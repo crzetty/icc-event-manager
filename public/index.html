@@ -322,7 +322,12 @@ function prop(page,name){
 function ptitle(page){
   var ps=page.properties||{};
   var keys=Object.keys(ps);
-  for(var i=0;i<keys.length;i++){if(ps[keys[i]].type==='title')return(ps[keys[i]].title||[]).map(function(t){return t.plain_text;}).join('')||'Untitled';}
+  for(var i=0;i<keys.length;i++){
+    if(ps[keys[i]].type==='title'){
+      var val=(ps[keys[i]].title||[]).map(function(t){return t.plain_text;}).join('');
+      if(val)return val;
+    }
+  }
   return'Untitled';
 }
 function fmtDate(d){if(!d)return'';try{return new Date(d+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}catch(e){return d;}}
@@ -389,7 +394,11 @@ async function init(){
 }
 
 async function loadEvents(){
-  var r=await qdb(COLLAB_DB,{sorts:[{property:'Date',direction:'ascending'}]});
+  var today=new Date().toISOString().split('T')[0];
+  var r=await qdb(COLLAB_DB,{
+    sorts:[{property:'Date',direction:'ascending'}],
+    filter:{property:'Date',date:{on_or_after:today}}
+  });
   S.events=r.results||[];
 }
 async function loadRel(key){
