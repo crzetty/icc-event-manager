@@ -6,23 +6,14 @@
 <title>ICC Event Manager</title>
 <link href="https://fonts.googleapis.com/css2?family=Cambria&family=Open+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root {
-  --navy:#1c355e;--navy-d:#142544;--navy-l:#2a4a7f;
-  --green:#60a511;--green-l:#e8f5d0;
-  --amber:#e8b146;--amber-l:#fdf3dc;
-  --blue:#0083c2;--blue-l:#e0f2fb;
-  --red:#e53d51;--red-l:#fde8eb;
-  --gray:#76777b;--gray-l:#f0f0f1;--gray-ll:#f8f8f8;
-  --border:rgba(28,53,94,0.1);--shadow:0 2px 12px rgba(28,53,94,0.08);--r:6px;
-}
+:root{--navy:#1c355e;--navy-l:#2a4a7f;--green:#60a511;--green-l:#e8f5d0;--amber:#e8b146;--amber-l:#fdf3dc;--blue:#0083c2;--blue-l:#e0f2fb;--red:#e53d51;--red-l:#fde8eb;--gray:#76777b;--gray-l:#f0f0f1;--gray-ll:#f8f8f8;--border:rgba(28,53,94,0.1);--r:6px;}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Open Sans',sans-serif;background:var(--gray-ll);color:#1a1a2e;font-size:14px;}
 .hdr{background:var(--navy);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:fixed;top:0;left:0;right:0;z-index:100;}
-.hdr-brand{display:flex;flex-direction:column;gap:1px;}
 .hdr-org{font-family:'Cambria',serif;font-size:15px;color:white;}
 .hdr-sub{font-size:10px;color:rgba(255,255,255,0.4);letter-spacing:.1em;text-transform:uppercase;}
 .hdr-nav{display:flex;gap:4px;}
-.nb{padding:6px 14px;border-radius:20px;font-size:12px;font-family:'Open Sans',sans-serif;font-weight:500;cursor:pointer;transition:all .15s;border:1px solid rgba(255,255,255,0.2);background:transparent;color:rgba(255,255,255,0.65);}
+.nb{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;border:1px solid rgba(255,255,255,0.2);background:transparent;color:rgba(255,255,255,0.65);font-family:'Open Sans',sans-serif;}
 .nb:hover{background:rgba(255,255,255,0.1);color:white;}
 .nb.active{background:white;border-color:white;color:var(--navy);font-weight:600;}
 .app{display:flex;height:100vh;padding-top:56px;}
@@ -36,7 +27,6 @@ body{font-family:'Open Sans',sans-serif;background:var(--gray-ll);color:#1a1a2e;
 .sb-ic{font-size:13px;width:18px;text-align:center;flex-shrink:0;}
 .sb-badge{margin-left:auto;font-size:10px;font-weight:700;padding:1px 7px;border-radius:10px;min-width:18px;text-align:center;}
 .sb-badge.red{background:var(--red-l);color:var(--red);}
-.sb-badge.amber{background:var(--amber-l);color:#a67a1a;}
 .sb-div{height:1px;background:var(--border);margin:8px 16px;}
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
 .topbar{padding:14px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:white;flex-shrink:0;}
@@ -47,14 +37,11 @@ body{font-family:'Open Sans',sans-serif;background:var(--gray-ll);color:#1a1a2e;
 .btn:hover{background:var(--gray-ll);}
 .btn.primary{background:var(--navy);color:white;border-color:var(--navy);}
 .btn.primary:hover{background:var(--navy-l);}
-.btn.sm{padding:4px 10px;font-size:12px;}
 .btn:disabled{opacity:.4;cursor:not-allowed;}
 .card{background:white;border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;margin-bottom:14px;}
 .card-title{font-family:'Cambria',serif;font-size:15px;color:var(--navy);margin-bottom:12px;}
 .ph{font-family:'Cambria',serif;font-size:22px;color:var(--navy);margin-bottom:4px;}
 .ps{font-size:12px;color:var(--gray);margin-bottom:20px;}
-
-/* Dashboard */
 .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
 .sc{background:white;border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;border-top:3px solid var(--navy);}
 .sc.red{border-top-color:var(--red);}
@@ -83,21 +70,19 @@ body{font-family:'Open Sans',sans-serif;background:var(--gray-ll);color:#1a1a2e;
 .dp-title{font-family:'Cambria',serif;font-size:13px;color:var(--navy);font-weight:600;}
 .dp-link{font-size:11px;color:var(--blue);cursor:pointer;}
 .dp-link:hover{text-decoration:underline;}
-.dr{display:flex;align-items:center;gap:10px;padding:9px 16px;border-bottom:1px solid var(--border);transition:background .1s;}
+.dr{display:flex;align-items:center;gap:10px;padding:9px 16px;border-bottom:1px solid var(--border);}
 .dr:last-child{border-bottom:none;}
 .dr:hover{background:var(--gray-ll);}
 .dd{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
 .dn{font-size:13px;font-weight:600;color:var(--navy);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .ddt{font-size:11px;color:var(--gray);white-space:nowrap;}
 .dbadge{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600;white-space:nowrap;}
-.qa-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:20px;}
+.qa-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;}
 .qa{background:white;border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;cursor:pointer;transition:all .15s;text-align:left;font-family:'Open Sans',sans-serif;}
-.qa:hover{border-color:var(--navy);box-shadow:var(--shadow);}
+.qa:hover{border-color:var(--navy);box-shadow:0 2px 12px rgba(28,53,94,0.08);}
 .qa-ic{font-size:18px;margin-bottom:5px;}
 .qa-t{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:2px;}
 .qa-d{font-size:11px;color:var(--gray);}
-
-/* Events table */
 .tbl{width:100%;border-collapse:collapse;}
 .tbl th{text-align:left;padding:7px 11px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--gray);border-bottom:2px solid var(--border);}
 .tbl td{padding:10px 11px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle;}
@@ -108,16 +93,14 @@ body{font-family:'Open Sans',sans-serif;background:var(--gray-ll);color:#1a1a2e;
 .sp-perspective{background:var(--gray-l);color:var(--gray);}
 .sp-requested{background:var(--amber-l);color:#a67a1a;}
 .sp-complete{background:var(--green-l);color:var(--green);}
-.sync-row{display:flex;gap:4px;align-items:center;flex-wrap:wrap;}
-.syn{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:600;cursor:pointer;transition:all .12s;border:1px solid;}
+.sync-row{display:flex;gap:4px;flex-wrap:wrap;}
+.syn{display:inline-flex;align-items:center;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:600;cursor:pointer;border:1px solid;}
 .syn.done{background:var(--green-l);color:var(--green);border-color:#b6dfa0;}
 .syn.pending{background:var(--red-l);color:var(--red);border-color:#f5b8bf;}
 .syn:hover{opacity:.75;}
-
-/* Gap report */
 .gc{background:white;border:1px solid var(--border);border-left:4px solid var(--blue);border-radius:var(--r);padding:14px 18px;margin-bottom:10px;}
 .gc.urgent{border-left-color:var(--red);}
-.gc.complete{border-left-color:var(--green);}
+.gc.ok{border-left-color:var(--green);}
 .gc-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:7px;}
 .gc-name{font-family:'Cambria',serif;font-size:14px;color:var(--navy);font-weight:600;}
 .gc-date{font-size:11px;color:var(--gray);margin-top:1px;}
@@ -127,36 +110,31 @@ body{font-family:'Open Sans',sans-serif;background:var(--gray-ll);color:#1a1a2e;
 .dp-ok{background:var(--green-l);color:var(--green);}
 .gf{display:flex;flex-wrap:wrap;gap:5px;}
 .gt{padding:2px 9px;border-radius:10px;font-size:11px;background:var(--red-l);color:var(--red);}
-
-/* Intake */
 .chat-wrap{display:flex;flex-direction:column;height:100%;}
 .chat-hdr{padding-bottom:14px;border-bottom:1px solid var(--border);margin-bottom:14px;flex-shrink:0;}
 .chat-title{font-family:'Cambria',serif;font-size:18px;color:var(--navy);margin-bottom:2px;}
 .chat-sub{font-size:12px;color:var(--gray);}
 .chat-msgs{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:14px;padding-bottom:6px;}
-.msg{display:flex;gap:9px;animation:fadeUp .18s ease;}
-@keyframes fadeUp{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+.msg{display:flex;gap:9px;}
 .msg.user{flex-direction:row-reverse;}
 .msg-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
-.msg.assistant .msg-av{background:var(--navy);color:white;font-family:'Cambria',serif;font-size:11px;font-weight:bold;letter-spacing:0;}
+.msg.assistant .msg-av{background:var(--navy);color:white;}
 .msg.user .msg-av{background:var(--blue);color:white;}
 .msg-bub{max-width:580px;padding:9px 13px;border-radius:8px;font-size:13.5px;line-height:1.65;}
 .msg.assistant .msg-bub{background:white;border:1px solid var(--border);color:#1a1a2e;border-radius:2px 8px 8px 8px;}
 .msg.user .msg-bub{background:var(--navy);color:white;border-radius:8px 2px 8px 8px;}
 .msg-bub strong{font-weight:600;}
-.msg-bub ul{padding-left:16px;margin:5px 0;}
-.msg-bub li{margin-bottom:3px;}
 .msg-bub p{margin-bottom:5px;}
 .msg-bub p:last-child{margin-bottom:0;}
 .qbs{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px;}
-.qb{padding:5px 13px;border-radius:16px;font-size:12px;font-family:'Open Sans',sans-serif;font-weight:500;cursor:pointer;transition:all .13s;border:1.5px solid var(--navy);background:white;color:var(--navy);}
+.qb{padding:5px 13px;border-radius:16px;font-size:12px;font-family:'Open Sans',sans-serif;font-weight:500;cursor:pointer;border:1.5px solid var(--navy);background:white;color:var(--navy);}
 .qb:hover{background:var(--navy);color:white;}
 .sel-tag{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;background:var(--blue-l);border:1px solid var(--blue);color:var(--blue);border-radius:16px;font-size:12px;margin:2px;}
-.sel-tag button{background:none;border:none;cursor:pointer;color:var(--blue);font-size:13px;line-height:1;padding:0;}
+.sel-tag-x{background:none;border:none;cursor:pointer;color:var(--blue);font-size:13px;line-height:1;padding:0;}
 .chat-ir{padding-top:14px;border-top:1px solid var(--border);flex-shrink:0;display:flex;gap:8px;align-items:flex-end;}
-.chat-in{flex:1;padding:9px 14px;border:1.5px solid var(--border);border-radius:22px;font-family:'Open Sans',sans-serif;font-size:14px;color:#1a1a2e;outline:none;resize:none;height:42px;background:white;transition:border .13s;}
+.chat-in{flex:1;padding:9px 14px;border:1.5px solid var(--border);border-radius:22px;font-family:'Open Sans',sans-serif;font-size:14px;color:#1a1a2e;outline:none;resize:none;height:42px;background:white;}
 .chat-in:focus{border-color:var(--navy);}
-.send-btn{width:42px;height:42px;border-radius:50%;background:var(--navy);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .13s;}
+.send-btn{width:42px;height:42px;border-radius:50%;background:var(--navy);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .send-btn:hover{background:var(--navy-l);}
 .send-btn:disabled{opacity:.4;cursor:not-allowed;}
 .send-btn svg{width:17px;height:17px;fill:white;}
@@ -165,103 +143,87 @@ body{font-family:'Open Sans',sans-serif;background:var(--gray-ll);color:#1a1a2e;
 .td:nth-child(2){animation-delay:.2s;}
 .td:nth-child(3){animation-delay:.4s;}
 @keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-4px);opacity:1}}
-
-/* Entry type grid */
-.type-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px;}
-.type-card{background:white;border:1.5px solid var(--border);border-radius:var(--r);padding:14px 16px;cursor:pointer;transition:all .14s;text-align:left;font-family:'Open Sans',sans-serif;}
-.type-card:hover{border-color:var(--navy);box-shadow:var(--shadow);}
-.tc-icon{font-size:22px;margin-bottom:6px;}
-.tc-title{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:1px;}
-.tc-desc{font-size:11px;color:var(--gray);}
+.type-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-top:12px;}
+.tc{background:white;border:1.5px solid var(--border);border-radius:var(--r);padding:13px 15px;cursor:pointer;text-align:left;font-family:'Open Sans',sans-serif;}
+.tc:hover{border-color:var(--navy);box-shadow:0 2px 8px rgba(28,53,94,0.08);}
+.tc-ic{font-size:20px;margin-bottom:5px;}
+.tc-t{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:1px;}
+.tc-d{font-size:11px;color:var(--gray);}
 .sub-grid{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;}
-.sub-card{flex:1;min-width:140px;background:white;border:1.5px solid var(--border);border-radius:var(--r);padding:12px 14px;cursor:pointer;transition:all .14s;font-family:'Open Sans',sans-serif;}
-.sub-card:hover{border-color:var(--navy);background:#e8edf5;}
-.sc-title{font-size:13px;font-weight:600;color:var(--navy);}
-.sc-desc{font-size:11px;color:var(--gray);margin-top:2px;}
-
-/* Form */
+.sc2{flex:1;min-width:120px;background:white;border:1.5px solid var(--border);border-radius:var(--r);padding:11px 13px;cursor:pointer;font-family:'Open Sans',sans-serif;}
+.sc2:hover{border-color:var(--navy);background:#e8edf5;}
+.sc2-t{font-size:13px;font-weight:600;color:var(--navy);}
+.sc2-d{font-size:11px;color:var(--gray);margin-top:2px;}
 .fg{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-bottom:13px;}
 .fg.single{grid-template-columns:1fr;}
 .fg.triple{grid-template-columns:1fr 1fr 1fr;}
 .field{display:flex;flex-direction:column;gap:4px;}
-.field label{font-size:11px;color:var(--gray);letter-spacing:.03em;}
-.field input,.field select,.field textarea{padding:8px 11px;border:1px solid var(--border);border-radius:var(--r);font-family:'Open Sans',sans-serif;font-size:13px;background:var(--gray-ll);color:#1a1a2e;outline:none;transition:border .13s;width:100%;}
+.field label{font-size:11px;color:var(--gray);}
+.field input,.field select,.field textarea{padding:8px 11px;border:1px solid var(--border);border-radius:var(--r);font-family:'Open Sans',sans-serif;font-size:13px;background:var(--gray-ll);color:#1a1a2e;outline:none;width:100%;}
 .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--navy);background:white;}
 .field textarea{resize:vertical;min-height:68px;}
-.choir-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:7px;}
-.choir-tog{display:flex;align-items:center;gap:7px;padding:6px 10px;border:1px solid var(--border);border-radius:var(--r);cursor:pointer;font-size:12px;transition:all .12s;background:var(--gray-ll);user-select:none;}
-.choir-tog input{display:none;}
+.choir-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:6px;margin-top:8px;}
+.choir-tog{padding:6px 10px;border:1px solid var(--border);border-radius:var(--r);cursor:pointer;font-size:12px;background:var(--gray-ll);color:#444;user-select:none;text-align:center;}
 .choir-tog:hover{border-color:var(--navy);}
 .choir-tog.on{background:#e8edf5;border-color:var(--navy);color:var(--navy);font-weight:600;}
-.status-row{display:flex;gap:7px;flex-wrap:wrap;}
-.status-tog{padding:5px 13px;border-radius:16px;border:1px solid var(--border);font-size:12px;cursor:pointer;transition:all .12s;background:var(--gray-ll);color:#444;}
+.status-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:6px;}
+.status-tog{padding:5px 13px;border-radius:16px;border:1px solid var(--border);font-size:12px;cursor:pointer;background:var(--gray-ll);color:#444;}
 .status-tog:hover{border-color:var(--navy);}
 .status-tog.on{background:var(--navy);color:white;border-color:var(--navy);}
-.mod-row{display:flex;gap:14px;margin-bottom:13px;}
+.mod-row{display:flex;gap:14px;margin-bottom:13px;align-items:center;}
 .mod-check{display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;}
 .mod-check input{accent-color:var(--navy);}
-
-/* Search */
 .sw{position:relative;}
 .sr{position:absolute;top:100%;left:0;right:0;background:white;border:1px solid var(--border);border-radius:var(--r);z-index:200;max-height:180px;overflow-y:auto;box-shadow:0 4px 14px rgba(0,0,0,.08);}
 .sri{padding:8px 12px;font-size:13px;cursor:pointer;border-bottom:1px solid var(--border);}
 .sri:last-child{border-bottom:none;}
 .sri:hover{background:var(--blue-l);}
-
-/* Take Note */
 .tn-out{font-family:'Open Sans',sans-serif;font-size:13.5px;line-height:1.9;white-space:pre-wrap;color:#1a1a2e;padding-top:14px;border-top:1px solid var(--border);}
-
-/* Misc */
 .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;}
 .spinner.dk{border-color:rgba(28,53,94,.15);border-top-color:var(--navy);}
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading{text-align:center;padding:60px;color:var(--gray);font-size:13px;}
 .loading .spinner{width:22px;height:22px;display:block;margin:0 auto 14px;}
 .empty{text-align:center;padding:50px;color:var(--gray);}
-.section-link{font-size:12px;color:var(--blue);cursor:pointer;}
-.section-link:hover{text-decoration:underline;}
 </style>
 </head>
 <body>
 <header class="hdr">
-  <div class="hdr-brand">
+  <div>
     <div class="hdr-org">Indianapolis Children's Choir</div>
     <div class="hdr-sub">Event Manager</div>
   </div>
   <nav class="hdr-nav">
-    <button class="nb" onclick="go('dashboard')" id="tab-dashboard">Dashboard</button>
-    <button class="nb active" onclick="go('intake')" id="tab-intake">+ Add Entry</button>
-    <button class="nb" onclick="go('gaps')" id="tab-gaps">Gap Report</button>
-    <button class="nb" onclick="go('events')" id="tab-events">All Entries</button>
-    <button class="nb" onclick="go('takenote')" id="tab-takenote">Take Note Brief</button>
+    <button class="nb" id="tab-dashboard" onclick="go('dashboard')">Dashboard</button>
+    <button class="nb active" id="tab-intake" onclick="go('intake')">+ Add Entry</button>
+    <button class="nb" id="tab-gaps" onclick="go('gaps')">Gap Report</button>
+    <button class="nb" id="tab-events" onclick="go('events')">All Entries</button>
+    <button class="nb" id="tab-takenote" onclick="go('takenote')">Take Note Brief</button>
   </nav>
 </header>
-
 <div class="app">
   <div class="sb">
     <div class="sb-sec">Views</div>
-    <div class="sb-i" onclick="go('dashboard')" id="sb-dashboard"><span class="sb-ic">&#x1F3E0;</span> Dashboard</div>
-    <div class="sb-i" onclick="go('events')" id="sb-events"><span class="sb-ic">&#x1F4CB;</span> All Entries</div>
-    <div class="sb-i" onclick="gof('performances')" id="sb-performances"><span class="sb-ic">&#x1F3B5;</span> Performances</div>
-    <div class="sb-i" onclick="gof('education')" id="sb-education"><span class="sb-ic">&#x1F393;</span> Education &amp; Outreach</div>
-    <div class="sb-i" onclick="gof('building')" id="sb-building"><span class="sb-ic">&#x1F3E2;</span> Building</div>
-    <div class="sb-i" onclick="gof('organizational')" id="sb-organizational"><span class="sb-ic">&#x1F4CC;</span> Organizational</div>
-    <div class="sb-i" onclick="gof('notices')" id="sb-notices"><span class="sb-ic">&#x1F4E2;</span> Calendar Notices</div>
+    <div class="sb-i" id="sb-dashboard" onclick="go('dashboard')"><span class="sb-ic">&#127968;</span> Dashboard</div>
+    <div class="sb-i" id="sb-events" onclick="go('events')"><span class="sb-ic">&#128203;</span> All Entries</div>
+    <div class="sb-i" id="sb-performances" onclick="gof('performances')"><span class="sb-ic">&#127925;</span> Performances</div>
+    <div class="sb-i" id="sb-education" onclick="gof('education')"><span class="sb-ic">&#127891;</span> Education &amp; Outreach</div>
+    <div class="sb-i" id="sb-building" onclick="gof('building')"><span class="sb-ic">&#127970;</span> Building</div>
+    <div class="sb-i" id="sb-notices" onclick="gof('notices')"><span class="sb-ic">&#128226;</span> Calendar Notices</div>
     <div class="sb-div"></div>
     <div class="sb-sec">Actions</div>
-    <div class="sb-i action" onclick="go('intake')" id="sb-intake"><span class="sb-ic">+</span> Add Entry</div>
-    <div class="sb-i" onclick="go('gaps')" id="sb-gaps">
-      <span class="sb-ic">&#x26A0;&#xFE0F;</span> Gap Report
+    <div class="sb-i action" id="sb-intake" onclick="go('intake')"><span class="sb-ic">+</span> Add Entry</div>
+    <div class="sb-i" id="sb-gaps" onclick="go('gaps')">
+      <span class="sb-ic">&#9888;</span> Gap Report
       <span class="sb-badge red" id="gap-badge">-</span>
     </div>
-    <div class="sb-i" onclick="go('takenote')" id="sb-takenote"><span class="sb-ic">&#x1F4C4;</span> Take Note Brief</div>
+    <div class="sb-i" id="sb-takenote" onclick="go('takenote')"><span class="sb-ic">&#128196;</span> Take Note Brief</div>
     <div class="sb-div"></div>
     <div class="sb-sec">Databases</div>
-    <div class="sb-i" onclick="godb('venues')" id="sb-db-venues"><span class="sb-ic">&#x1F4CD;</span> Venues</div>
-    <div class="sb-i" onclick="godb('orgs')" id="sb-db-orgs"><span class="sb-ic">&#x1F3DB;&#xFE0F;</span> Organizations</div>
-    <div class="sb-i" onclick="godb('contacts')" id="sb-db-contacts"><span class="sb-ic">&#x1F464;</span> Collaborators</div>
+    <div class="sb-i" id="sb-db-venues" onclick="godb('venues')"><span class="sb-ic">&#128205;</span> Venues</div>
+    <div class="sb-i" id="sb-db-orgs" onclick="godb('orgs')"><span class="sb-ic">&#127963;</span> Organizations</div>
+    <div class="sb-i" id="sb-db-contacts" onclick="godb('contacts')"><span class="sb-ic">&#128100;</span> Collaborators</div>
   </div>
-
   <div class="main">
     <div class="topbar">
       <div class="page-title" id="page-title">Loading...</div>
@@ -272,345 +234,256 @@ body{font-family:'Open Sans',sans-serif;background:var(--gray-ll);color:#1a1a2e;
     </div>
   </div>
 </div>
-
 <script>
-const NOTION_KEY='ntn_s40523532606oEIHti7zdPHNMHpSIssattDAezK4weQa5M';
-const COLLAB_DB='c7aa2e1b-f842-426c-a208-574d36ee826d';
-const TAG_PERF=['Collaborative Bookings','Season Concerts & Events','Season Concerts & Events [AACC}','Season Concerts & Events [CICC]'];
-const TAG_EDU=['Education & Outreach'];
-const TAG_BLDG=['Partner Events & Meetings','Resident Events & Meetings'];
-const TAG_ORG=['Organizational Events'];
-const TAG_NOTICE=['Calendar Addition / Adjustment','Staff Notice'];
-const CHOIRS=['Foundations','Prep','BLC','Hendricks Co. BLC','Lyric','IndyVoice','Master Chorale','Touring Choirs','Jubilate','Special Group','Seniors','AAACC Prep','AACC Concert','AACC Youth Chorale','CICC Descant','CICC Concert','Neighborhood Choir Academy','Camp Participants','Alumni Choir'];
-const STATUSES=['In progress','Details Set','Perspective','Requested'];
+var NOTION_KEY = 'ntn_s40523532606oEIHti7zdPHNMHpSIssattDAezK4weQa5M';
+var COLLAB_DB = 'c7aa2e1b-f842-426c-a208-574d36ee826d';
+var VENUES_DB = '0dd0ac29-cb1f-4e20-9362-7513a6e907be';
+var ORGS_DB = '443b1059-8996-4358-984f-9ec652d05ecb';
+var CONTACTS_DB = '3dcaa9f5-2da5-4a96-bdf2-ba7662630245';
+var TAG_PERF = ['Collaborative Bookings','Season Concerts & Events','Season Concerts & Events [AACC}','Season Concerts & Events [CICC]'];
+var TAG_EDU = ['Education & Outreach'];
+var TAG_BLDG = ['Partner Events & Meetings','Resident Events & Meetings'];
+var TAG_ORG = ['Organizational Events'];
+var TAG_NOTICE = ['Calendar Addition / Adjustment','Staff Notice'];
+var CHOIRS = ['Foundations','Prep','BLC','Hendricks Co. BLC','Lyric','IndyVoice','Master Chorale','Touring Choirs','Jubilate','Special Group','Seniors','AAACC Prep','AACC Concert','AACC Youth Chorale','CICC Descant','CICC Concert','Neighborhood Choir Academy','Camp Participants','Alumni Choir'];
+var STATUSES = ['In progress','Details Set','Perspective','Requested'];
+var S = { events:[], venues:[], orgs:[], contacts:[], chatHistory:[], currentFilter:null, intake:{type:null,sub:null,choirs:[],status:'',rels:{},paid:false,inkind:false,josh:false} };
 
-const S={dbs:{},events:[],venues:[],orgs:[],contacts:[],chatHistory:[],currentFilter:null,intake:{step:null,type:null,subtype:null,choirs:new Set(),status:'',rels:{},paid:false,inkind:false,josh:false}};
-
-async function notion(ep,method,payload){
-  const r=await fetch('/api/notion',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({endpoint:ep,method:method||'POST',payload:payload||{},notionKey:NOTION_KEY})});
-  if(!r.ok){const t=await r.text();throw new Error(r.status+': '+t.slice(0,200));}
-  return r.json();
+function nReq(ep, method, payload) {
+  return fetch('/api/notion', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({endpoint:ep, method:method||'POST', payload:payload||{}, notionKey:NOTION_KEY}) })
+    .then(function(r){ if(!r.ok) return r.text().then(function(t){ throw new Error(r.status+': '+t.slice(0,200)); }); return r.json(); });
 }
-async function qdb(id,extra){return notion('/databases/'+id+'/query','POST',Object.assign({page_size:100},extra||{}));}
-async function patchPage(id,props){return notion('/pages/'+id,'PATCH',{properties:props});}
-async function createPage(dbId,props,notes){
-  const p=await notion('/pages','POST',{parent:{database_id:dbId},properties:props});
-  if(notes)await notion('/blocks/'+p.id+'/children','PATCH',{children:[{object:'block',type:'paragraph',paragraph:{rich_text:[{type:'text',text:{content:notes}}]}}]});
-  return p;
-}
-async function claude(messages,system){
-  const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1200,system:system||'',messages:messages})});
-  const d=await r.json();
-  return (d.content||[]).map(function(c){return c.text||'';}).join('');
+function qdb(id, extra) { return nReq('/databases/'+id+'/query','POST',Object.assign({page_size:100},extra||{})); }
+function cReq(messages, system) {
+  return fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1200,system:system||'',messages:messages})})
+    .then(function(r){return r.json();}).then(function(d){return (d.content||[]).map(function(c){return c.text||'';}).join('');});
 }
 
-function prop(page,name){
-  var ps=page.properties||{};
-  var k=Object.keys(ps).find(function(k){return k.toLowerCase()===name.toLowerCase();})||Object.keys(ps).find(function(k){return k.toLowerCase().indexOf(name.toLowerCase())>=0;});
-  if(!k)return'';
-  var p=ps[k];
-  if(p.type==='title')return(p.title||[]).map(function(t){return t.plain_text;}).join('');
-  if(p.type==='rich_text')return(p.rich_text||[]).map(function(t){return t.plain_text;}).join('');
-  if(p.type==='date')return(p.date&&p.date.start)||'';
-  if(p.type==='select')return(p.select&&p.select.name)||'';
-  if(p.type==='multi_select')return(p.multi_select||[]).map(function(s){return s.name;}).join(', ');
-  if(p.type==='relation')return p.relation||[];
-  if(p.type==='checkbox')return p.checkbox||false;
-  if(p.type==='number')return p.number!=null?p.number:'';
-  return'';
+function gP(page, name) {
+  var ps=page.properties||{}, keys=Object.keys(ps), key=null;
+  for(var i=0;i<keys.length;i++){if(keys[i].toLowerCase()===name.toLowerCase()){key=keys[i];break;}}
+  if(!key){for(var i=0;i<keys.length;i++){if(keys[i].toLowerCase().indexOf(name.toLowerCase())>=0){key=keys[i];break;}}}
+  if(!key) return '';
+  var p=ps[key];
+  if(!p) return '';
+  if(p.type==='title') return (p.title||[]).map(function(t){return t.plain_text;}).join('');
+  if(p.type==='rich_text') return (p.rich_text||[]).map(function(t){return t.plain_text;}).join('');
+  if(p.type==='date') return (p.date&&p.date.start)||'';
+  if(p.type==='select') return (p.select&&p.select.name)||'';
+  if(p.type==='multi_select') return (p.multi_select||[]).map(function(s){return s.name;}).join(', ');
+  if(p.type==='relation') return p.relation||[];
+  if(p.type==='checkbox') return p.checkbox||false;
+  if(p.type==='status') return (p.status&&p.status.name)||'';
+  return '';
 }
-function ptitle(page){
-  var ps=page.properties||{};
-  var keys=Object.keys(ps);
-  for(var i=0;i<keys.length;i++){
-    if(ps[keys[i]].type==='title'){
-      var val=(ps[keys[i]].title||[]).map(function(t){return t.plain_text;}).join('');
-      if(val)return val;
-    }
-  }
-  return'Untitled';
+function gT(page) {
+  var ps=page.properties||{}, keys=Object.keys(ps);
+  for(var i=0;i<keys.length;i++){if(ps[keys[i]].type==='title'){var v=(ps[keys[i]].title||[]).map(function(t){return t.plain_text;}).join('');if(v)return v;}}
+  return 'Untitled';
 }
-function fmtDate(d){if(!d)return'';try{return new Date(d+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}catch(e){return d;}}
-function fmtDateLong(d){if(!d)return'';try{return new Date(d+'T12:00:00').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});}catch(e){return d;}}
-function fmtTime(t){if(!t)return'';var parts=t.split(':').map(Number);var h=parts[0],m=parts[1];return(h%12||12)+':'+(m<10?'0':'')+m+' '+(h>=12?'PM':'AM');}
-function daysUntil(d){if(!d)return null;return Math.ceil((new Date(d+'T12:00:00')-new Date())/86400000);}
-function setTitle(t){document.getElementById('page-title').textContent=t;}
-function setActions(h){document.getElementById('topbar-actions').innerHTML=h;}
-function setContent(h){document.getElementById('content').innerHTML=h;}
+function fD(d){if(!d)return'';try{return new Date(d+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}catch(e){return d;}}
+function fDL(d){if(!d)return'';try{return new Date(d+'T12:00:00').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});}catch(e){return d;}}
+function fT(t){if(!t)return'';var p=t.split(':'),h=parseInt(p[0]),m=parseInt(p[1]);return(h%12||12)+':'+(m<10?'0':'')+m+' '+(h>=12?'PM':'AM');}
+function dU(d){if(!d)return null;return Math.ceil((new Date(d+'T12:00:00')-new Date())/86400000);}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function sTitle(t){document.getElementById('page-title').textContent=t;}
+function sActions(h){document.getElementById('topbar-actions').innerHTML=h;}
+function sContent(h){document.getElementById('content').innerHTML=h;}
 function tod(){var h=new Date().getHours();return h<12?'morning':h<17?'afternoon':'evening';}
 
-function missingFields(page){
-  var tags=prop(page,'tags');
-  var tl=typeof tags==='string'?tags.split(', '):[];
-  var isNotice=tl.some(function(t){return TAG_NOTICE.indexOf(t)>=0;});
-  var isBldg=tl.length>0&&tl.every(function(t){return TAG_BLDG.indexOf(t)>=0;});
-  if(isNotice)return[];
+function missing(page) {
+  var tags=gP(page,'Tags'), tl=typeof tags==='string'?tags.split(', '):[];
+  var isN=tl.some(function(t){return TAG_NOTICE.indexOf(t)>=0;});
+  var isB=tl.length>0&&tl.every(function(t){return TAG_BLDG.indexOf(t)>=0;});
+  if(isN) return [];
   var check=['Call Time','Performance Time','Uniform','Venue','Contact'];
-  if(!isBldg)check.push('Participating Choirs');
-  return check.filter(function(f){
-    var v=prop(page,f);
-    if(Array.isArray(v))return v.length===0;
-    return!v;
-  });
+  if(!isB) check.push('Participating Choirs');
+  return check.filter(function(f){var v=gP(page,f);if(Array.isArray(v))return v.length===0;return !v;});
 }
-
-function syncStatus(page){
-  var cc=prop(page,'Update on ChorusConnection');
-  var oc=prop(page,'Update on Organizational Calendar');
-  var jc=prop(page,"Update on Josh's Calendar");
-  var onJ=prop(page,"On Josh's Calendar");
+function syncSt(page) {
+  var cc=gP(page,'Update on ChorusConnection'), oc=gP(page,'Update on Organizational Calendar'), jc=gP(page,"Update on Josh's Calendar"), onJ=gP(page,"On Josh's Calendar");
   var items=[{key:'cc',label:'CC',done:cc===true},{key:'oc',label:'Org Cal',done:oc===true}];
-  if(onJ===true)items.push({key:'jc',label:"Josh's Cal",done:jc===true});
+  if(onJ===true) items.push({key:'jc',label:"Josh's Cal",done:jc===true});
   return items;
 }
-
-function pendingSyncs(page){return syncStatus(page).filter(function(s){return!s.done;}).length;}
-
+function pendS(page){return syncSt(page).filter(function(s){return !s.done;}).length;}
+function tagCol(tags){
+  var tl=typeof tags==='string'?tags.split(', '):[];
+  if(tl.some(function(t){return TAG_PERF.indexOf(t)>=0;})) return 'var(--navy)';
+  if(tl.some(function(t){return TAG_EDU.indexOf(t)>=0;})) return 'var(--green)';
+  if(tl.some(function(t){return TAG_BLDG.indexOf(t)>=0;})) return 'var(--amber)';
+  if(tl.some(function(t){return TAG_NOTICE.indexOf(t)>=0;})) return 'var(--gray)';
+  return 'var(--blue)';
+}
 function spill(s){
   var m={'in progress':'sp-progress','details set':'sp-set','perspective':'sp-perspective','requested':'sp-requested','complete':'sp-complete','calendar event passed':'sp-complete'};
-  return '<span class="sp '+(m[(s||'').toLowerCase()]||'sp-perspective')+'">'+esc(s||'—')+'</span>';
+  return '<span class="sp '+(m[(s||'').toLowerCase()]||'sp-perspective')+'">'+esc(s||'&mdash;')+'</span>';
 }
 
-function tagColor(tags){
-  var tl=typeof tags==='string'?tags.split(', '):[];
-  if(tl.some(function(t){return TAG_PERF.indexOf(t)>=0;}))return'var(--navy)';
-  if(tl.some(function(t){return TAG_EDU.indexOf(t)>=0;}))return'var(--green)';
-  if(tl.some(function(t){return TAG_BLDG.indexOf(t)>=0;}))return'var(--amber)';
-  if(tl.some(function(t){return TAG_NOTICE.indexOf(t)>=0;}))return'var(--gray)';
-  return'var(--blue)';
-}
-
-async function init(){
-  try{
-    // Hardcoded DB IDs from Notion schema
-    S.dbs.venues={id:'0dd0ac29-cb1f-4e20-9362-7513a6e907be'};
-    S.dbs.orgs={id:'443b1059-8996-4358-984f-9ec652d05ecb'};
-    S.dbs.contacts={id:'3dcaa9f5-2da5-4a96-bdf2-ba7662630245'};
-    await Promise.all([loadEvents(),loadRel('venues'),loadRel('orgs'),loadRel('contacts')]);
-    updateBadges();
-    go('dashboard');
-  }catch(e){setContent('<div class="loading" style="color:var(--red);">Connection error: '+esc(e.message)+'</div>');}
-}
-
-async function loadEvents(){
+function init() {
   var today=new Date().toISOString().split('T')[0];
-  var r=await qdb(COLLAB_DB,{
-    sorts:[{property:'Date',direction:'ascending'}],
-    filter:{property:'Date',date:{on_or_after:today}}
-  });
-  S.events=r.results||[];
-}
-async function loadRel(key){
-  var db=S.dbs[key];if(!db)return;
-  var r=await qdb(db.id);
-  S[key]=(r.results||[]).map(function(p){return{id:p.id,name:ptitle(p)};}).sort(function(a,b){return a.name.localeCompare(b.name);});
-}
-
-function updateBadges(){
-  var now=new Date();
-  var gaps=S.events.filter(function(p){var d=prop(p,'date');return d&&new Date(d)>=now&&missingFields(p).length>0;}).length;
-  var syncs=S.events.filter(function(p){var d=prop(p,'date');return d&&new Date(d)>=now&&pendingSyncs(p)>0;}).length;
-  var gb=document.getElementById('gap-badge');
-  if(gb){gb.textContent=gaps||'0';gb.className='sb-badge '+(gaps>0?'red':'');}
+  Promise.all([
+    qdb(COLLAB_DB,{sorts:[{property:'Date',direction:'ascending'}],filter:{property:'Date',date:{on_or_after:today}}}),
+    qdb(VENUES_DB), qdb(ORGS_DB), qdb(CONTACTS_DB)
+  ]).then(function(res) {
+    S.events=res[0].results||[];
+    S.venues=(res[1].results||[]).map(function(p){return{id:p.id,name:gT(p)};}).sort(function(a,b){return a.name.localeCompare(b.name);});
+    S.orgs=(res[2].results||[]).map(function(p){return{id:p.id,name:gT(p)};}).sort(function(a,b){return a.name.localeCompare(b.name);});
+    S.contacts=(res[3].results||[]).map(function(p){return{id:p.id,name:gT(p)};}).sort(function(a,b){return a.name.localeCompare(b.name);});
+    updBadges(); go('dashboard');
+  }).catch(function(e){ sContent('<div class="loading" style="color:var(--red);">Connection error: '+esc(e.message)+'</div>'); });
 }
 
-function go(tab){
+function refresh() {
+  var today=new Date().toISOString().split('T')[0];
+  return qdb(COLLAB_DB,{sorts:[{property:'Date',direction:'ascending'}],filter:{property:'Date',date:{on_or_after:today}}})
+    .then(function(r){S.events=r.results||[];updBadges();});
+}
+
+function updBadges() {
+  var cnt=S.events.filter(function(p){return missing(p).length>0;}).length;
+  var el=document.getElementById('gap-badge');
+  if(el){el.textContent=cnt||'0';el.className='sb-badge'+(cnt>0?' red':'');}
+}
+
+function go(tab) {
   S.currentFilter=null;
   document.querySelectorAll('.nb,.sb-i').forEach(function(b){b.classList.remove('active');});
   ['tab-','sb-'].forEach(function(p){var el=document.getElementById(p+tab);if(el)el.classList.add('active');});
-  if(tab==='dashboard')showDashboard();
-  else if(tab==='events')showEvents(null);
-  else if(tab==='gaps')showGaps();
-  else if(tab==='intake')showIntake();
-  else if(tab==='takenote')showTakenote();
+  if(tab==='dashboard') showDash();
+  else if(tab==='events') showEvents(null);
+  else if(tab==='gaps') showGaps();
+  else if(tab==='intake') showIntake();
+  else if(tab==='takenote') showTN();
 }
-
-function gof(filter){
+function gof(filter) {
   S.currentFilter=filter;
   document.querySelectorAll('.nb,.sb-i').forEach(function(b){b.classList.remove('active');});
   var el=document.getElementById('sb-'+filter);if(el)el.classList.add('active');
   document.getElementById('tab-events').classList.add('active');
   showEvents(filter);
 }
-
-function godb(key){
+function godb(key) {
   document.querySelectorAll('.nb,.sb-i').forEach(function(b){b.classList.remove('active');});
   var el=document.getElementById('sb-db-'+key);if(el)el.classList.add('active');
-  showDbBrowser(key);
+  showDB(key);
 }
 
-function showDashboard(){
-  setTitle('Dashboard');
-  setActions('<button class="btn" onclick="refreshAll()">&#x21BB; Refresh</button>');
-  var now=new Date();
-  var up=S.events.filter(function(p){var d=prop(p,'date');return d&&new Date(d)>=now;});
-  var gaps=up.filter(function(p){return missingFields(p).length>0;});
-  var complete=up.filter(function(p){return missingFields(p).length===0;});
-  var urgentGaps=gaps.filter(function(p){var d=daysUntil(prop(p,'date'));return d!==null&&d<=14;});
-  var pendSync=up.filter(function(p){return pendingSyncs(p)>0;});
-  var thisWeek=up.filter(function(p){var d=daysUntil(prop(p,'date'));return d!==null&&d<=7;});
-  var next=up[0];
-  var nd=next?daysUntil(prop(next,'date')):null;
-
-  var gapCard=gaps.length>0?'red':complete.length===up.length&&up.length>0?'green':'muted';
-  var syncCard=pendSync.length>0?'amber':'muted';
-
-  var upRows=up.slice(0,6).map(function(p){
-    var m=missingFields(p);var color=tagColor(prop(p,'tags'));var ps=pendingSyncs(p);
-    return '<div class="dr"><div class="dd" style="background:'+color+';"></div>'+
-      '<div class="dn">'+esc(ptitle(p))+'</div>'+
-      '<div class="ddt">'+fmtDate(prop(p,'date'))+'</div>'+
-      (m.length?'<span class="dbadge" style="background:var(--red-l);color:var(--red);">&#x26A0; '+m.length+'</span>':'')+
-      (ps?'<span class="dbadge" style="background:var(--amber-l);color:#a67a1a;">&#x21BB; '+ps+'</span>':
-        m.length===0?'<span class="dbadge" style="background:var(--green-l);color:var(--green);">&#x2713;</span>':'')+
+function showDash() {
+  sTitle('Dashboard');
+  sActions('<button class="btn" onclick="refresh().then(showDash)">&#8635; Refresh</button>');
+  var up=S.events, now=new Date();
+  var gaps=up.filter(function(p){return missing(p).length>0;});
+  var complete=up.filter(function(p){return missing(p).length===0;});
+  var urgGaps=gaps.filter(function(p){var d=dU(gP(p,'date'));return d!==null&&d<=14;});
+  var pendSync=up.filter(function(p){return pendS(p)>0;});
+  var thisWeek=up.filter(function(p){var d=dU(gP(p,'date'));return d!==null&&d<=7;});
+  var next=up[0]; var nd=next?dU(gP(next,'date')):null;
+  var gCard=gaps.length>0?'red':(complete.length===up.length&&up.length>0?'green':'muted');
+  var sCard=pendSync.length>0?'amber':'muted';
+  var upR=up.slice(0,6).map(function(p){
+    var m=missing(p),color=tagColor2(gP(p,'Tags')),ps=pendS(p);
+    return '<div class="dr"><div class="dd" style="background:'+color+';"></div><div class="dn">'+esc(gT(p))+'</div><div class="ddt">'+fD(gP(p,'date'))+'</div>'+
+      (m.length?'<span class="dbadge" style="background:var(--red-l);color:var(--red);">&#9888; '+m.length+'</span>':'')+
+      (ps?'<span class="dbadge" style="background:var(--amber-l);color:#a67a1a;">&#8635; '+ps+'</span>':m.length===0?'<span class="dbadge" style="background:var(--green-l);color:var(--green);">&#10003;</span>':'')+
       '</div>';
   }).join('');
-
-  var syncRows=pendSync.slice(0,4).map(function(p){
-    var items=syncStatus(p).filter(function(s){return!s.done;});
-    return '<div class="dr"><div class="dd" style="background:var(--amber);"></div>'+
-      '<div style="flex:1;min-width:0;"><div class="dn">'+esc(ptitle(p))+'</div>'+
-      '<div style="font-size:11px;color:var(--gray);margin-top:1px;">'+items.map(function(s){return s.label;}).join(' · ')+'</div></div>'+
-      '<div class="ddt">'+fmtDate(prop(p,'date'))+'</div></div>';
+  var gR=gaps.slice(0,4).map(function(p){
+    var d=dU(gP(p,'date')),m=missing(p);
+    return '<div class="dr"><div class="dd" style="background:'+(d<=7?'var(--red)':'var(--blue)')+'"></div><div style="flex:1;min-width:0;"><div class="dn">'+esc(gT(p))+'</div><div style="font-size:11px;color:var(--gray);margin-top:1px;">'+esc(m.join(' \u00b7 '))+'</div></div><div class="ddt">'+(d===0?'Today':d===1?'Tomorrow':d+' days')+'</div></div>';
   }).join('');
-
-  var gapRows=gaps.slice(0,4).map(function(p){
-    var d=daysUntil(prop(p,'date'));var m=missingFields(p);
-    return '<div class="dr"><div class="dd" style="background:'+(d<=7?'var(--red)':'var(--blue)')+'"></div>'+
-      '<div style="flex:1;min-width:0;"><div class="dn">'+esc(ptitle(p))+'</div>'+
-      '<div style="font-size:11px;color:var(--gray);margin-top:1px;">'+esc(m.join(' · '))+'</div></div>'+
-      '<div class="ddt">'+(d===0?'Today':d===1?'Tomorrow':d+' days')+'</div></div>';
+  var sR=pendSync.slice(0,4).map(function(p){
+    var items=syncSt(p).filter(function(s){return !s.done;});
+    return '<div class="dr"><div class="dd" style="background:var(--amber);"></div><div style="flex:1;min-width:0;"><div class="dn">'+esc(gT(p))+'</div><div style="font-size:11px;color:var(--gray);margin-top:1px;">'+items.map(function(s){return s.label;}).join(' \u00b7 ')+'</div></div><div class="ddt">'+fD(gP(p,'date'))+'</div></div>';
   }).join('');
-
-  setContent(
+  sContent(
     '<div class="ph">Good '+tod()+', Camden.</div>'+
     '<div class="ps">'+new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})+'</div>'+
-
-    (next?'<div class="next-ban"><div><div class="nl">Next event</div>'+
-      '<div class="nn">'+esc(ptitle(next))+'</div>'+
-      '<div class="nm"><span>'+fmtDate(prop(next,'date'))+'</span>'+
-      (prop(next,'call time')?'<span>Call '+esc(prop(next,'call time'))+'</span>':'')+
-      (prop(next,'uniform')?'<span>'+esc(prop(next,'uniform'))+'</span>':'')+
-      '</div></div><div class="cdn"><div class="cdn-n">'+(nd===0?'Today':nd===1?'1':nd)+'</div>'+
-      '<div class="cdn-l">'+(nd===0?'':nd===1?'day away':'days away')+'</div></div></div>':'')+
-
+    (next?'<div class="next-ban"><div><div class="nl">Next event</div><div class="nn">'+esc(gT(next))+'</div><div class="nm"><span>'+fD(gP(next,'date'))+'</span>'+(gP(next,'Call Time')?'<span>Call '+esc(gP(next,'Call Time'))+'</span>':'')+(gP(next,'Uniform')?'<span>'+esc(gP(next,'Uniform'))+'</span>':'')+'</div></div><div class="cdn"><div class="cdn-n">'+(nd===0?'Today':nd===1?'1':nd)+'</div><div class="cdn-l">'+(nd===0?'':nd===1?'day away':'days away')+'</div></div></div>':'')+
     '<div class="stat-grid">'+
       '<div class="sc blue"><div class="sl">Total upcoming</div><div class="sv">'+up.length+'</div><div class="ss">'+thisWeek.length+' this week</div></div>'+
-      '<div class="sc '+gapCard+'"><div class="sl">Missing info</div><div class="sv">'+gaps.length+'</div><div class="ss">'+(urgentGaps.length>0?urgentGaps.length+' within 14 days':gaps.length===0?'All complete':'check gap report')+'</div></div>'+
-      '<div class="sc '+syncCard+'"><div class="sl">Pending syncs</div><div class="sv">'+pendSync.length+'</div><div class="ss">CC / Org Cal / Josh\'s Cal</div></div>'+
+      '<div class="sc '+gCard+'"><div class="sl">Missing info</div><div class="sv">'+gaps.length+'</div><div class="ss">'+(urgGaps.length>0?urgGaps.length+' within 14 days':gaps.length===0?'All complete':'check gap report')+'</div></div>'+
+      '<div class="sc '+sCard+'"><div class="sl">Pending syncs</div><div class="sv">'+pendSync.length+'</div><div class="ss">CC / Org Cal / Josh\'s Cal</div></div>'+
       '<div class="sc"><div class="sl">This week</div><div class="sv">'+thisWeek.length+'</div><div class="ss">Next 7 days</div></div>'+
     '</div>'+
-
     '<div class="qa-grid">'+
       '<button class="qa" onclick="go(\'intake\')"><div class="qa-ic">+</div><div class="qa-t">Add Entry</div><div class="qa-d">Event, notice, or adjustment</div></button>'+
-      '<button class="qa" onclick="go(\'gaps\')"><div class="qa-ic">&#x26A0;&#xFE0F;</div><div class="qa-t">Gap Report</div><div class="qa-d">'+gaps.length+' entr'+(gaps.length===1?'y':'ies')+' need attention</div></button>'+
-      '<button class="qa" onclick="go(\'takenote\')"><div class="qa-ic">&#x1F4C4;</div><div class="qa-t">Take Note Brief</div><div class="qa-d">Generate staff email</div></button>'+
+      '<button class="qa" onclick="go(\'gaps\')"><div class="qa-ic">&#9888;&#65039;</div><div class="qa-t">Gap Report</div><div class="qa-d">'+gaps.length+' entr'+(gaps.length===1?'y':'ies')+' need attention</div></button>'+
+      '<button class="qa" onclick="go(\'takenote\')"><div class="qa-ic">&#128196;</div><div class="qa-t">Take Note Brief</div><div class="qa-d">Generate staff email</div></button>'+
     '</div>'+
-
     '<div class="dash-grid">'+
-      '<div class="dp"><div class="dp-hdr"><div class="dp-title">Upcoming</div><span class="dp-link" onclick="go(\'events\')">View all &#x2192;</span></div>'+
-        (upRows||'<div style="padding:18px;text-align:center;color:var(--gray);font-size:13px;">No upcoming entries</div>')+
-      '</div>'+
-      '<div class="dp">'+
-        '<div class="dp-hdr"><div class="dp-title">Missing info</div><span class="dp-link" onclick="go(\'gaps\')">Full report &#x2192;</span></div>'+
-        (gapRows||'<div style="padding:12px 16px;text-align:center;color:var(--green);font-size:13px;">&#x2713; All complete</div>')+
-        '<div class="dp-hdr" style="margin-top:4px;"><div class="dp-title" style="color:#a67a1a;">Pending syncs</div><span class="dp-link" onclick="go(\'events\')">View all &#x2192;</span></div>'+
-        (syncRows||'<div style="padding:12px 16px;text-align:center;color:var(--green);font-size:13px;">&#x2713; All synced</div>')+
-      '</div>'+
+      '<div class="dp"><div class="dp-hdr"><div class="dp-title">Upcoming</div><span class="dp-link" onclick="go(\'events\')">View all &rarr;</span></div>'+(upR||'<div style="padding:18px;text-align:center;color:var(--gray);font-size:13px;">No upcoming entries</div>')+'</div>'+
+      '<div class="dp"><div class="dp-hdr"><div class="dp-title">Missing info</div><span class="dp-link" onclick="go(\'gaps\')">Full report &rarr;</span></div>'+(gR||'<div style="padding:12px 16px;text-align:center;color:var(--green);font-size:13px;">&#10003; All complete</div>')+
+        '<div class="dp-hdr" style="margin-top:4px;"><div class="dp-title" style="color:#a67a1a;">Pending syncs</div><span class="dp-link" onclick="go(\'events\')">View all &rarr;</span></div>'+(sR||'<div style="padding:12px 16px;text-align:center;color:var(--green);font-size:13px;">&#10003; All synced</div>')+'</div>'+
     '</div>'
   );
 }
 
-async function refreshAll(){
-  var btn=document.querySelector('#topbar-actions .btn');
-  if(btn){btn.innerHTML='<span class="spinner"></span> Refreshing...';btn.disabled=true;}
-  await loadEvents();updateBadges();showDashboard();
+function tagColor2(tags){
+  var tl=typeof tags==='string'?tags.split(', '):[];
+  if(tl.some(function(t){return TAG_PERF.indexOf(t)>=0;})) return 'var(--navy)';
+  if(tl.some(function(t){return TAG_EDU.indexOf(t)>=0;})) return 'var(--green)';
+  if(tl.some(function(t){return TAG_BLDG.indexOf(t)>=0;})) return 'var(--amber)';
+  if(tl.some(function(t){return TAG_NOTICE.indexOf(t)>=0;})) return 'var(--gray)';
+  return 'var(--blue)';
 }
 
-function filterEvents(filter){
-  var now=new Date();
+function fEvents(filter){
   return S.events.filter(function(p){
-    var d=prop(p,'date');if(!d||new Date(d)<now)return false;
-    if(!filter)return true;
-    var tags=prop(p,'tags');
-    var tl=typeof tags==='string'?tags.split(', '):[];
-    if(filter==='performances')return tl.some(function(t){return TAG_PERF.indexOf(t)>=0;});
-    if(filter==='education')return tl.some(function(t){return TAG_EDU.indexOf(t)>=0;});
-    if(filter==='building')return tl.some(function(t){return TAG_BLDG.indexOf(t)>=0;});
-    if(filter==='organizational')return tl.some(function(t){return TAG_ORG.indexOf(t)>=0;});
-    if(filter==='notices')return tl.some(function(t){return TAG_NOTICE.indexOf(t)>=0;});
+    if(!filter) return true;
+    var tags=gP(p,'Tags'), tl=typeof tags==='string'?tags.split(', '):[];
+    if(filter==='performances') return tl.some(function(t){return TAG_PERF.indexOf(t)>=0;});
+    if(filter==='education') return tl.some(function(t){return TAG_EDU.indexOf(t)>=0;});
+    if(filter==='building') return tl.some(function(t){return TAG_BLDG.indexOf(t)>=0;});
+    if(filter==='organizational') return tl.some(function(t){return TAG_ORG.indexOf(t)>=0;});
+    if(filter==='notices') return tl.some(function(t){return TAG_NOTICE.indexOf(t)>=0;});
     return true;
   });
 }
 
 function showEvents(filter){
-  var labels={null:'All Entries',performances:'Performances',education:'Education & Outreach',building:'Building',organizational:'Organizational',notices:'Calendar Notices'};
-  var lbl=labels[filter]||'All Entries';
-  setTitle(lbl);
-  setActions('<button class="btn" onclick="loadEvents().then(function(){showEvents('+JSON.stringify(filter)+')})">&#x21BB; Refresh</button><button class="btn primary" onclick="go(\'intake\')">+ Add Entry</button>');
-  var events=filterEvents(filter);
-  if(!events.length){setContent('<div class="empty"><p>No upcoming entries in this category.</p></div>');return;}
-  var rows=events.map(function(p){
-    var m=missingFields(p);var sync=syncStatus(p);
-    var syncHtml=sync.map(function(s){
-      return '<span class="syn '+(s.done?'done':'pending')+'" onclick="toggleSync(\''+p.id+'\',\''+s.key+'\','+s.done+')" title="'+(s.done?'Synced':'Pending — click to mark done')+'">'+s.label+'</span>';
-    }).join('');
-    return '<tr><td style="font-weight:600;color:var(--navy);">'+esc(ptitle(p))+'</td>'+
-      '<td style="font-size:12px;color:var(--gray);">'+fmtDate(prop(p,'date'))+'</td>'+
-      '<td>'+spill(prop(p,'status'))+'</td>'+
-      '<td style="font-size:12px;">'+esc(prop(p,'call time')||'—')+'</td>'+
-      '<td style="font-size:12px;">'+esc(prop(p,'uniform')||'—')+'</td>'+
-      '<td>'+(m.length?'<span style="color:var(--red);font-size:12px;font-weight:600;">&#x26A0; '+m.length+'</span>':'<span style="color:var(--green);font-size:12px;">&#x2713;</span>')+'</td>'+
-      '<td><div class="sync-row">'+syncHtml+'</div></td></tr>';
+  var lbls={null:'All Entries',performances:'Performances',education:'Education & Outreach',building:'Building',organizational:'Organizational',notices:'Calendar Notices'};
+  sTitle(lbls[filter]||'All Entries');
+  sActions('<button class="btn" onclick="refresh().then(function(){showEvents('+JSON.stringify(filter)+')})">&#8635; Refresh</button><button class="btn primary" onclick="go(\'intake\')">+ Add Entry</button>');
+  var evs=fEvents(filter);
+  if(!evs.length){sContent('<div class="empty"><p>No upcoming entries in this category.</p></div>');return;}
+  var rows=evs.map(function(p){
+    var m=missing(p), sync=syncSt(p);
+    var sH=sync.map(function(s){return '<span class="syn '+(s.done?'done':'pending')+'" onclick="togSync(\''+p.id+'\',\''+s.key+'\','+s.done+')">'+s.label+'</span>';}).join('');
+    return '<tr><td style="font-weight:600;color:var(--navy);">'+esc(gT(p))+'</td><td style="font-size:12px;color:var(--gray);">'+fD(gP(p,'date'))+'</td><td>'+spill(gP(p,'Status'))+'</td><td style="font-size:12px;">'+esc(gP(p,'Call Time')||'\u2014')+'</td><td style="font-size:12px;">'+esc(gP(p,'Uniform')||'\u2014')+'</td><td>'+(m.length?'<span style="color:var(--red);font-size:12px;font-weight:600;">&#9888; '+m.length+'</span>':'<span style="color:var(--green);font-size:12px;">&#10003;</span>')+'</td><td><div class="sync-row">'+sH+'</div></td></tr>';
   }).join('');
-  setContent('<div class="card" style="padding:0;overflow:hidden;"><table class="tbl"><thead><tr><th>Entry</th><th>Date</th><th>Status</th><th>Call Time</th><th>Uniform</th><th>Missing</th><th>Sync</th></tr></thead><tbody>'+rows+'</tbody></table></div>');
+  sContent('<div class="card" style="padding:0;overflow:hidden;"><table class="tbl"><thead><tr><th>Entry</th><th>Date</th><th>Status</th><th>Call Time</th><th>Uniform</th><th>Missing</th><th>Sync</th></tr></thead><tbody>'+rows+'</tbody></table></div>');
 }
 
-async function toggleSync(pageId,key,currentDone){
-  var newVal=!currentDone;
+function togSync(pageId, key, cur){
+  var newVal=!cur;
   var fm={cc:'Update on ChorusConnection',oc:'Update on Organizational Calendar',jc:"Update on Josh's Calendar"};
-  var field=fm[key];if(!field)return;
-  try{
-    var props={};props[field]={checkbox:newVal};
-    await patchPage(pageId,props);
+  var field=fm[key]; if(!field) return;
+  var props={}; props[field]={checkbox:newVal};
+  nReq('/pages/'+pageId,'PATCH',{properties:props}).then(function(){
     var idx=S.events.findIndex(function(p){return p.id===pageId;});
-    if(idx>=0){
-      var fk=Object.keys(S.events[idx].properties).find(function(k){return k===field;});
-      if(fk)S.events[idx].properties[fk].checkbox=newVal;
-    }
-    showEvents(S.currentFilter);
-    updateBadges();
-  }catch(e){alert('Error: '+e.message);}
+    if(idx>=0){var fk=Object.keys(S.events[idx].properties).find(function(k){return k===field;});if(fk)S.events[idx].properties[fk].checkbox=newVal;}
+    showEvents(S.currentFilter); updBadges();
+  }).catch(function(e){alert('Error: '+e.message);});
 }
 
 function showGaps(){
-  setTitle('Gap Report');
-  setActions('<button class="btn" onclick="loadEvents().then(showGaps)">&#x21BB; Refresh</button>');
-  var now=new Date();
-  var wg=S.events.filter(function(p){var d=prop(p,'date');return d&&new Date(d)>=now;})
-    .map(function(p){return{p:p,m:missingFields(p),d:daysUntil(prop(p,'date'))};})
-    .filter(function(x){return x.m.length>0;})
-    .sort(function(a,b){return a.d-b.d;});
-  var complete=S.events.filter(function(p){var d=prop(p,'date');return d&&new Date(d)>=now&&missingFields(p).length===0;});
-  if(!wg.length){setContent('<div class="empty"><p style="color:var(--green);font-size:16px;">&#x2705; All upcoming entries are complete.</p></div>');return;}
+  sTitle('Gap Report');
+  sActions('<button class="btn" onclick="refresh().then(showGaps)">&#8635; Refresh</button>');
+  var wg=S.events.map(function(p){return{p:p,m:missing(p),d:dU(gP(p,'date'))};}).filter(function(x){return x.m.length>0;}).sort(function(a,b){return a.d-b.d;});
+  var comp=S.events.filter(function(p){return missing(p).length===0;});
+  if(!wg.length){sContent('<div class="empty"><p style="color:var(--green);font-size:16px;">&#9989; All upcoming entries are complete.</p></div>');return;}
   var cards=wg.map(function(x){
-    var dc=x.d<=7?'dp-urgent':x.d<=21?'dp-soon':'dp-ok';
-    var dl=x.d<=0?'Today':x.d===1?'Tomorrow':x.d+' days';
-    return '<div class="gc '+(x.d<=7?'urgent':'')+'">'+
-      '<div class="gc-hdr"><div><div class="gc-name">'+esc(ptitle(x.p))+'</div><div class="gc-date">'+fmtDate(prop(x.p,'date'))+'</div></div>'+
-      '<span class="days-p '+dc+'">'+dl+'</span></div>'+
-      '<div class="gf">'+x.m.map(function(f){return'<span class="gt">'+esc(f)+'</span>';}).join('')+'</div></div>';
+    var dc=x.d<=7?'dp-urgent':x.d<=21?'dp-soon':'dp-ok', dl=x.d<=0?'Today':x.d===1?'Tomorrow':x.d+' days';
+    return '<div class="gc '+(x.d<=7?'urgent':'')+'"><div class="gc-hdr"><div><div class="gc-name">'+esc(gT(x.p))+'</div><div class="gc-date">'+fD(gP(x.p,'date'))+'</div></div><span class="days-p '+dc+'">'+dl+'</span></div><div class="gf">'+x.m.map(function(f){return'<span class="gt">'+esc(f)+'</span>';}).join('')+'</div></div>';
   }).join('');
-  var cs=complete.length?'<div style="margin-top:20px;padding-top:14px;border-top:1px solid var(--border);"><div style="font-size:11px;font-weight:600;color:var(--green);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;">&#x2713; Complete ('+complete.length+')</div>'+
-    complete.map(function(p){return'<div class="gc complete" style="padding:10px 16px;"><div style="display:flex;justify-content:space-between;align-items:center;"><div><div class="gc-name" style="font-size:13px;">'+esc(ptitle(p))+'</div><div class="gc-date">'+fmtDate(prop(p,'date'))+'</div></div><span style="color:var(--green);">&#x2713;</span></div></div>';}).join('')+'</div>':'';
-  setContent('<div class="ph">Gap Report</div><div class="ps">'+wg.length+' entries need attention</div>'+cards+cs);
+  var cs=comp.length?'<div style="margin-top:20px;padding-top:14px;border-top:1px solid var(--border);"><div style="font-size:11px;font-weight:600;color:var(--green);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;">&#10003; Complete ('+comp.length+')</div>'+comp.map(function(p){return'<div class="gc ok" style="padding:10px 16px;"><div style="display:flex;justify-content:space-between;"><div><div class="gc-name" style="font-size:13px;">'+esc(gT(p))+'</div><div class="gc-date">'+fD(gP(p,'date'))+'</div></div><span style="color:var(--green);">&#10003;</span></div></div>';}).join('')+'</div>':'';
+  sContent('<div class="ph">Gap Report</div><div class="ps">'+wg.length+' entries need attention</div>'+cards+cs);
 }
 
-// ---- INTAKE ----
 function showIntake(){
-  setTitle('Add Entry');setActions('');
-  S.intake={step:'type',type:null,subtype:null,choirs:new Set(),status:'',rels:{},paid:false,inkind:false,josh:false};
+  sTitle('Add Entry'); sActions('');
+  S.intake={type:null,sub:null,choirs:[],status:'',rels:{},paid:false,inkind:false,josh:false};
   if(!S.chatHistory.length){
     S.chatHistory=[{role:'assistant',content:'',html:'<p>Hi Camden! What are you adding?</p>'+typeGrid()}];
   }
@@ -619,334 +492,208 @@ function showIntake(){
 
 function typeGrid(){
   return '<div class="type-grid">'+
-    '<button class="type-card" onclick="selectType(\'perf\')"><div class="tc-icon">&#x1F3B5;</div><div class="tc-title">Performance / Concert</div><div class="tc-desc">Collaborative or season event</div></button>'+
-    '<button class="type-card" onclick="selectType(\'edu\')"><div class="tc-icon">&#x1F393;</div><div class="tc-title">Education & Outreach</div><div class="tc-desc">Program or outreach event</div></button>'+
-    '<button class="type-card" onclick="selectType(\'building\')"><div class="tc-icon">&#x1F3E2;</div><div class="tc-title">Building / Meeting</div><div class="tc-desc">Partner or resident event</div></button>'+
-    '<button class="type-card" onclick="selectType(\'org\')"><div class="tc-icon">&#x1F4CC;</div><div class="tc-title">Organizational Event</div><div class="tc-desc">Internal ICC event</div></button>'+
-    '<button class="type-card" onclick="selectType(\'cal\')"><div class="tc-icon">&#x1F4C5;</div><div class="tc-title">Calendar Notice</div><div class="tc-desc">Break, cancellation, or change</div></button>'+
-    '<button class="type-card" onclick="selectType(\'notice\')"><div class="tc-icon">&#x1F4E2;</div><div class="tc-title">Staff Notice</div><div class="tc-desc">Building or operational update</div></button>'+
+    '<button class="tc" onclick="selType(\'perf\')"><div class="tc-ic">&#127925;</div><div class="tc-t">Performance / Concert</div><div class="tc-d">Collaborative or season event</div></button>'+
+    '<button class="tc" onclick="selType(\'edu\')"><div class="tc-ic">&#127891;</div><div class="tc-t">Education &amp; Outreach</div><div class="tc-d">Program or outreach event</div></button>'+
+    '<button class="tc" onclick="selType(\'building\')"><div class="tc-ic">&#127970;</div><div class="tc-t">Building / Meeting</div><div class="tc-d">Partner, resident, or internal</div></button>'+
+    '<button class="tc" onclick="selType(\'cal\')"><div class="tc-ic">&#128197;</div><div class="tc-t">Calendar Notice</div><div class="tc-d">Break, cancellation, or change</div></button>'+
+    '<button class="tc" onclick="selType(\'notice\')"><div class="tc-ic">&#128226;</div><div class="tc-t">Staff Notice</div><div class="tc-d">Building or operational update</div></button>'+
   '</div>';
 }
 
-function selectType(type){
+function selType(type){
   S.intake.type=type;
-  S.chatHistory.push({role:'user',content:'',html:'<p>'+{perf:'Performance / Concert',edu:'Education & Outreach',building:'Building / Meeting',org:'Organizational Event',cal:'Calendar Notice',notice:'Staff Notice'}[type]+'</p>'});
+  var lbls={perf:'Performance / Concert',edu:'Education & Outreach',building:'Building / Meeting',cal:'Calendar Notice',notice:'Staff Notice'};
+  S.chatHistory.push({role:'user',content:'',html:'<p>'+lbls[type]+'</p>'});
   if(type==='perf'){
-    S.chatHistory.push({role:'assistant',content:'',html:'<p>Which type of performance?</p>'+
-      '<div class="sub-grid">'+
-        '<button class="sub-card" onclick="selectSubtype(\'icc\')"><div class="sc-title">ICC</div><div class="sc-desc">Indianapolis Children\'s Choir</div></button>'+
-        '<button class="sub-card" onclick="selectSubtype(\'aacc\')"><div class="sc-title">AACC</div><div class="sc-desc">Anderson Area Children\'s Choir</div></button>'+
-        '<button class="sub-card" onclick="selectSubtype(\'cicc\')"><div class="sc-title">CICC</div><div class="sc-desc">Central Indiana Children\'s Choir</div></button>'+
-      '</div>'});
+    S.chatHistory.push({role:'assistant',content:'',html:'<p>Which type of performance?</p><div class="sub-grid">'+
+      '<button class="sc2" onclick="selSub(\'icc\')"><div class="sc2-t">ICC</div><div class="sc2-d">Indianapolis Children\'s Choir</div></button>'+
+      '<button class="sc2" onclick="selSub(\'aacc\')"><div class="sc2-t">AACC</div><div class="sc2-d">Anderson Area Children\'s Choir</div></button>'+
+      '<button class="sc2" onclick="selSub(\'cicc\')"><div class="sc2-t">CICC</div><div class="sc2-d">Central Indiana Children\'s Choir</div></button>'+
+    '</div>'});
   } else if(type==='building'){
-    S.chatHistory.push({role:'assistant',content:'',html:'<p>What kind of building event?</p>'+
-      '<div class="sub-grid">'+
-        '<button class="sub-card" onclick="selectSubtype(\'partner\')"><div class="sc-title">Partner</div><div class="sc-desc">External group using our space</div></button>'+
-        '<button class="sub-card" onclick="selectSubtype(\'resident\')"><div class="sc-title">Resident</div><div class="sc-desc">Recurring resident meeting</div></button>'+
-      '</div>'});
+    S.chatHistory.push({role:'assistant',content:'',html:'<p>What kind of building event?</p><div class="sub-grid">'+
+      '<button class="sc2" onclick="selSub(\'partner\')"><div class="sc2-t">Partner</div><div class="sc2-d">External group using our space</div></button>'+
+      '<button class="sc2" onclick="selSub(\'resident\')"><div class="sc2-t">Resident</div><div class="sc2-d">Recurring resident meeting</div></button>'+
+      '<button class="sc2" onclick="selSub(\'org-bldg\')"><div class="sc2-t">Organizational</div><div class="sc2-d">Internal ICC meeting or event</div></button>'+
+    '</div>'});
   } else {
-    S.intake.subtype='default';
+    S.intake.sub='default';
     S.chatHistory.push({role:'assistant',content:'',html:buildForm()});
   }
   renderChat();
 }
 
-function selectSubtype(sub){
-  S.intake.subtype=sub;
-  S.chatHistory.push({role:'user',content:'',html:'<p>'+{icc:'ICC',aacc:'AACC',cicc:'CICC',partner:'Partner event',resident:'Resident meeting','org-bldg':'Organizational event'}[sub]+'</p>'});
+function selSub(sub){
+  S.intake.sub=sub;
+  var lbls={icc:'ICC performance',aacc:'AACC performance',cicc:'CICC performance',partner:'Partner event',resident:'Resident meeting','org-bldg':'Organizational event'};
+  S.chatHistory.push({role:'user',content:'',html:'<p>'+(lbls[sub]||sub)+'</p>'});
   S.chatHistory.push({role:'assistant',content:'',html:buildForm()});
   renderChat();
 }
 
 function buildForm(){
-  var type=S.intake.type;var sub=S.intake.subtype;
-  var isPerf=(type==='perf');
-  var isEdu=(type==='edu');
-  var isBldg=(type==='building');
-  var isOrg=(type==='org');
-  var isCal=(type==='cal');
-  var isNotice=(type==='notice');
-  var needsLogistics=isPerf||isEdu;
-  var isOrgBldg=(type==='building'&&sub==='org-bldg');
-  var needsChoirs=isPerf||isEdu||isOrg||isCal||isOrgBldg;
-  var needsVenue=isPerf||isEdu||isBldg||isOrg;
-  var needsContact=isPerf||isEdu||isBldg;
-  var choirsOptional=isEdu||isOrg||isCal||isOrgBldg;
-
+  var type=S.intake.type, sub=S.intake.sub;
+  var isP=type==='perf', isE=type==='edu', isB=type==='building', isOB=isB&&sub==='org-bldg', isC=type==='cal', isN=type==='notice';
+  var needLog=isP||isE, needCh=isP||isE||isC||isOB, chOpt=isE||isC||isOB, needV=isP||isE||isB, needCon=isP||isE||isB;
   var h='<div>';
-  h+='<div class="fg single" style="margin-bottom:10px;"><div class="field"><label>Entry name *</label><input type="text" id="f-name" placeholder="'+(isNotice?'e.g. PAC closure April 28th':isCal?'e.g. No Rehearsal — Boone Co. Prep':'e.g. NFFF Gala')+'" /></div></div>';
-  h+='<div class="fg" style="margin-bottom:10px;"><div class="field"><label>Date</label><input type="date" id="f-date" /></div>';
-  h+='<div class="field"><label>Status</label><div class="status-row" style="margin-top:4px;" id="status-row">'+STATUSES.map(function(s){return'<div class="status-tog" onclick="toggleStatus(this,\''+s+'\')">'+s+'</div>';}).join('')+'</div></div></div>';
-
-  if(isPerf){
-    h+='<div class="mod-row"><label class="mod-check"><input type="checkbox" id="f-paid" onchange="S.intake.paid=this.checked"> Paid</label>';
-    h+='<label class="mod-check"><input type="checkbox" id="f-inkind" onchange="S.intake.inkind=this.checked"> In-Kind</label></div>';
+  h+='<div class="fg single"><div class="field"><label>Entry name *</label><input type="text" id="f-name" placeholder="'+(isN?'e.g. PAC closure April 28th':isC?'e.g. No Rehearsal \u2014 Boone Co. Prep':'e.g. NFFF Gala')+'" /></div></div>';
+  h+='<div class="fg"><div class="field"><label>Date</label><input type="date" id="f-date" /></div><div class="field"><label>Status</label><div class="status-row" id="f-sr">'+STATUSES.map(function(s){return'<div class="status-tog" onclick="togSt(this,\''+s+'\')">'+s+'</div>';}).join('')+'</div></div></div>';
+  if(isP) h+='<div class="mod-row"><label class="mod-check"><input type="checkbox" id="f-paid" onchange="S.intake.paid=this.checked"> Paid</label><label class="mod-check"><input type="checkbox" id="f-inkind" onchange="S.intake.inkind=this.checked"> In-Kind</label></div>';
+  if(needV) h+='<div class="fg single"><div class="field sw"><label>Venue</label><input type="text" id="f-vs" placeholder="Search venues..." oninput="sRel(\'venues\',\'f-vs\',\'f-vr\',\'f-vsel\')" autocomplete="off" /><div class="sr" id="f-vr" style="display:none;"></div><div id="f-vsel"></div></div></div>';
+  if(needCon) h+='<div class="fg"><div class="field sw"><label>Organization</label><input type="text" id="f-os" placeholder="Search orgs..." oninput="sRel(\'orgs\',\'f-os\',\'f-or\',\'f-osel\')" autocomplete="off" /><div class="sr" id="f-or" style="display:none;"></div><div id="f-osel"></div></div><div class="field sw"><label>Contact</label><input type="text" id="f-cs" placeholder="Search contacts..." oninput="sRel(\'contacts\',\'f-cs\',\'f-cr\',\'f-csel\')" autocomplete="off" /><div class="sr" id="f-cr" style="display:none;"></div><div id="f-csel"></div></div></div>';
+  if(needCh){
+    h+='<div><div style="font-size:11px;color:var(--gray);margin-bottom:4px;">'+(chOpt?'Participating choirs (optional)':'Participating choirs')+'</div>';
+    h+='<div class="choir-grid">';
+    CHOIRS.forEach(function(c){ h+='<div class="choir-tog" data-choir="'+esc(c)+'" onclick="togCh(this)">'+esc(c)+'</div>'; });
+    h+='</div></div><br>';
   }
-
-  if(needsVenue){
-    h+='<div class="fg single" style="margin-bottom:10px;"><div class="field sw"><label>Venue</label>'+
-      '<input type="text" id="f-venue-s" placeholder="Search venues..." oninput="searchRel(\'venues\',\'f-venue-s\',\'f-venue-r\',\'f-venue-sel\')" autocomplete="off" />'+
-      '<div class="sr" id="f-venue-r" style="display:none;"></div><div id="f-venue-sel"></div></div></div>';
-  }
-  if(needsContact){
-    h+='<div class="fg" style="margin-bottom:10px;">'+
-      '<div class="field sw"><label>Organization</label>'+
-      '<input type="text" id="f-org-s" placeholder="Search orgs..." oninput="searchRel(\'orgs\',\'f-org-s\',\'f-org-r\',\'f-org-sel\')" autocomplete="off" />'+
-      '<div class="sr" id="f-org-r" style="display:none;"></div><div id="f-org-sel"></div></div>'+
-      '<div class="field sw"><label>Contact</label>'+
-      '<input type="text" id="f-contact-s" placeholder="Search contacts..." oninput="searchRel(\'contacts\',\'f-contact-s\',\'f-contact-r\',\'f-contact-sel\')" autocomplete="off" />'+
-      '<div class="sr" id="f-contact-r" style="display:none;"></div><div id="f-contact-sel"></div></div></div>';
-  }
-
-  if(needsChoirs){
-    var lbl=choirsOptional?'Participating choirs (optional)':'Participating choirs';
-    h+='<div style="margin-bottom:10px;"><div style="font-size:11px;color:var(--gray);margin-bottom:6px;">'+lbl+'</div>'+
-      '<div class="choir-grid">'+CHOIRS.map(function(c){return'<label class="choir-tog" onclick="toggleChoir(this,\''+esc(c)+'\')"><input type="checkbox"> '+esc(c)+'</label>';}).join('')+'</div></div>';
-  }
-
-  if(needsLogistics){
-    h+='<div class="fg triple" style="margin-bottom:10px;">'+
-      '<div class="field"><label>Call time</label><input type="time" id="f-call" /></div>'+
-      '<div class="field"><label>Performance time</label><input type="time" id="f-perf" /></div>'+
-      '<div class="field"><label>Approx. dismissal</label><input type="time" id="f-dismiss" /></div></div>'+
-      '<div class="fg single" style="margin-bottom:10px;"><div class="field"><label>Uniform</label><input type="text" id="f-uniform" placeholder="e.g. Formal" /></div></div>';
-  }
-
-  if(!isNotice&&!isCal){
-    h+='<div style="margin-bottom:10px;"><label class="mod-check"><input type="checkbox" id="f-josh" onchange="S.intake.josh=this.checked"> On Josh\'s Calendar</label></div>';
-  }
-
-  h+='<div class="fg single" style="margin-bottom:14px;"><div class="field"><label>Notes</label><textarea id="f-notes" placeholder="'+(isNotice?'Notice details...':isCal?'What changed, which choirs are affected...':'Food, drop-off, tickets, logistics...')+'"></textarea></div></div>';
-  h+='<button class="btn primary" style="width:100%;padding:11px;" onclick="submitIntake()">Add to Notion</button></div>';
+  if(needLog) h+='<div class="fg triple"><div class="field"><label>Call time</label><input type="time" id="f-call" /></div><div class="field"><label>Performance time</label><input type="time" id="f-perf" /></div><div class="field"><label>Approx. dismissal</label><input type="time" id="f-dis" /></div></div><div class="fg single"><div class="field"><label>Uniform</label><input type="text" id="f-uni" placeholder="e.g. Formal" /></div></div>';
+  if(!isN&&!isC) h+='<div class="mod-row"><label class="mod-check"><input type="checkbox" id="f-josh" onchange="S.intake.josh=this.checked"> On Josh\'s Calendar</label></div>';
+  h+='<div class="fg single"><div class="field"><label>Notes</label><textarea id="f-notes" placeholder="'+(isN?'Notice details...':isC?'What changed, which choirs affected...':'Food, drop-off, tickets, logistics...')+'"></textarea></div></div>';
+  h+='<button class="btn primary" style="width:100%;padding:11px;" onclick="subIntake()">Add to Notion</button></div>';
   return h;
 }
 
-function toggleStatus(btn,status){
-  document.querySelectorAll('#status-row .status-tog').forEach(function(b){b.classList.remove('on');});
-  btn.classList.add('on');S.intake.status=status;
+function togSt(btn,status){
+  document.querySelectorAll('#f-sr .status-tog').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on'); S.intake.status=status;
 }
-function toggleChoir(label,choir){
-  label.classList.toggle('on');
-  if(label.classList.contains('on'))S.intake.choirs.add(choir);else S.intake.choirs.delete(choir);
+function togCh(el){
+  var c=el.getAttribute('data-choir'); el.classList.toggle('on');
+  if(el.classList.contains('on')){if(S.intake.choirs.indexOf(c)<0)S.intake.choirs.push(c);}
+  else{S.intake.choirs=S.intake.choirs.filter(function(x){return x!==c;});}
 }
 
-async function searchRel(key,inputId,resultsId,selId){
-  var q=(document.getElementById(inputId)?document.getElementById(inputId).value:'').trim().toLowerCase();
-  var rEl=document.getElementById(resultsId);
-  if(!q||q.length<1){if(rEl)rEl.style.display='none';return;}
-  var items=S[key]||[];
-  var matches=items.filter(function(r){return r.name.toLowerCase().indexOf(q)>=0;}).slice(0,8);
-  if(rEl){
-    var html=matches.map(function(m){return'<div class="sri" onclick="selectRel(\''+key+'\',\''+m.id+'\','+JSON.stringify(m.name)+',\''+inputId+'\',\''+resultsId+'\',\''+selId+'\')">'+esc(m.name)+'</div>';}).join('');
-    html+='<div class="sri" style="color:#a67a1a;font-style:italic;" onclick="flagNewRel(\''+key+'\','+JSON.stringify(q)+',\''+inputId+'\',\''+resultsId+'\',\''+selId+'\')">+ Create new: "'+esc(q)+'"</div>';
-    rEl.innerHTML=html;rEl.style.display='block';
-  }
+function sRel(key, inId, resId, selId){
+  var inp=document.getElementById(inId), q=inp?inp.value.trim().toLowerCase():'', rEl=document.getElementById(resId);
+  if(!q||!rEl){if(rEl)rEl.style.display='none';return;}
+  var matches=(S[key]||[]).filter(function(r){return r.name.toLowerCase().indexOf(q)>=0;}).slice(0,8);
+  var html=matches.map(function(m){return'<div class="sri" onclick="selRel(\''+key+'\',\''+m.id+'\','+JSON.stringify(m.name)+',\''+inId+'\',\''+resId+'\',\''+selId+'\')">'+esc(m.name)+'</div>';}).join('');
+  html+='<div class="sri" style="color:#a67a1a;font-style:italic;" onclick="newRel(\''+key+'\','+JSON.stringify(q)+',\''+inId+'\',\''+resId+'\',\''+selId+'\')">+ Create new: &ldquo;'+esc(q)+'&rdquo;</div>';
+  rEl.innerHTML=html; rEl.style.display='block';
 }
-function selectRel(key,id,name,inputId,resultsId,selId){
+function selRel(key,id,name,inId,resId,selId){
   S.intake.rels[key]={id:id,name:name,isNew:false};
-  var el=document.getElementById(inputId);if(el)el.value='';
-  var r=document.getElementById(resultsId);if(r)r.style.display='none';
-  var s=document.getElementById(selId);if(s)s.innerHTML='<span class="sel-tag">'+esc(name)+' <button onclick="clearRel(\''+key+'\',\''+selId+'\')">x</button></span>';
+  var el=document.getElementById(inId);if(el)el.value='';
+  var r=document.getElementById(resId);if(r)r.style.display='none';
+  var s=document.getElementById(selId);if(s)s.innerHTML='<span class="sel-tag">'+esc(name)+' <button class="sel-tag-x" onclick="clrRel(\''+key+'\',\''+selId+'\')">&#215;</button></span>';
 }
-function flagNewRel(key,name,inputId,resultsId,selId){
+function newRel(key,name,inId,resId,selId){
   S.intake.rels[key]={id:null,name:name,isNew:true};
-  var el=document.getElementById(inputId);if(el)el.value='';
-  var r=document.getElementById(resultsId);if(r)r.style.display='none';
-  var s=document.getElementById(selId);if(s)s.innerHTML='<span class="sel-tag" style="background:var(--amber-l);border-color:var(--amber);color:#a67a1a;">New: '+esc(name)+' <button onclick="clearRel(\''+key+'\',\''+selId+'\')">x</button></span>';
+  var el=document.getElementById(inId);if(el)el.value='';
+  var r=document.getElementById(resId);if(r)r.style.display='none';
+  var s=document.getElementById(selId);if(s)s.innerHTML='<span class="sel-tag" style="background:var(--amber-l);border-color:var(--amber);color:#a67a1a;">New: '+esc(name)+' <button class="sel-tag-x" onclick="clrRel(\''+key+'\',\''+selId+'\')">&#215;</button></span>';
 }
-function clearRel(key,selId){
-  delete S.intake.rels[key];
-  var s=document.getElementById(selId);if(s)s.innerHTML='';
-}
+function clrRel(key,selId){delete S.intake.rels[key];var s=document.getElementById(selId);if(s)s.innerHTML='';}
 document.addEventListener('click',function(e){if(!e.target.closest('.sw'))document.querySelectorAll('.sr').forEach(function(el){el.style.display='none';});});
 
-async function submitIntake(){
-  var name=(document.getElementById('f-name')?document.getElementById('f-name').value:'').trim();
+function subIntake(){
+  var nEl=document.getElementById('f-name'), name=nEl?nEl.value.trim():'';
   if(!name){alert('Entry name is required.');return;}
-  var btn=document.querySelector('[onclick="submitIntake()"]');
+  var btn=document.querySelector('[onclick="subIntake()"]');
   if(btn){btn.innerHTML='<span class="spinner"></span> Adding...';btn.disabled=true;}
-
-  var type=S.intake.type;var sub=S.intake.subtype;
-  var date=document.getElementById('f-date')?document.getElementById('f-date').value:'';
-  var call=document.getElementById('f-call')?document.getElementById('f-call').value:'';
-  var perf=document.getElementById('f-perf')?document.getElementById('f-perf').value:'';
-  var dismiss=document.getElementById('f-dismiss')?document.getElementById('f-dismiss').value:'';
-  var uniform=document.getElementById('f-uniform')?document.getElementById('f-uniform').value.trim():'';
-  var notes=document.getElementById('f-notes')?document.getElementById('f-notes').value.trim():'';
-
-  // Build tags
+  var type=S.intake.type, sub=S.intake.sub;
+  var date=(document.getElementById('f-date')||{}).value||'';
+  var call=(document.getElementById('f-call')||{}).value||'';
+  var perf=(document.getElementById('f-perf')||{}).value||'';
+  var dis=(document.getElementById('f-dis')||{}).value||'';
+  var uni=((document.getElementById('f-uni')||{}).value||'').trim();
+  var notes=((document.getElementById('f-notes')||{}).value||'').trim();
   var tags=[];
-  if(type==='perf'){
-    if(sub==='aacc')tags.push('Season Concerts & Events [AACC}');
-    else if(sub==='cicc')tags.push('Season Concerts & Events [CICC]');
-    else tags.push('Collaborative Bookings');
-    if(S.intake.paid)tags.push('Paid');
-    if(S.intake.inkind)tags.push('In-Kind');
-  } else if(type==='edu'){tags.push('Education & Outreach');}
+  if(type==='perf'){if(sub==='aacc')tags.push('Season Concerts & Events [AACC}');else if(sub==='cicc')tags.push('Season Concerts & Events [CICC]');else tags.push('Collaborative Bookings');if(S.intake.paid)tags.push('Paid');if(S.intake.inkind)tags.push('In-Kind');}
+  else if(type==='edu')tags.push('Education & Outreach');
   else if(type==='building'){if(sub==='org-bldg')tags.push('Organizational Events');else tags.push(sub==='resident'?'Resident Events & Meetings':'Partner Events & Meetings');}
-  else if(type==='org'){tags.push('Organizational Events');}
-  else if(type==='cal'){tags.push('Calendar Addition / Adjustment');}
-  else if(type==='notice'){tags.push('Staff Notice');}
-
-  var props={
-    'Event':{title:[{text:{content:name}}]},
-    'Update on ChorusConnection':{checkbox:false},
-    'Update on Organizational Calendar':{checkbox:false},
-    "Update on Josh's Calendar":{checkbox:false},
-    "On Josh's Calendar":{checkbox:S.intake.josh||false}
-  };
-  if(date)props['Date']={date:{start:date}};
-  if(tags.length)props['Tags']={multi_select:tags.map(function(t){return{name:t};})};
-  if(S.intake.status)props['Status']={status:{name:S.intake.status}};
-  if(call)props['Call Time']={rich_text:[{text:{content:fmtTime(call)}}]};
-  if(perf)props['Performance Time']={rich_text:[{text:{content:fmtTime(perf)}}]};
-  if(dismiss)props['Approx. Dismissal']={rich_text:[{text:{content:fmtTime(dismiss)}}]};
-  if(uniform)props['Uniform']={rich_text:[{text:{content:uniform}}]};
-  if(S.intake.choirs.size)props['Participating Choirs']={multi_select:Array.from(S.intake.choirs).map(function(c){return{name:c};})};
-  if(S.intake.rels.venues&&S.intake.rels.venues.id)props['Venue']={relation:[{id:S.intake.rels.venues.id}]};
-  if(S.intake.rels.orgs&&S.intake.rels.orgs.id)props['Organization']={relation:[{id:S.intake.rels.orgs.id}]};
-  if(S.intake.rels.contacts&&S.intake.rels.contacts.id)props['Contact']={relation:[{id:S.intake.rels.contacts.id}]};
-
-  try{
-    await createPage(COLLAB_DB,props,notes);
-    await loadEvents();updateBadges();
-    var missing=[];
-    if(!date)missing.push('Date');
-    if(!S.intake.rels.venues)missing.push('Venue');
-    if(!S.intake.rels.contacts)missing.push('Contact');
-    if((type==='perf'||type==='edu')&&!call)missing.push('Call time');
-    if((type==='perf'||type==='edu')&&!perf)missing.push('Performance time');
-    if((type==='perf'||type==='edu')&&!uniform)missing.push('Uniform');
-    if(type==='perf'&&S.intake.choirs.size===0)missing.push('Participating choirs');
-    var newRec=Object.entries(S.intake.rels).filter(function(e){return e[1].isNew;}).map(function(e){return e[1].name;});
-    S.chatHistory.push({role:'assistant',content:'',html:
-      '<p>&#x2713; <strong>'+esc(name)+'</strong> added to Notion.</p>'+
-      (newRec.length?'<p style="color:#a67a1a;margin-top:6px;"><strong>Create in Notion first:</strong> '+esc(newRec.join(', '))+'</p>':'')+
-      (missing.length?'<p style="margin-top:6px;"><strong>Still needed:</strong> '+esc(missing.join(', '))+'</p>':'')+
-      '<div class="qbs"><button class="qb" onclick="resetIntake()">Add another</button><button class="qb" onclick="go(\'events\')">View entries</button></div>'
-    });
-    S.intake={step:'type',type:null,subtype:null,choirs:new Set(),status:'',rels:{},paid:false,inkind:false,josh:false};
-    renderChat();
-  }catch(e){if(btn){btn.textContent='Add to Notion';btn.disabled=false;}alert('Error: '+e.message);}
+  else if(type==='cal')tags.push('Calendar Addition / Adjustment');
+  else if(type==='notice')tags.push('Staff Notice');
+  var props={'Event':{title:[{text:{content:name}}]},'Update on ChorusConnection':{checkbox:false},'Update on Organizational Calendar':{checkbox:false},"Update on Josh's Calendar":{checkbox:false},"On Josh's Calendar":{checkbox:S.intake.josh||false}};
+  if(date) props['Date']={date:{start:date}};
+  if(tags.length) props['Tags']={multi_select:tags.map(function(t){return{name:t};})};
+  if(S.intake.status) props['Status']={status:{name:S.intake.status}};
+  if(call) props['Call Time']={rich_text:[{text:{content:fT(call)}}]};
+  if(perf) props['Performance Time']={rich_text:[{text:{content:fT(perf)}}]};
+  if(dis) props['Approx. Dismissal']={rich_text:[{text:{content:fT(dis)}}]};
+  if(uni) props['Uniform']={rich_text:[{text:{content:uni}}]};
+  if(S.intake.choirs.length) props['Participating Choirs']={multi_select:S.intake.choirs.map(function(c){return{name:c};})};
+  if(S.intake.rels.venues&&S.intake.rels.venues.id) props['Venue']={relation:[{id:S.intake.rels.venues.id}]};
+  if(S.intake.rels.orgs&&S.intake.rels.orgs.id) props['Organization']={relation:[{id:S.intake.rels.orgs.id}]};
+  if(S.intake.rels.contacts&&S.intake.rels.contacts.id) props['Contact']={relation:[{id:S.intake.rels.contacts.id}]};
+  nReq('/pages','POST',{parent:{database_id:COLLAB_DB},properties:props})
+    .then(function(np){if(notes)return nReq('/blocks/'+np.id+'/children','PATCH',{children:[{object:'block',type:'paragraph',paragraph:{rich_text:[{type:'text',text:{content:notes}}]}}]});})
+    .then(function(){return refresh();})
+    .then(function(){
+      var miss=[];
+      if(!date)miss.push('Date');if(!S.intake.rels.venues)miss.push('Venue');if(!S.intake.rels.contacts)miss.push('Contact');
+      if((type==='perf'||type==='edu')&&!call)miss.push('Call time');
+      if((type==='perf'||type==='edu')&&!perf)miss.push('Performance time');
+      if((type==='perf'||type==='edu')&&!uni)miss.push('Uniform');
+      if(type==='perf'&&S.intake.choirs.length===0)miss.push('Participating choirs');
+      var nR=Object.keys(S.intake.rels).filter(function(k){return S.intake.rels[k].isNew;}).map(function(k){return S.intake.rels[k].name;});
+      S.chatHistory.push({role:'assistant',content:'',html:'<p>&#10003; <strong>'+esc(name)+'</strong> added to Notion.</p>'+(nR.length?'<p style="color:#a67a1a;margin-top:6px;"><strong>Create in Notion first:</strong> '+esc(nR.join(', '))+'</p>':'')+(miss.length?'<p style="margin-top:6px;"><strong>Still needed:</strong> '+esc(miss.join(', '))+'</p>':'')+'<div class="qbs"><button class="qb" onclick="rstIntake()">Add another</button><button class="qb" onclick="go(\'events\')">View entries</button></div>'});
+      S.intake={type:null,sub:null,choirs:[],status:'',rels:{},paid:false,inkind:false,josh:false};
+      renderChat();
+    }).catch(function(e){if(btn){btn.textContent='Add to Notion';btn.disabled=false;}alert('Error: '+e.message);});
 }
 
-function resetIntake(){S.chatHistory=[];showIntake();}
+function rstIntake(){S.chatHistory=[];showIntake();}
 
 function renderChat(){
-  setContent(
-    '<div class="chat-wrap">'+
-    '<div class="chat-hdr"><div class="chat-title">Add Entry</div><div class="chat-sub">I\'ll guide you through adding to Notion</div></div>'+
-    '<div class="chat-msgs" id="chat-msgs">'+
-      S.chatHistory.map(function(m){
-        return '<div class="msg '+m.role+'"><div class="msg-av">'+(m.role==='assistant'?'iC':'CZ')+'</div>'+
-          '<div class="msg-bub">'+(m.html||esc(m.content).replace(/\n/g,'<br>'))+'</div></div>';
-      }).join('')+
-    '</div>'+
-    '<div class="chat-ir"><textarea class="chat-in" id="chat-in" placeholder="Ask me anything about your events..." onkeydown="if(event.key===\'Enter\'&&!event.shiftKey){event.preventDefault();sendChat();}"></textarea>'+
-    '<button class="send-btn" onclick="sendChat()"><svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg></button></div></div>'
-  );
-  var el=document.getElementById('chat-msgs');
-  if(el)setTimeout(function(){el.scrollTop=el.scrollHeight;},50);
+  sContent('<div class="chat-wrap"><div class="chat-hdr"><div class="chat-title">Add Entry</div><div class="chat-sub">I\'ll guide you through adding to Notion</div></div>'+
+    '<div class="chat-msgs" id="chat-msgs">'+S.chatHistory.map(function(m){return'<div class="msg '+m.role+'"><div class="msg-av">'+(m.role==='assistant'?'iC':'CZ')+'</div><div class="msg-bub">'+(m.html||esc(m.content))+'</div></div>';}).join('')+'</div>'+
+    '<div class="chat-ir"><textarea class="chat-in" id="chat-in" placeholder="Ask me anything about your events..." onkeydown="if(event.key===\'Enter\'&&!event.shiftKey){event.preventDefault();sendChat();}"></textarea><button class="send-btn" onclick="sendChat()"><svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg></button></div></div>');
+  var el=document.getElementById('chat-msgs');if(el)setTimeout(function(){el.scrollTop=el.scrollHeight;},50);
 }
 
-async function sendChat(){
-  var input=document.getElementById('chat-in');if(!input)return;
-  var text=input.value.trim();if(!text)return;
-  input.value='';
-  S.chatHistory.push({role:'user',content:text});
-  renderChat();
+function sendChat(){
+  var inp=document.getElementById('chat-in');if(!inp)return;var text=inp.value.trim();if(!text)return;inp.value='';
+  S.chatHistory.push({role:'user',content:text});renderChat();
   var msgs=document.getElementById('chat-msgs');
   if(msgs){var t=document.createElement('div');t.id='typing-ind';t.className='msg assistant';t.innerHTML='<div class="msg-av">iC</div><div class="msg-bub"><div class="typing"><div class="td"></div><div class="td"></div><div class="td"></div></div></div>';msgs.appendChild(t);msgs.scrollTop=msgs.scrollHeight;}
-  var now=new Date();
-  var ctx=S.events.filter(function(p){var d=prop(p,'date');return d&&new Date(d)>=now;}).slice(0,15).map(function(p){return{name:ptitle(p),date:prop(p,'date'),status:prop(p,'status'),missing:missingFields(p)};});
-  var system='You are an AI assistant for Camden Zetty at Indianapolis Children\'s Choir. Help manage events and answer questions. Be direct.\n\nUpcoming events: '+JSON.stringify(ctx);
-  try{
-    var reply=await claude(S.chatHistory.map(function(m){return{role:m.role,content:m.content||m.html||''};}),system);
-    var ti=document.getElementById('typing-ind');if(ti)ti.remove();
-    S.chatHistory.push({role:'assistant',content:reply});
-  }catch(e){var ti2=document.getElementById('typing-ind');if(ti2)ti2.remove();S.chatHistory.push({role:'assistant',content:'Error: '+e.message});}
-  renderChat();
+  var ctx=S.events.slice(0,15).map(function(p){return{name:gT(p),date:gP(p,'date'),status:gP(p,'Status'),missing:missing(p)};});
+  cReq(S.chatHistory.map(function(m){return{role:m.role,content:m.content||m.html||''};}), 'You are an AI assistant for Camden Zetty at ICC. Help manage events. Be direct.\n\nUpcoming: '+JSON.stringify(ctx))
+    .then(function(r){var ti=document.getElementById('typing-ind');if(ti)ti.remove();S.chatHistory.push({role:'assistant',content:r});renderChat();})
+    .catch(function(e){var ti=document.getElementById('typing-ind');if(ti)ti.remove();S.chatHistory.push({role:'assistant',content:'Error: '+e.message});renderChat();});
 }
 
-function showTakenote(){
-  setTitle('Take Note Brief');setActions('');
+function showTN(){
+  sTitle('Take Note Brief');sActions('');
   var today=new Date().toISOString().split('T')[0];
-  setContent(
-    '<div style="max-width:740px;">'+
-    '<div class="ph" style="margin-bottom:4px;">Take Note Brief</div>'+
-    '<div class="ps" style="margin-bottom:20px;">Generate the "Take Note, Music Makers & Beyond" staff email from your live Notion data</div>'+
+  sContent('<div style="max-width:740px;"><div class="ph" style="margin-bottom:4px;">Take Note Brief</div><div class="ps" style="margin-bottom:20px;">Generate the "Take Note, Music Makers &amp; Beyond" staff email</div>'+
     '<div class="card">'+
-      '<div class="fg" style="margin-bottom:14px;">'+
-        '<div class="field"><label>Publish date (Thursday)</label>'+
-        '<input type="date" id="tn-date" value="'+today+'" style="padding:8px 11px;border:1.5px solid var(--border);border-radius:var(--r);font-family:\'Open Sans\',sans-serif;font-size:13px;color:var(--navy);background:var(--gray-ll);outline:none;width:100%;"/>'+
-        '<div style="font-size:11px;color:var(--gray);margin-top:4px;">Thursday send date — report covers 6 weeks from this date</div></div>'+
-        '<div class="field"><label>Response deadline</label>'+
-        '<input type="text" id="tn-deadline" placeholder="e.g. EOD Tuesday, April 22nd" style="padding:8px 11px;border:1.5px solid var(--border);border-radius:var(--r);font-family:\'Open Sans\',sans-serif;font-size:13px;color:var(--navy);background:var(--gray-ll);outline:none;width:100%;"/></div>'+
-      '</div>'+
-      '<div class="field" style="margin-bottom:14px;"><label>Additional breaks & schedule changes (optional)</label>'+
-      '<textarea id="tn-breaks" placeholder="Manual additions beyond what\'s in Notion..." style="padding:8px 11px;border:1.5px solid var(--border);border-radius:var(--r);font-family:\'Open Sans\',sans-serif;font-size:13px;color:var(--navy);background:var(--gray-ll);outline:none;width:100%;min-height:72px;resize:vertical;"></textarea></div>'+
-      '<button class="btn primary" style="width:100%;padding:11px;" id="tn-btn" onclick="genTakenote()">Generate Take Note Brief</button>'+
-    '</div>'+
-    '<div id="tn-output"></div></div>'
-  );
+      '<div class="fg" style="margin-bottom:14px;"><div class="field"><label>Publish date (Thursday)</label><input type="date" id="tn-date" value="'+today+'" style="padding:8px 11px;border:1.5px solid var(--border);border-radius:var(--r);font-family:\'Open Sans\',sans-serif;font-size:13px;outline:none;width:100%;background:var(--gray-ll);"/><div style="font-size:11px;color:var(--gray);margin-top:4px;">Thursday send date &mdash; report covers 6 weeks from this date</div></div>'+
+      '<div class="field"><label>Response deadline</label><input type="text" id="tn-dl" placeholder="e.g. EOD Tuesday, April 22nd" style="padding:8px 11px;border:1.5px solid var(--border);border-radius:var(--r);font-family:\'Open Sans\',sans-serif;font-size:13px;outline:none;width:100%;background:var(--gray-ll);"/></div></div>'+
+      '<div class="field" style="margin-bottom:14px;"><label>Additional breaks &amp; schedule changes (optional)</label><textarea id="tn-breaks" placeholder="Manual additions beyond what\'s in Notion..." style="padding:8px 11px;border:1.5px solid var(--border);border-radius:var(--r);font-family:\'Open Sans\',sans-serif;font-size:13px;outline:none;width:100%;min-height:72px;resize:vertical;background:var(--gray-ll);"></textarea></div>'+
+      '<button class="btn primary" style="width:100%;padding:11px;" id="tn-btn" onclick="genTN()">Generate Take Note Brief</button>'+
+    '</div><div id="tn-out"></div></div>');
 }
 
-async function genTakenote(){
-  var btn=document.getElementById('tn-btn');
-  btn.innerHTML='<span class="spinner"></span> Generating...';btn.disabled=true;
-  var dateVal=document.getElementById('tn-date').value;
-  var deadline=document.getElementById('tn-deadline').value.trim();
-  var extraBreaks=document.getElementById('tn-breaks').value.trim();
-  var startDate=dateVal?new Date(dateVal+'T12:00:00'):new Date();
-  var endDate=new Date(startDate.getTime()+42*24*60*60*1000);
-  var emailDate=fmtDateLong(dateVal||new Date().toISOString().split('T')[0]);
-  var deadlineText=deadline||'EOD Monday before publish';
-  var upcoming=S.events.filter(function(p){
-    var d=prop(p,'date');if(!d)return false;
-    var dt=new Date(d+'T12:00:00');return dt>=startDate&&dt<=endDate;
-  }).sort(function(a,b){return new Date(prop(a,'date'))-new Date(prop(b,'date'));});
-  var notices=upcoming.filter(function(p){var t=prop(p,'tags');return typeof t==='string'&&t.indexOf('Staff Notice')>=0;});
-  var calAdj=upcoming.filter(function(p){var t=prop(p,'tags');return typeof t==='string'&&t.indexOf('Calendar Addition / Adjustment')>=0;});
-  var events=upcoming.filter(function(p){var t=prop(p,'tags');return typeof t!=='string'||(t.indexOf('Staff Notice')<0&&t.indexOf('Calendar Addition / Adjustment')<0);});
-  var eventData=events.map(function(p){return{name:ptitle(p),date:prop(p,'date'),formattedDate:fmtDate(prop(p,'date')),callTime:prop(p,'call time'),perfTime:prop(p,'performance time'),dismissal:prop(p,'approx. dismissal'),uniform:prop(p,'uniform'),choirs:prop(p,'participating choirs'),tags:prop(p,'tags')};});
-  var prompt='Generate the full "Take Note, Music Makers & Beyond" weekly ICC staff email for publish date '+emailDate+'.\n\nRESPONSE DEADLINE: '+deadlineText+'\n\nSTAFF NOTICES (weave into opening paragraph if any):\n'+(notices.length?notices.map(function(p){return ptitle(p);}).join('\n'):'None')+'\n\nCALENDAR ADJUSTMENTS (Breaks & Schedule Changes section):\n'+(calAdj.length?calAdj.map(function(p){return ptitle(p);}).join('\n'):'None')+(extraBreaks?'\nAdditional: '+extraBreaks:'')+'\n\nEVENTS:\n'+JSON.stringify(eventData,null,2)+'\n\nFORMAT:\n\nHi Team!\n\nI hope your week is off to a wonderful start. [Add staff notices naturally if any.] Please take the time to review and respond with any changes or additions by '+deadlineText+'.\n\nThank you for your help in making these happen!\n\n**Breaks & Schedule Changes:**\n[List or "None this week."]\n\n**Upcoming Events:**\n\n**[CHOIR]:**\n**[Event] | [Date e.g. May 17th]**\nLocation: ...\nUniform: ...\nCall Time: ...\nPerformance: ...\n[Notes]\n\nCHOIR ORDER: AACC Prep & Concert, AACC Youth Chorale, CICC Concert & Descant, Foundations, ICC Preparatory Choirs, ICC Beginning Level Choirs, ICC Lyric Choirs, ICC IndyVoice, ICC Master Chorale, Jubilate\n\nRULES: Omit empty fields. End with **Marketing, Development & Admin:** placeholder.';
-  try{
-    var result=await claude([{role:'user',content:prompt}],'You are helping Camden Zetty at ICC prepare the weekly staff email. Be precise and professional.');
-    window._tnDoc=result;
-    document.getElementById('tn-output').innerHTML='<div class="card" style="margin-top:14px;">'+
-      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border);">'+
-        '<div><div class="card-title" style="margin-bottom:2px;">Take Note, Music Makers &amp; Beyond</div>'+
-        '<div style="font-size:12px;color:var(--gray);">Publish '+emailDate+' &middot; '+events.length+' events</div></div>'+
-        '<div style="display:flex;gap:8px;">'+
-          '<button class="btn" onclick="navigator.clipboard.writeText(window._tnDoc||\'\').then(function(){var b=event.target;b.textContent=\'Copied!\';setTimeout(function(){b.textContent=\'Copy text\';},2000);})">Copy text</button>'+
-          '<button class="btn primary" onclick="genTakenote()">Regenerate</button>'+
-        '</div></div>'+
-      '<div class="tn-out">'+result.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\*(.*?)\*/g,'<em>$1</em>')+'</div></div>';
-    btn.textContent='Generate Take Note Brief';btn.disabled=false;
-  }catch(e){btn.textContent='Generate Take Note Brief';btn.disabled=false;alert('Error: '+e.message);}
+function genTN(){
+  var btn=document.getElementById('tn-btn');btn.innerHTML='<span class="spinner"></span> Generating...';btn.disabled=true;
+  var dv=document.getElementById('tn-date').value, dl=document.getElementById('tn-dl').value.trim(), xb=document.getElementById('tn-breaks').value.trim();
+  var sd=dv?new Date(dv+'T12:00:00'):new Date(), ed=new Date(sd.getTime()+42*24*60*60*1000);
+  var eDate=fDL(dv||new Date().toISOString().split('T')[0]), dlText=dl||'EOD Monday before publish';
+  var up=S.events.filter(function(p){var d=gP(p,'date');if(!d)return false;var dt=new Date(d+'T12:00:00');return dt>=sd&&dt<=ed;});
+  var notices=up.filter(function(p){var t=gP(p,'Tags');return typeof t==='string'&&t.indexOf('Staff Notice')>=0;});
+  var calAdj=up.filter(function(p){var t=gP(p,'Tags');return typeof t==='string'&&t.indexOf('Calendar Addition / Adjustment')>=0;});
+  var evs=up.filter(function(p){var t=gP(p,'Tags');return typeof t!=='string'||(t.indexOf('Staff Notice')<0&&t.indexOf('Calendar Addition / Adjustment')<0);});
+  var eData=evs.map(function(p){return{name:gT(p),date:gP(p,'date'),formattedDate:fD(gP(p,'date')),callTime:gP(p,'Call Time'),perfTime:gP(p,'Performance Time'),dismissal:gP(p,'Approx. Dismissal'),uniform:gP(p,'Uniform'),choirs:gP(p,'Participating Choirs'),tags:gP(p,'Tags')};});
+  var prompt='Generate the full "Take Note, Music Makers & Beyond" weekly ICC staff email for publish date '+eDate+'.\n\nRESPONSE DEADLINE: '+dlText+'\n\nSTAFF NOTICES:\n'+(notices.length?notices.map(function(p){return gT(p);}).join('\n'):'None')+'\n\nCALENDAR ADJUSTMENTS:\n'+(calAdj.length?calAdj.map(function(p){return gT(p);}).join('\n'):'None')+(xb?'\nAdditional: '+xb:'')+'\n\nEVENTS:\n'+JSON.stringify(eData,null,2)+'\n\nFORMAT:\nHi Team!\n\nI hope your week is off to a wonderful start. [Include staff notices naturally if any.] Please review and respond with changes by '+dlText+'.\n\nThank you!\n\n**Breaks & Schedule Changes:**\n[List or "None this week."]\n\n**Upcoming Events:**\n**[CHOIR]:**\n**[Event] | [Date]**\nLocation: ...\nUniform: ...\nCall Time: ...\nPerformance: ...\n[Notes]\n\nCHOIR ORDER: AACC Prep & Concert, AACC Youth Chorale, CICC Concert & Descant, Foundations, ICC Preparatory Choirs, ICC Beginning Level Choirs, ICC Lyric Choirs, ICC IndyVoice, ICC Master Chorale, Jubilate\n\nRules: Omit empty fields. End with **Marketing, Development & Admin:** placeholder.';
+  cReq([{role:'user',content:prompt}],'You are helping Camden Zetty at ICC prepare the weekly staff email. Be precise and professional.')
+    .then(function(result){
+      window._tnDoc=result;
+      document.getElementById('tn-out').innerHTML='<div class="card" style="margin-top:14px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border);"><div><div class="card-title" style="margin-bottom:2px;">Take Note, Music Makers &amp; Beyond</div><div style="font-size:12px;color:var(--gray);">Publish '+eDate+' &middot; '+evs.length+' events</div></div><div style="display:flex;gap:8px;"><button class="btn" onclick="navigator.clipboard.writeText(window._tnDoc||\'\').then(function(){var b=event.target;b.textContent=\'Copied!\';setTimeout(function(){b.textContent=\'Copy text\';},2000)})">Copy text</button><button class="btn primary" onclick="genTN()">Regenerate</button></div></div><div class="tn-out">'+result.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\*(.*?)\*/g,'<em>$1</em>')+'</div></div>';
+      btn.textContent='Generate Take Note Brief';btn.disabled=false;
+    }).catch(function(e){btn.textContent='Generate Take Note Brief';btn.disabled=false;alert('Error: '+e.message);});
 }
 
-async function showDbBrowser(key){
-  var labels={venues:'Venues',orgs:'Organizations',contacts:'Collaborators'};
-  var lbl=labels[key]||key;
-  setTitle(lbl);setActions('');
-  setContent('<div class="loading"><div class="spinner dk"></div>Loading '+lbl+'...</div>');
-  var db=S.dbs[key];
-  if(!db){setContent('<div class="empty"><p>Database not connected.</p></div>');return;}
-  try{
-    var r=await qdb(db.id);var pages=r.results||[];
-    var rows=pages.slice(0,60).map(function(p){
-      var ps=Object.entries(p.properties).filter(function(e){return e[1].type!=='title';}).map(function(e){
-        var val=prop(p,e[0]);
-        if(Array.isArray(val))val=val.length?val.length+' linked':'';
-        if(typeof val==='boolean')val=val?'Yes':'No';
-        return val?'<span style="font-size:11px;background:var(--gray-l);padding:1px 7px;border-radius:4px;margin-right:3px;">'+esc(e[0])+': '+esc(String(val).slice(0,25))+'</span>':'';
-      }).filter(Boolean).slice(0,4).join('');
-      return'<tr><td style="font-weight:600;color:var(--navy);">'+esc(ptitle(p))+'</td><td>'+ps+'</td></tr>';
-    }).join('');
-    setContent('<div class="ph">'+lbl+'</div><div class="ps">'+pages.length+' records</div>'+
-      '<div class="card" style="padding:0;overflow:hidden;"><table class="tbl"><thead><tr><th>Name</th><th>Details</th></tr></thead><tbody>'+rows+'</tbody></table></div>');
-  }catch(e){setContent('<div class="empty"><p>Error: '+esc(e.message)+'</p></div>');}
+function showDB(key){
+  var lbls={venues:'Venues',orgs:'Organizations',contacts:'Collaborators'}, ids={venues:VENUES_DB,orgs:ORGS_DB,contacts:CONTACTS_DB};
+  sTitle(lbls[key]||key);sActions('');
+  sContent('<div class="loading"><div class="spinner dk"></div>Loading '+lbls[key]+'...</div>');
+  qdb(ids[key]).then(function(r){
+    var pages=r.results||[];
+    var rows=pages.slice(0,60).map(function(p){return'<tr><td style="font-weight:600;color:var(--navy);">'+esc(gT(p))+'</td></tr>';}).join('');
+    sContent('<div class="ph">'+lbls[key]+'</div><div class="ps">'+pages.length+' records</div><div class="card" style="padding:0;overflow:hidden;"><table class="tbl"><thead><tr><th>Name</th></tr></thead><tbody>'+rows+'</tbody></table></div>');
+  }).catch(function(e){sContent('<div class="empty"><p>Error: '+esc(e.message)+'</p></div>');});
 }
 
 init();
