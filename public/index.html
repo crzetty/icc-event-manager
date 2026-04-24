@@ -276,7 +276,7 @@ body{font-family:'Open Sans',sans-serif;background:var(--gray-ll);color:#1a1a2e;
 <script>
 const NOTION_KEY='ntn_s40523532606oEIHti7zdPHNMHpSIssattDAezK4weQa5M';
 const COLLAB_DB='c7aa2e1b-f842-426c-a208-574d36ee826d';
-const TAG_PERF=['Collaborative Bookings','Season Concerts & Events','Season Concerts & Events [AACC]','Season Concerts & Events [CICC]'];
+const TAG_PERF=['Collaborative Bookings','Season Concerts & Events','Season Concerts & Events [AACC}','Season Concerts & Events [CICC]'];
 const TAG_EDU=['Education & Outreach'];
 const TAG_BLDG=['Partner Events & Meetings','Resident Events & Meetings'];
 const TAG_ORG=['Organizational Events'];
@@ -378,13 +378,10 @@ function tagColor(tags){
 
 async function init(){
   try{
-    var dbs=(await notion('/search','POST',{filter:{value:'database',property:'object'},page_size:50})).results||[];
-    dbs.forEach(function(db){
-      var n=(db.title||[]).map(function(t){return t.plain_text;}).join('').toLowerCase();
-      if(n==='venues')S.dbs.venues=db;
-      else if(n==='organizations')S.dbs.orgs=db;
-      else if(n==='collaborators')S.dbs.contacts=db;
-    });
+    // Hardcoded DB IDs from Notion schema
+    S.dbs.venues={id:'0dd0ac29-cb1f-4e20-9362-7513a6e907be'};
+    S.dbs.orgs={id:'443b1059-8996-4358-984f-9ec652d05ecb'};
+    S.dbs.contacts={id:'3dcaa9f5-2da5-4a96-bdf2-ba7662630245'};
     await Promise.all([loadEvents(),loadRel('venues'),loadRel('orgs'),loadRel('contacts')]);
     updateBadges();
     go('dashboard');
@@ -771,7 +768,7 @@ async function submitIntake(){
   // Build tags
   var tags=[];
   if(type==='perf'){
-    if(sub==='aacc')tags.push('Season Concerts & Events [AACC]');
+    if(sub==='aacc')tags.push('Season Concerts & Events [AACC}');
     else if(sub==='cicc')tags.push('Season Concerts & Events [CICC]');
     else tags.push('Collaborative Bookings');
     if(S.intake.paid)tags.push('Paid');
