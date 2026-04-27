@@ -118,7 +118,7 @@ body{font-family:'Open Sans',sans-serif;background:var(--gray-ll);color:#1a1a2e;
 .msg{display:flex;gap:9px;}
 .msg.user{flex-direction:row-reverse;}
 .msg-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
-.msg.assistant .msg-av{background:var(--navy);color:white;}
+.msg.assistant .msg-av{background:var(--blue);color:white;font-size:0;}
 .msg.user .msg-av{background:var(--blue);color:white;}
 .msg-bub{max-width:580px;padding:9px 13px;border-radius:8px;font-size:13.5px;line-height:1.65;}
 .msg.assistant .msg-bub{background:white;border:1px solid var(--border);color:#1a1a2e;border-radius:2px 8px 8px 8px;}
@@ -237,9 +237,9 @@ body{font-family:'Open Sans',sans-serif;background:var(--gray-ll);color:#1a1a2e;
 <script>
 var NOTION_KEY = 'ntn_s40523532606oEIHti7zdPHNMHpSIssattDAezK4weQa5M';
 var COLLAB_DB = 'c7aa2e1b-f842-426c-a208-574d36ee826d';
-var VENUES_DB = '0dd0ac29-cb1f-4e20-9362-7513a6e907be';
-var ORGS_DB = '443b1059-8996-4358-984f-9ec652d05ecb';
-var CONTACTS_DB = '3dcaa9f5-2da5-4a96-bdf2-ba7662630245';
+var VENUES_DB = '341cb336-4acb-4540-866f-08e443ba6876';
+var ORGS_DB = '1740f18a-00ec-8004-9879-f88a5d3eaec6';
+var CONTACTS_DB = 'f5998a51-e200-4ad7-9e20-9e25ca4ca1eb';
 var TAG_PERF = ['Collaborative Bookings','Season Concerts & Events','Season Concerts & Events [AACC}','Season Concerts & Events [CICC]'];
 var TAG_EDU = ['Education & Outreach'];
 var TAG_BLDG = ['Partner Events & Meetings','Resident Events & Meetings'];
@@ -247,10 +247,10 @@ var TAG_ORG = ['Organizational Events'];
 var TAG_NOTICE = ['Calendar Addition / Adjustment','Staff Notice'];
 var CHOIRS = ['Foundations','Prep','BLC','Hendricks Co. BLC','Lyric','IndyVoice','Master Chorale','Touring Choirs','Jubilate','Special Group','Seniors','AAACC Prep','AACC Concert','AACC Youth Chorale','CICC Descant','CICC Concert','Neighborhood Choir Academy','Camp Participants','Alumni Choir'];
 var STATUSES = ['In progress','Details Set','Perspective','Requested'];
-var S = { events:[], venues:[], orgs:[], contacts:[], chatHistory:[], currentFilter:null, intake:{type:null,sub:null,choirs:[],status:'',rels:{},paid:false,inkind:false,josh:false} };
+var S = { events:[], venues:[], orgs:[], contacts:[], chatHistory:[], currentFilter:null, editPage:null, editChoirs:[], editStatus:'', intake:{type:null,sub:null,choirs:[],status:'',rels:{},paid:false,inkind:false,josh:false} };
 
 function nReq(ep, method, payload) {
-  return fetch('/.netlify/functions/notion', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({endpoint:ep, method:method||'POST', payload:payload||{}, notionKey:NOTION_KEY}) })
+  return fetch('/api/notion', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({endpoint:ep, method:method||'POST', payload:payload||{}, notionKey:NOTION_KEY}) })
     .then(function(r){ if(!r.ok) return r.text().then(function(t){ throw new Error(r.status+': '+t.slice(0,200)); }); return r.json(); });
 }
 function qdb(id, extra) { return nReq('/databases/'+id+'/query','POST',Object.assign({page_size:100},extra||{})); }
@@ -450,7 +450,7 @@ function showEvents(filter){
   var rows=evs.map(function(p){
     var m=missing(p), sync=syncSt(p);
     var sH=sync.map(function(s){return '<span class="syn '+(s.done?'done':'pending')+'" onclick="togSync(\''+p.id+'\',\''+s.key+'\','+s.done+')">'+s.label+'</span>';}).join('');
-    return '<tr><td style="font-weight:600;color:var(--navy);">'+esc(gT(p))+'</td><td style="font-size:12px;color:var(--gray);">'+fD(gP(p,'date'))+'</td><td>'+spill(gP(p,'Status'))+'</td><td style="font-size:12px;">'+esc(gP(p,'Call Time')||'\u2014')+'</td><td style="font-size:12px;">'+esc(gP(p,'Uniform')||'\u2014')+'</td><td>'+(m.length?'<span style="color:var(--red);font-size:12px;font-weight:600;">&#9888; '+m.length+'</span>':'<span style="color:var(--green);font-size:12px;">&#10003;</span>')+'</td><td><div class="sync-row">'+sH+'</div></td></tr>';
+    return '<tr><td style="font-weight:600;color:var(--navy);cursor:pointer;" onclick="editEvent(\''+p.id+'\')" title="Click to edit">'+esc(gT(p))+'</td><td style="font-size:12px;color:var(--gray);">'+fD(gP(p,'date'))+'</td><td>'+spill(gP(p,'Status'))+'</td><td style="font-size:12px;">'+esc(gP(p,'Call Time')||'\u2014')+'</td><td style="font-size:12px;">'+esc(gP(p,'Uniform')||'\u2014')+'</td><td>'+(m.length?'<span style="color:var(--red);font-size:12px;font-weight:600;">&#9888; '+m.length+'</span>':'<span style="color:var(--green);font-size:12px;">&#10003;</span>')+'</td><td><div class="sync-row">'+sH+'</div></td></tr>';
   }).join('');
   sContent('<div class="card" style="padding:0;overflow:hidden;"><table class="tbl"><thead><tr><th>Entry</th><th>Date</th><th>Status</th><th>Call Time</th><th>Uniform</th><th>Missing</th><th>Sync</th></tr></thead><tbody>'+rows+'</tbody></table></div>');
 }
@@ -475,7 +475,7 @@ function showGaps(){
   if(!wg.length){sContent('<div class="empty"><p style="color:var(--green);font-size:16px;">&#9989; All upcoming entries are complete.</p></div>');return;}
   var cards=wg.map(function(x){
     var dc=x.d<=7?'dp-urgent':x.d<=21?'dp-soon':'dp-ok', dl=x.d<=0?'Today':x.d===1?'Tomorrow':x.d+' days';
-    return '<div class="gc '+(x.d<=7?'urgent':'')+'"><div class="gc-hdr"><div><div class="gc-name">'+esc(gT(x.p))+'</div><div class="gc-date">'+fD(gP(x.p,'date'))+'</div></div><span class="days-p '+dc+'">'+dl+'</span></div><div class="gf">'+x.m.map(function(f){return'<span class="gt">'+esc(f)+'</span>';}).join('')+'</div></div>';
+    return '<div class="gc '+(x.d<=7?'urgent':'')+'" style="cursor:pointer;" onclick="editEvent(\''+x.p.id+'\')"><div class="gc-hdr"><div><div class="gc-name" style="cursor:pointer;" onclick="editEvent(&quot;'+x.p.id+'&quot;)"><span style="text-decoration:underline;text-underline-offset:2px;">'+esc(gT(x.p))+'</span></div><div class="gc-date">'+fD(gP(x.p,'date'))+'</div></div><span class="days-p '+dc+'">'+dl+'</span></div><div class="gf">'+x.m.map(function(f){return'<span class="gt">'+esc(f)+'</span>';}).join('')+'</div></div>';
   }).join('');
   var cs=comp.length?'<div style="margin-top:20px;padding-top:14px;border-top:1px solid var(--border);"><div style="font-size:11px;font-weight:600;color:var(--green);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;">&#10003; Complete ('+comp.length+')</div>'+comp.map(function(p){return'<div class="gc ok" style="padding:10px 16px;"><div style="display:flex;justify-content:space-between;"><div><div class="gc-name" style="font-size:13px;">'+esc(gT(p))+'</div><div class="gc-date">'+fD(gP(p,'date'))+'</div></div><span style="color:var(--green);">&#10003;</span></div></div>';}).join('')+'</div>':'';
   sContent('<div class="ph">Gap Report</div><div class="ps">'+wg.length+' entries need attention</div>'+cards+cs);
@@ -564,6 +564,10 @@ function togCh(el){
   else{S.intake.choirs=S.intake.choirs.filter(function(x){return x!==c;});}
 }
 
+function sRelD(el){
+  var key=el.getAttribute('data-rel'), resId=el.getAttribute('data-res'), selId=el.getAttribute('data-sel');
+  sRel(key, el.id, resId, selId);
+}
 function sRel(key, inId, resId, selId){
   var inp=document.getElementById(inId), q=inp?inp.value.trim().toLowerCase():'', rEl=document.getElementById(resId);
   if(!q||!rEl){if(rEl)rEl.style.display='none';return;}
@@ -685,6 +689,114 @@ function genTN(){
     }).catch(function(e){btn.textContent='Generate Take Note Brief';btn.disabled=false;alert('Error: '+e.message);});
 }
 
+function editEvent(pageId){
+  var page=S.events.find(function(p){return p.id===pageId;});
+  if(!page) return;
+  sTitle('Edit: '+gT(page)); sActions('<button class="btn" onclick="go(\'events\')">&#8592; Back</button>');
+  var m=missing(page);
+  var html='<div style="max-width:640px;">';
+  html+='<div class="ph" style="font-size:18px;margin-bottom:4px;">'+esc(gT(page))+'</div>';
+  html+='<div class="ps">'+fD(gP(page,'date'))+(m.length?' &mdash; <span style="color:var(--red);">'+m.length+' fields missing</span>':'')+'</div>';
+  
+  // Missing fields highlighted
+  if(m.length){
+    html+='<div class="card" style="border-left:4px solid var(--red);margin-bottom:14px;">';
+    html+='<div class="card-title" style="color:var(--red);">Missing information</div>';
+    html+='<div class="gf">'+m.map(function(f){return'<span class="gt">'+esc(f)+'</span>';}).join('')+'</div>';
+    html+='</div>';
+  }
+
+  // Edit form
+  html+='<div class="card"><div class="card-title">Update fields</div>';
+  html+='<div class="fg triple"><div class="field"><label>Call time</label><input type="time" id="e-call" value="'+timeToInput(gP(page,'Call Time'))+'" /></div>';
+  html+='<div class="field"><label>Performance time</label><input type="time" id="e-perf" value="'+timeToInput(gP(page,'Performance Time'))+'" /></div>';
+  html+='<div class="field"><label>Approx. dismissal</label><input type="time" id="e-dis" value="'+timeToInput(gP(page,'Approx. Dismissal'))+'" /></div></div>';
+  html+='<div class="fg single"><div class="field"><label>Uniform</label><input type="text" id="e-uni" value="'+esc(gP(page,'Uniform'))+'" placeholder="e.g. Formal" /></div></div>';
+  html+='<div class="fg single"><div class="field"><label>Status</label><div class="status-row" id="e-sr">'+['In progress','Details Set','Perspective','Requested'].map(function(s){var cur=gP(page,'Status');return'<div class="status-tog '+(cur===s?'on':'')+' e-st" data-status="'+esc(s)+'" onclick="togEStD(this)">'+s+'</div>';}).join('')+'</div></div></div>';
+  
+  // Participating choirs
+  var curChoirs=gP(page,'Participating Choirs')||'';
+  var choirList=typeof curChoirs==='string'&&curChoirs?curChoirs.split(', '):[];
+  html+='<div style="margin-bottom:13px;"><div style="font-size:11px;color:var(--gray);margin-bottom:6px;">Participating choirs</div>';
+  html+='<div class="choir-grid">';
+  CHOIRS.forEach(function(c){var on=choirList.indexOf(c)>=0;html+='<div class="choir-tog '+(on?'on':'')+'" data-choir="'+esc(c)+'" onclick="togCh(this)">'+esc(c)+'</div>';});
+  html+='</div></div>';
+  
+  // Venue search
+  html+='<div class="fg single"><div class="field sw"><label>Venue</label>';
+  html+='<input type="text" id="e-vs" placeholder="Search venues..." data-rel="venues" data-res="e-vr" data-sel="e-vsel" oninput="sRelD(this)" autocomplete="off" />';
+  html+='<div class="sr" id="e-vr" style="display:none;"></div><div id="e-vsel"></div></div></div>';
+  
+  // Contact search  
+  html+='<div class="fg"><div class="field sw"><label>Organization</label>';
+  html+='<input type="text" id="e-os" placeholder="Search orgs..." data-rel="orgs" data-res="e-or" data-sel="e-osel" oninput="sRelD(this)" autocomplete="off" />';
+  html+='<div class="sr" id="e-or" style="display:none;"></div><div id="e-osel"></div></div>';
+  html+='<div class="field sw"><label>Contact</label>';
+  html+='<input type="text" id="e-cs" placeholder="Search contacts..." data-rel="contacts" data-res="e-cr" data-sel="e-csel" oninput="sRelD(this)" autocomplete="off" />';
+  html+='<div class="sr" id="e-cr" style="display:none;"></div><div id="e-csel"></div></div></div>';
+  
+  html+='<button class="btn primary" style="width:100%;padding:11px;" id="e-save-btn" onclick="saveEditCur()">Save to Notion</button>';
+  html+='</div></div>';
+  
+  // Store edit state
+  S.editPage=page;
+  S.editChoirs=choirList.slice();
+  S.editStatus=gP(page,'Status')||'';
+  S.intake={type:null,sub:null,choirs:S.editChoirs,status:S.editStatus,rels:{},paid:false,inkind:false,josh:false};
+  
+  sContent(html);
+}
+
+function timeToInput(timeStr){
+  if(!timeStr) return '';
+  var m=timeStr.match(/(\d+):(\d+)\s*(AM|PM)/i);
+  if(!m) return '';
+  var h=parseInt(m[1]),min=parseInt(m[2]),ap=m[3].toUpperCase();
+  if(ap==='PM'&&h!==12) h+=12;
+  if(ap==='AM'&&h===12) h=0;
+  return (h<10?'0':'')+h+':'+(min<10?'0':'')+min;
+}
+
+function togEStD(btn){
+  var status=btn.getAttribute('data-status');
+  document.querySelectorAll('#e-sr .status-tog').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');S.editStatus=status;S.intake.status=status;
+}
+function togESt(btn,status){
+  document.querySelectorAll('#e-sr .status-tog').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');S.editStatus=status;S.intake.status=status;
+}
+
+function saveEditCur(){ saveEdit(S.editPage.id); }
+function saveEdit(pageId){
+  var btn=document.getElementById('e-save-btn');
+  if(btn){btn.innerHTML='<span class="spinner"></span> Saving...';btn.disabled=true;}
+  var call=(document.getElementById('e-call')||{}).value||'';
+  var perf=(document.getElementById('e-perf')||{}).value||'';
+  var dis=(document.getElementById('e-dis')||{}).value||'';
+  var uni=((document.getElementById('e-uni')||{}).value||'').trim();
+  var props={};
+  if(call) props['Call Time']={rich_text:[{text:{content:fT(call)}}]};
+  if(perf) props['Performance Time']={rich_text:[{text:{content:fT(perf)}}]};
+  if(dis) props['Approx. Dismissal']={rich_text:[{text:{content:fT(dis)}}]};
+  if(uni) props['Uniform']={rich_text:[{text:{content:uni}}]};
+  if(S.editStatus) props['Status']={status:{name:S.editStatus}};
+  if(S.intake.choirs&&S.intake.choirs.length) props['Participating Choirs']={multi_select:S.intake.choirs.map(function(c){return{name:c};})};
+  if(S.intake.rels.venues&&S.intake.rels.venues.id) props['Venue']={relation:[{id:S.intake.rels.venues.id}]};
+  if(S.intake.rels.orgs&&S.intake.rels.orgs.id) props['Organization']={relation:[{id:S.intake.rels.orgs.id}]};
+  if(S.intake.rels.contacts&&S.intake.rels.contacts.id) props['Contact']={relation:[{id:S.intake.rels.contacts.id}]};
+  // Also uncheck sync boxes since fields were updated
+  props['Update on ChorusConnection']={checkbox:false};
+  props['Update on Organizational Calendar']={checkbox:false};
+  props["Update on Josh's Calendar"]={checkbox:false};
+  nReq('/pages/'+pageId,'PATCH',{properties:props})
+    .then(function(){return refresh();})
+    .then(function(){
+      var idx=S.events.findIndex(function(p){return p.id===pageId;});
+      sContent('<div style="max-width:480px;margin:60px auto;text-align:center;"><div style="font-size:32px;margin-bottom:16px;">&#10003;</div><div class="ph" style="margin-bottom:8px;">Saved to Notion</div><p style="color:var(--gray);font-size:13px;margin-bottom:24px;">Sync flags reset &mdash; update CC, Org Cal, and Josh&apos;s Cal as needed.</p><div style="display:flex;gap:10px;justify-content:center;"><button class="btn primary" onclick="go(&apos;gaps&apos;)">Back to gap report</button><button class="btn" onclick="go(&apos;events&apos;)">All entries</button></div></div>');
+    }).catch(function(e){if(btn){btn.textContent='Save to Notion';btn.disabled=false;}alert('Error: '+e.message);});
+}
+
 function showDB(key){
   var lbls={venues:'Venues',orgs:'Organizations',contacts:'Collaborators'}, ids={venues:VENUES_DB,orgs:ORGS_DB,contacts:CONTACTS_DB};
   sTitle(lbls[key]||key);sActions('');
@@ -694,6 +806,124 @@ function showDB(key){
     var rows=pages.slice(0,60).map(function(p){return'<tr><td style="font-weight:600;color:var(--navy);">'+esc(gT(p))+'</td></tr>';}).join('');
     sContent('<div class="ph">'+lbls[key]+'</div><div class="ps">'+pages.length+' records</div><div class="card" style="padding:0;overflow:hidden;"><table class="tbl"><thead><tr><th>Name</th></tr></thead><tbody>'+rows+'</tbody></table></div>');
   }).catch(function(e){sContent('<div class="empty"><p>Error: '+esc(e.message)+'</p></div>');});
+}
+
+
+function editEvent(pageId) {
+  var page = S.events.find(function(p){ return p.id === pageId; });
+  if (!page) return;
+  sTitle('Edit: ' + gT(page));
+  setActions('<button class="btn" onclick="go(\'events\')">&#8592; Back</button>');
+  var miss = missing(page);
+  var sync = syncSt(page);
+  var h = '<div style="max-width:640px;">';
+  h += '<div class="ph" style="margin-bottom:4px;">' + esc(gT(page)) + '</div>';
+  h += '<div class="ps">' + fD(gP(page,'date')) + (miss.length ? ' &middot; <span style="color:var(--red);">&#9888; ' + miss.length + ' fields missing</span>' : ' &middot; <span style="color:var(--green);">&#10003; Complete</span>') + '</div>';
+  
+  if (miss.length) {
+    h += '<div class="card" style="margin-bottom:14px;"><div class="card-title" style="color:var(--red);">Missing information</div>';
+    h += '<div class="gf" style="margin-bottom:14px;">' + miss.map(function(f){ return '<span class="gt">' + esc(f) + '</span>'; }).join('') + '</div>';
+    h += '<p style="font-size:13px;color:var(--gray);">Fill in what you have below and click Save.</p></div>';
+  }
+
+  h += '<div class="card">';
+  h += '<div class="fg"><div class="field"><label>Call time</label><input type="time" id="e-call" value="' + timeToInput(gP(page,'Call Time')) + '" /></div>';
+  h += '<div class="field"><label>Performance time</label><input type="time" id="e-perf" value="' + timeToInput(gP(page,'Performance Time')) + '" /></div></div>';
+  h += '<div class="fg"><div class="field"><label>Approx. dismissal</label><input type="time" id="e-dis" value="' + timeToInput(gP(page,'Approx. Dismissal')) + '" /></div>';
+  h += '<div class="field"><label>Uniform</label><input type="text" id="e-uni" value="' + esc(gP(page,'Uniform')||'') + '" placeholder="e.g. Formal" /></div></div>';
+  h += '<div class="fg single"><div class="field"><label>Status</label><div class="status-row" id="e-sr">' + STATUSES.map(function(s){ var on = gP(page,'Status')===s ? ' on' : ''; return '<div class="status-tog'+on+'" onclick="togSt2(this,\''+s+'\')">'+s+'</div>'; }).join('') + '</div></div></div>';
+  
+  // Venue search
+  var venueInput = '<input type="text" id="e-vs" placeholder="Search venues..." oninput="sRel(\x27venues\x27,\x27e-vs\x27,\x27e-vr\x27,\x27e-vsel\x27)" autocomplete="off" />';
+  h += '<div class="fg single"><div class="field sw"><label>Venue</label>' + venueInput + '<div class="sr" id="e-vr" style="display:none;"></div><div id="e-vsel"></div></div></div>';
+  var orgInput = '<input type="text" id="e-os" placeholder="Search orgs..." oninput="sRel(\x27orgs\x27,\x27e-os\x27,\x27e-or\x27,\x27e-osel\x27)" autocomplete="off" />';
+  var conInput = '<input type="text" id="e-cs" placeholder="Search contacts..." oninput="sRel(\x27contacts\x27,\x27e-cs\x27,\x27e-cr\x27,\x27e-csel\x27)" autocomplete="off" />';
+  h += '<div class="fg"><div class="field sw"><label>Organization</label>' + orgInput + '<div class="sr" id="e-or" style="display:none;"></div><div id="e-osel"></div></div><div class="field sw"><label>Contact</label>' + conInput + '<div class="sr" id="e-cr" style="display:none;"></div><div id="e-csel"></div></div></div>';
+
+  // Choirs
+  h += '<div style="margin-bottom:13px;"><div style="font-size:11px;color:var(--gray);margin-bottom:6px;">Participating choirs</div>';
+  var curChoirs = gP(page,'Participating Choirs');
+  var curChoirList = typeof curChoirs === 'string' ? curChoirs.split(', ').map(function(c){return c.trim();}) : [];
+  h += '<div class="choir-grid">';
+  CHOIRS.forEach(function(c){ 
+    var on = curChoirList.indexOf(c) >= 0 ? ' on' : '';
+    h += '<div class="choir-tog'+on+'" data-choir="'+esc(c)+'" onclick="togCh(this)">'+esc(c)+'</div>'; 
+  });
+  h += '</div></div>';
+
+  h += '<div class="fg single"><div class="field"><label>Notes (added to page body)</label><textarea id="e-notes" placeholder="Food, drop-off, tickets..."></textarea></div></div>';
+  h += '<button class="btn primary" style="width:100%;padding:11px;" onclick="saveEdit(\''+pageId+'\')">Save changes</button>';
+  h += '</div></div>';
+  
+  S.editStatus = gP(page,'Status') || '';
+  S.editChoirs = curChoirList.slice();
+  S.editRels = {};
+  sContent(h);
+}
+
+var S_editStatus = '';
+var S_editChoirs = [];
+var S_editRels = {};
+
+function togSt2(btn, status) {
+  document.querySelectorAll('#e-sr .status-tog').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');
+  S.editStatus = status;
+}
+
+function timeToInput(val) {
+  if (!val) return '';
+  var m = val.match(/(\d+):(\d+)\s*(AM|PM)/i);
+  if (!m) return '';
+  var h = parseInt(m[1]), min = parseInt(m[2]), ap = m[3].toUpperCase();
+  if (ap === 'PM' && h !== 12) h += 12;
+  if (ap === 'AM' && h === 12) h = 0;
+  return (h<10?'0':'')+h+':'+(min<10?'0':'')+min;
+}
+
+function saveEdit(pageId) {
+  var btn = document.querySelector('[onclick="saveEdit(\''+pageId+'\')"]');
+  if (btn) { btn.innerHTML = '<span class="spinner"></span> Saving...'; btn.disabled = true; }
+  
+  var call = (document.getElementById('e-call')||{}).value||'';
+  var perf = (document.getElementById('e-perf')||{}).value||'';
+  var dis = (document.getElementById('e-dis')||{}).value||'';
+  var uni = ((document.getElementById('e-uni')||{}).value||'').trim();
+  var notes = ((document.getElementById('e-notes')||{}).value||'').trim();
+  var status = S.editStatus;
+
+  var props = {};
+  if (call) props['Call Time'] = {rich_text:[{text:{content:fT(call)}}]};
+  if (perf) props['Performance Time'] = {rich_text:[{text:{content:fT(perf)}}]};
+  if (dis) props['Approx. Dismissal'] = {rich_text:[{text:{content:fT(dis)}}]};
+  if (uni) props['Uniform'] = {rich_text:[{text:{content:uni}}]};
+  if (status) props['Status'] = {status:{name:status}};
+  
+  // Get selected choirs from DOM
+  var selChoirs = [];
+  document.querySelectorAll('#content .choir-tog.on').forEach(function(el){ selChoirs.push(el.getAttribute('data-choir')); });
+  if (selChoirs.length) props['Participating Choirs'] = {multi_select: selChoirs.map(function(c){return{name:c};})};
+  
+  if (S.intake.rels.venues && S.intake.rels.venues.id) props['Venue'] = {relation:[{id:S.intake.rels.venues.id}]};
+  if (S.intake.rels.orgs && S.intake.rels.orgs.id) props['Organization'] = {relation:[{id:S.intake.rels.orgs.id}]};
+  if (S.intake.rels.contacts && S.intake.rels.contacts.id) props['Contact'] = {relation:[{id:S.intake.rels.contacts.id}]};
+
+  var chain = nReq('/pages/'+pageId,'PATCH',{properties:props});
+  if (notes) chain = chain.then(function(){ return nReq('/blocks/'+pageId+'/children','PATCH',{children:[{object:'block',type:'paragraph',paragraph:{rich_text:[{type:'text',text:{content:notes}}]}}]}); });
+  
+  chain.then(function(){ return refresh(); })
+    .then(function(){
+      var page = S.events.find(function(p){return p.id===pageId;});
+      var stillMissing = page ? missing(page) : [];
+      sContent('<div style="max-width:480px;margin:60px auto;text-align:center;">'+
+        '<div style="font-size:32px;margin-bottom:12px;">&#10003;</div>'+
+        '<div class="ph" style="margin-bottom:8px;">Changes saved</div>'+
+        (stillMissing.length?'<div class="card" style="text-align:left;margin-top:16px;"><div class="card-title" style="color:var(--red);">Still needed</div>'+stillMissing.map(function(f){return'<div style="padding:4px 0;font-size:13px;color:var(--red);">'+esc(f)+'</div>';}).join('')+'</div>':'')+
+        '<div style="display:flex;gap:10px;justify-content:center;margin-top:20px;">'+
+        '<button class="btn primary" onclick="editEvent(\''+pageId+'\')">Keep editing</button>'+
+        '<button class="btn" onclick="go(\x27gaps\x27)">Back to gap report</button>'+
+        '</div></div>');
+    }).catch(function(e){ if(btn){btn.textContent='Save changes';btn.disabled=false;} alert('Error: '+e.message); });
 }
 
 init();
