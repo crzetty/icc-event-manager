@@ -225,10 +225,6 @@ body{font-family:'Open Sans',sans-serif;background:var(--gray-ll);color:#1a1a2e;
     <div class="sb-i" id="sb-db-contacts" onclick="godb('contacts')"><span class="sb-ic">&#128100;</span> Collaborators</div>
   </div>
   <div class="main">
-    <div class="topbar">
-      <div class="page-title" id="page-title">Loading...</div>
-      <div class="topbar-actions" id="topbar-actions"></div>
-    </div>
     <div class="content" id="content">
       <div class="loading"><div class="spinner dk"></div>Connecting to Notion...</div>
     </div>
@@ -255,8 +251,11 @@ function nReq(ep, method, payload) {
 }
 function qdb(id, extra) { return nReq('/databases/'+id+'/query','POST',Object.assign({page_size:100},extra||{})); }
 function cReq(messages, system) {
-  return fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1200,system:system||'',messages:messages})})
-    .then(function(r){return r.json();}).then(function(d){return (d.content||[]).map(function(c){return c.text||'';}).join('');});
+  return fetch('/.netlify/functions/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1200,system:system||'',messages:messages})})
+    .then(function(r){return r.json();}).then(function(d){
+      if(d.error) throw new Error(d.error.message||JSON.stringify(d.error));
+      return (d.content||[]).map(function(c){return c.text||'';}).join('');
+    });
 }
 
 function gP(page, name) {
@@ -286,9 +285,14 @@ function fDL(d){if(!d)return'';try{return new Date(d+'T12:00:00').toLocaleDateSt
 function fT(t){if(!t)return'';var p=t.split(':'),h=parseInt(p[0]),m=parseInt(p[1]);return(h%12||12)+':'+(m<10?'0':'')+m+' '+(h>=12?'PM':'AM');}
 function dU(d){if(!d)return null;return Math.ceil((new Date(d+'T12:00:00')-new Date())/86400000);}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function sTitle(t){document.getElementById('page-title').textContent=t;}
-function sActions(h){document.getElementById('topbar-actions').innerHTML=h;}
-function sContent(h){document.getElementById('content').innerHTML=h;}
+function sTitle(t){var el=document.getElementById('content-title');if(el)el.textContent=t;}
+function sActions(h){var el=document.getElementById('content-actions');if(el)el.innerHTML=h;}
+function sContent(h){
+  document.getElementById('content').innerHTML=
+    '<div style="background:white;border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;margin:-22px -24px 22px -24px;">' +
+    '<div id="content-title" style="font-family:Cambria,serif;font-size:20px;color:var(--navy);"></div>' +
+    '<div id="content-actions" style="display:flex;gap:8px;"></div></div>'+h;
+}
 function tod(){var h=new Date().getHours();return h<12?'morning':h<17?'afternoon':'evening';}
 
 function missing(page) {
@@ -302,7 +306,7 @@ function missing(page) {
 }
 function syncSt(page) {
   var cc=gP(page,'Update on ChorusConnection'), oc=gP(page,'Update on Organizational Calendar'), jc=gP(page,"Update on Josh's Calendar"), onJ=gP(page,"On Josh's Calendar");
-  var items=[{key:'cc',label:'CC',done:cc===true},{key:'oc',label:'Org Cal',done:oc===true}];
+  var items=[{key:'cc',label:'ChorusConnection',done:cc===true},{key:'oc',label:'Organizational Calendar',done:oc===true}];
   if(onJ===true) items.push({key:'jc',label:"Josh's Cal",done:jc===true});
   return items;
 }
@@ -572,9 +576,16 @@ function sRel(key, inId, resId, selId){
   var inp=document.getElementById(inId), q=inp?inp.value.trim().toLowerCase():'', rEl=document.getElementById(resId);
   if(!q||!rEl){if(rEl)rEl.style.display='none';return;}
   var matches=(S[key]||[]).filter(function(r){return r.name.toLowerCase().indexOf(q)>=0;}).slice(0,8);
-  var html=matches.map(function(m){return'<div class="sri" onclick="selRel(\''+key+'\',\''+m.id+'\','+JSON.stringify(m.name)+',\''+inId+'\',\''+resId+'\',\''+selId+'\')">'+esc(m.name)+'</div>';}).join('');
-  html+='<div class="sri" style="color:#a67a1a;font-style:italic;" onclick="newRel(\''+key+'\','+JSON.stringify(q)+',\''+inId+'\',\''+resId+'\',\''+selId+'\')">+ Create new: &ldquo;'+esc(q)+'&rdquo;</div>';
-  rEl.innerHTML=html; rEl.style.display='block';
+  rEl.innerHTML=''; rEl.style.display='block';
+  matches.forEach(function(m){
+    var d=document.createElement('div'); d.className='sri'; d.textContent=m.name;
+    (function(mid,mname){d.addEventListener('mousedown',function(e){e.preventDefault();selRel(key,mid,mname,inId,resId,selId);});})(m.id,m.name);
+    rEl.appendChild(d);
+  });
+  var nd=document.createElement('div'); nd.className='sri'; nd.style.color='#a67a1a'; nd.style.fontStyle='italic';
+  nd.textContent='+ Create new: "'+q+'"';
+  (function(qq){nd.addEventListener('mousedown',function(e){e.preventDefault();newRel(key,qq,inId,resId,selId);});})(q);
+  rEl.appendChild(nd);
 }
 function selRel(key,id,name,inId,resId,selId){
   S.intake.rels[key]={id:id,name:name,isNew:false};
