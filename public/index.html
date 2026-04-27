@@ -250,7 +250,7 @@ var STATUSES = ['In progress','Details Set','Perspective','Requested'];
 var S = { events:[], venues:[], orgs:[], contacts:[], chatHistory:[], currentFilter:null, editPage:null, editChoirs:[], editStatus:'', intake:{type:null,sub:null,choirs:[],status:'',rels:{},paid:false,inkind:false,josh:false} };
 
 function nReq(ep, method, payload) {
-  return fetch('/api/notion', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({endpoint:ep, method:method||'POST', payload:payload||{}, notionKey:NOTION_KEY}) })
+  return fetch('/.netlify/functions/notion', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({endpoint:ep, method:method||'POST', payload:payload||{}, notionKey:NOTION_KEY}) })
     .then(function(r){ if(!r.ok) return r.text().then(function(t){ throw new Error(r.status+': '+t.slice(0,200)); }); return r.json(); });
 }
 function qdb(id, extra) { return nReq('/databases/'+id+'/query','POST',Object.assign({page_size:100},extra||{})); }
