@@ -239,9 +239,10 @@ var EDU = ['Education & Outreach'];
 var BLDG = ['Partner Events & Meetings','Resident Events & Meetings'];
 var ORG = ['Organizational Events'];
 var NTCE = ['Calendar Addition / Adjustment','Staff Notice'];
+var RUDB = 'f5f40839-f72f-4ef9-bd82-8629563a8e83'; // Choirs & Programs (Receiving Updates)
 var CHOIRS = ['Foundations','Prep','BLC','Hendricks Co. BLC','Lyric','IndyVoice','Master Chorale','Touring Choirs','Jubilate','Special Group','Seniors','AAACC Prep','AACC Concert','AACC Youth Chorale','CICC Descant','CICC Concert','Neighborhood Choir Academy','Camp Participants','Alumni Choir'];
 var STATS = ['In progress','Details Set','Perspective','Requested'];
-var S = {ev:[],vn:[],og:[],ct:[],ch:[],chatH:[],filt:null,eRels:{},eSt:''};
+var S = {ev:[],vn:[],og:[],ct:[],ru:[],chatH:[],filt:null,eRels:{},eSt:''};
 
 // ── API ────────────────────────────────────────────────────────────────────
 function nr(ep,method,payload) {
@@ -304,8 +305,13 @@ function miss(page) {
   var tags=gp(page,'Tags'),tl=typeof tags==='string'?tags.split(', '):[];
   var isN=tl.some(function(t){return NTCE.indexOf(t)>=0;});
   var isB=tl.length>0&&tl.every(function(t){return BLDG.indexOf(t)>=0;});
+  var isOrg=tl.some(function(t){return ORG.indexOf(t)>=0;});
   if(isN) return [];
-  var chk=['Call Time','Performance Time','Uniform','Venue','Contact'];
+  // Building-only events don't need choirs or performance logistics
+  if(isB&&!isOrg){
+    return ['Venue','Organization','Contact'].filter(function(f){var v=gp(page,f);if(Array.isArray(v))return v.length===0;return !v;});
+  }
+  var chk=['Call Time','Performance Time','Approx. Dismissal','Uniform','Venue','Organization','Contact'];
   if(!isB) chk.push('Participating Choirs');
   return chk.filter(function(f){var v=gp(page,f);if(Array.isArray(v))return v.length===0;return !v;});
 }
@@ -337,17 +343,38 @@ function setC(h){document.getElementById('content').innerHTML='<div class="conte
 function setT(t){var e=document.getElementById('ctitle');if(e)e.textContent=t;}
 function setA(h){var e=document.getElementById('cactions');if(e)e.innerHTML=h;}
 
+
+// Map participating choir names to Receiving Updates (Choirs & Programs) page IDs
+function getReceivingUpdates(choirList) {
+  if (!choirList || !choirList.length) return [];
+  var matched = [];
+  S.ru.forEach(function(ru) {
+    var ruName = ru.name.toLowerCase();
+    choirList.forEach(function(choir) {
+      var cName = choir.toLowerCase();
+      // Match if choir name is contained in the RU record name or vice versa
+      if (ruName.indexOf(cName) >= 0 || cName.indexOf(ruName) >= 0) {
+        if (!matched.find(function(m){return m.id===ru.id;})) {
+          matched.push({id: ru.id});
+        }
+      }
+    });
+  });
+  return matched;
+}
+
 // ── Init ───────────────────────────────────────────────────────────────────
 function init() {
   var today = new Date().toISOString().split('T')[0];
   Promise.all([
     qdb(CDB,{sorts:[{property:'Date',direction:'ascending'}],filter:{property:'Date',date:{on_or_after:today}}}),
-    qdb(VDB), qdb(ODB), qdb(XDB)
+    qdb(VDB), qdb(ODB), qdb(XDB), qdb(RUDB)
   ]).then(function(res){
     S.ev = res[0].results||[];
     S.vn = (res[1].results||[]).map(function(p){return{id:p.id,name:gt(p)};}).sort(function(a,b){return a.name.localeCompare(b.name);});
     S.og = (res[2].results||[]).map(function(p){return{id:p.id,name:gt(p)};}).sort(function(a,b){return a.name.localeCompare(b.name);});
     S.ct = (res[3].results||[]).map(function(p){return{id:p.id,name:gt(p)};}).sort(function(a,b){return a.name.localeCompare(b.name);});
+    S.ru = (res[4].results||[]).map(function(p){return{id:p.id,name:gt(p)};});
     updB();
     go('dashboard');
   }).catch(function(e){
@@ -631,7 +658,11 @@ function saveEv(){
   if(S.eRels.ct&&S.eRels.ct.id) props['Contact']={relation:[{id:S.eRels.ct.id}]};
   var sc=[];
   document.querySelectorAll('#content .choir-tog.on').forEach(function(el){sc.push(el.getAttribute('data-choir'));});
-  if(sc.length) props['Participating Choirs']={multi_select:sc.map(function(c){return{name:c};})};
+  if(sc.length) {
+    props['Participating Choirs']={multi_select:sc.map(function(c){return{name:c};})};
+    var ruIds2=getReceivingUpdates(sc);
+    if(ruIds2.length) props['Receiving Updates']={relation:ruIds2};
+  }
   var chain=nr('/pages/'+pageId,'PATCH',{properties:props});
   if(nv) chain=chain.then(function(){return nr('/blocks/'+pageId+'/children','PATCH',{children:[{object:'block',type:'paragraph',paragraph:{rich_text:[{type:'text',text:{content:nv}}]}}]});});
   chain.then(function(){return refresh();}).then(function(){
@@ -753,7 +784,11 @@ function subForm(){
   if(uni) props['Uniform']={rich_text:[{text:{content:uni}}]};
   var sc=[];
   document.querySelectorAll('#content .choir-tog.on').forEach(function(el){sc.push(el.getAttribute('data-choir'));});
-  if(sc.length) props['Participating Choirs']={multi_select:sc.map(function(c){return{name:c};})};
+  if(sc.length) {
+    props['Participating Choirs']={multi_select:sc.map(function(c){return{name:c};})};
+    var ruIds=getReceivingUpdates(sc);
+    if(ruIds.length) props['Receiving Updates']={relation:ruIds};
+  }
   if(S.eRels.vn&&S.eRels.vn.id) props['Venue']={relation:[{id:S.eRels.vn.id}]};
   if(S.eRels.og&&S.eRels.og.id) props['Organization']={relation:[{id:S.eRels.og.id}]};
   if(S.eRels.ct&&S.eRels.ct.id) props['Contact']={relation:[{id:S.eRels.ct.id}]};
