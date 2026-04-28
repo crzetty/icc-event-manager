@@ -477,9 +477,13 @@ function showGaps(){
   if(!wg.length){sContent('<div class="empty"><p style="color:var(--green);font-size:16px;">&#9989; All upcoming entries are complete.</p></div>');return;}
   var cards=wg.map(function(x){
     var dc=x.d<=7?'dp-urgent':x.d<=21?'dp-soon':'dp-ok', dl=x.d<=0?'Today':x.d===1?'Tomorrow':x.d+' days';
-        return '<div class="gc '+(x.d<=7?'urgent':'')+'" style="cursor:pointer;" onclick="editEvent(\'' + x.p.id + '\')"><div class="gc-hdr"><div><div class="gc-name">'+esc(gT(x.p))+'</div><div class="gc-date">'+fD(gP(x.p,'date'))+'</div></div><span class="days-p '+dc+'">'+dl+'</span></div><div class="gf">'+x.m.map(function(f){return'<span class="gt">'+esc(f)+'</span>';}).join('')+'</div></div>';
+    return '<div class="gc '+(x.d<=7?'urgent':'')+'" style="cursor:pointer;" onclick="editEvent(\'' + x.p.id + '\')"><div class="gc-hdr"><div><div class="gc-name">'+esc(gT(x.p))+'</div><div class="gc-date">'+fD(gP(x.p,'date'))+'</div></div><span class="days-p '+dc+'">'+dl+'</span></div><div class="gf">'+x.m.map(function(f){return'<span class="gt">'+esc(f)+'</span>';}).join('')+'</div></div>';
+  }).join('');
+  var cs=comp.length?'<div style="margin-top:20px;padding-top:14px;border-top:1px solid var(--border);"><div style="font-size:11px;font-weight:600;color:var(--green);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;">&#10003; Complete ('+comp.length+')</div>'+comp.map(function(p){return'<div class="gc ok" style="padding:10px 16px;"><div style="display:flex;justify-content:space-between;"><div><div class="gc-name" style="font-size:13px;">'+esc(gT(p))+'</div><div class="gc-date">'+fD(gP(p,'date'))+'</div></div><span style="color:var(--green);">&#10003;</span></div></div>';}).join('')+'</div>':'';
+  sContent('<div class="ph">Gap Report</div><div class="ps">'+wg.length+' entries need attention</div>'+cards+cs);
+  sTitle('Gap Report');
+  sActions('<button class="btn" onclick="refresh().then(showGaps)">&#8635; Refresh</button>');
 }
-
 function selType(type){
   S.intake.type=type;
   var lbls={perf:'Performance / Concert',edu:'Education & Outreach',building:'Building / Meeting',cal:'Calendar Notice',notice:'Staff Notice'};
