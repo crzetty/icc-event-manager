@@ -182,6 +182,12 @@ body{font-family:'Open Sans',sans-serif;background:var(--gray-ll);color:#1a1a2e;
 .td:nth-child(2){animation-delay:.2s;}
 .td:nth-child(3){animation-delay:.4s;}
 @keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-4px);opacity:1}}
+
+.choir-picker{margin-top:6px;}
+.choir-group{margin-bottom:6px;}
+.choir-sub-tog{display:inline-flex;align-items:center;padding:4px 10px;border:1px solid var(--border);border-radius:12px;font-size:11px;cursor:pointer;background:var(--gray-ll);color:#555;transition:all .12s;user-select:none;}
+.choir-sub-tog:hover{border-color:var(--navy);}
+.choir-sub-tog.on{background:#e8edf5;border-color:var(--navy);color:var(--navy);font-weight:600;}
 </style>
 </head>
 <body>
@@ -235,6 +241,7 @@ var VDB = '341cb336-4acb-4540-866f-08e443ba6876';
 var ODB = '1740f18a-00ec-8004-9879-f88a5d3eaec6';
 var XDB = 'f5998a51-e200-4ad7-9e20-9e25ca4ca1eb';
 var PERF = ['Collaborative Bookings','Season Concerts & Events','Season Concerts & Events [AACC}','Season Concerts & Events [CICC]'];
+var RUDB = 'f5f40839-f72f-4ef9-bd82-8629563a8e83';
 var EDU = ['Education & Outreach'];
 var BLDG = ['Partner Events & Meetings','Resident Events & Meetings'];
 var ORG = ['Organizational Events'];
@@ -246,10 +253,12 @@ var S = {ev:[],vn:[],og:[],ct:[],ru:[],chatH:[],filt:null,eRels:{},eSt:''};
 
 // ── API ────────────────────────────────────────────────────────────────────
 function nr(ep,method,payload) {
-  return fetch('/.netlify/functions/notion',{
+  var m = method||'POST';
+  var body = {action:'notion',notionKey:NK,payload:{endpoint:ep,method:m,data:(m==='GET'?null:(payload||{}))}};
+  return fetch('/.netlify/functions/server',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({endpoint:ep,method:method||'POST',payload:payload||{},notionKey:NK})
+    body:JSON.stringify(body)
   }).then(function(r){
     if(!r.ok) return r.text().then(function(t){throw new Error(r.status+': '+t.slice(0,200));});
     return r.json();
@@ -344,36 +353,27 @@ function setT(t){var e=document.getElementById('ctitle');if(e)e.textContent=t;}
 function setA(h){var e=document.getElementById('cactions');if(e)e.innerHTML=h;}
 
 
-// Map participating choir names to Receiving Updates (Choirs & Programs) page IDs
-function getReceivingUpdates(choirList) {
-  if (!choirList || !choirList.length) return [];
-  var matched = [];
-  S.ru.forEach(function(ru) {
-    var ruName = ru.name.toLowerCase();
-    choirList.forEach(function(choir) {
-      var cName = choir.toLowerCase();
-      // Match if choir name is contained in the RU record name or vice versa
-      if (ruName.indexOf(cName) >= 0 || cName.indexOf(ruName) >= 0) {
-        if (!matched.find(function(m){return m.id===ru.id;})) {
-          matched.push({id: ru.id});
-        }
-      }
-    });
-  });
-  return matched;
-}
+
 
 // ── Init ───────────────────────────────────────────────────────────────────
 function init() {
   var today = new Date().toISOString().split('T')[0];
   Promise.all([
     qdb(CDB,{sorts:[{property:'Date',direction:'ascending'}],filter:{property:'Date',date:{on_or_after:today}}}),
-    qdb(VDB), qdb(ODB), qdb(XDB), qdb(RUDB)
+    qdb(VDB), qdb(ODB), qdb(XDB),
+    qdb(RUDB,{page_size:100})
   ]).then(function(res){
     S.ev = res[0].results||[];
     S.vn = (res[1].results||[]).map(function(p){return{id:p.id,name:gt(p)};}).sort(function(a,b){return a.name.localeCompare(b.name);});
     S.og = (res[2].results||[]).map(function(p){return{id:p.id,name:gt(p)};}).sort(function(a,b){return a.name.localeCompare(b.name);});
     S.ct = (res[3].results||[]).map(function(p){return{id:p.id,name:gt(p)};}).sort(function(a,b){return a.name.localeCompare(b.name);});
+    S.ru = (res[4].results||[]).map(function(p){
+      var sub=gp(p,'Sub-item'), par=gp(p,'Parent item');
+      var parentId=Array.isArray(par)&&par.length?par[0].id:null;
+      var subIds=Array.isArray(sub)?sub.map(function(s){return s.id;}):[];
+      return {id:p.id,name:gt(p),parentId:parentId,subIds:subIds};
+    });
+    buildRuTree();
     S.ru = (res[4].results||[]).map(function(p){return{id:p.id,name:gt(p)};});
     updB();
     go('dashboard');
@@ -534,9 +534,9 @@ function editEv(pid){
   h+='<div class="fg single"><div class="field sw"><label>Venue (leave blank to keep existing)</label><input type="text" id="ev-s" placeholder="Search venues..." autocomplete="off" /><div class="sr" id="ev-r" style="display:none;"></div><div id="ev-sel"></div></div></div>';
   h+='<div class="fg"><div class="field sw"><label>Organization</label><input type="text" id="eo-s" placeholder="Search orgs..." autocomplete="off" /><div class="sr" id="eo-r" style="display:none;"></div><div id="eo-sel"></div></div>';
   h+='<div class="field sw"><label>Contact</label><input type="text" id="ex-s" placeholder="Search contacts..." autocomplete="off" /><div class="sr" id="ex-r" style="display:none;"></div><div id="ex-sel"></div></div></div>';
-  h+='<div style="margin-bottom:13px;"><div style="font-size:11px;color:var(--gray);margin-bottom:6px;">Participating choirs</div><div class="choir-grid">';
-  CHOIRS.forEach(function(c){h+='<div class="choir-tog'+(chl.indexOf(c)>=0?' on':'')+'" data-choir="'+esc(c)+'" onclick="togCh(this)">'+esc(c)+'</div>';});
-  h+='</div></div>';
+  h+='<div style="margin-bottom:13px;"><div style="font-size:11px;color:var(--gray);margin-bottom:6px;">Participating choirs</div>';
+  h+=buildChoirPicker(null,curChoirList);
+  h+='</div>';
   h+='<div class="fg single"><div class="field"><label>Notes (appended to page body)</label><textarea id="en" placeholder="Additional notes..."></textarea></div></div>';
   h+='<input type="hidden" id="epid" value="'+pid+'" />';
   h+='<button class="btn primary" style="width:100%;padding:11px;" onclick="saveEv()">Save to Notion</button>';
@@ -656,13 +656,9 @@ function saveEv(){
   if(S.eRels.vn&&S.eRels.vn.id) props['Venue']={relation:[{id:S.eRels.vn.id}]};
   if(S.eRels.og&&S.eRels.og.id) props['Organization']={relation:[{id:S.eRels.og.id}]};
   if(S.eRels.ct&&S.eRels.ct.id) props['Contact']={relation:[{id:S.eRels.ct.id}]};
-  var sc=[];
-  document.querySelectorAll('#content .choir-tog.on').forEach(function(el){sc.push(el.getAttribute('data-choir'));});
-  if(sc.length) {
-    props['Participating Choirs']={multi_select:sc.map(function(c){return{name:c};})};
-    var ruIds2=getReceivingUpdates(sc);
-    if(ruIds2.length) props['Receiving Updates']={relation:ruIds2};
-  }
+    var sel2=getSelectedRU();
+  if(sel2.ruIds.length) props['Receiving Updates']={relation:sel2.ruIds.map(function(id){return{id:id};})};
+  if(sel2.choirNames.length) props['Participating Choirs']={multi_select:sel2.choirNames.map(function(c){return{name:c};})};
   var chain=nr('/pages/'+pageId,'PATCH',{properties:props});
   if(nv) chain=chain.then(function(){return nr('/blocks/'+pageId+'/children','PATCH',{children:[{object:'block',type:'paragraph',paragraph:{rich_text:[{type:'text',text:{content:nv}}]}}]});});
   chain.then(function(){return refresh();}).then(function(){
@@ -738,9 +734,9 @@ function buildForm(){
   if(needV) h+='<div class="fg single"><div class="field sw"><label>Venue</label><input type="text" id="fv-s" placeholder="Search venues..." autocomplete="off" /><div class="sr" id="fv-r" style="display:none;"></div><div id="fv-sel"></div></div></div>';
   if(needCon) h+='<div class="fg"><div class="field sw"><label>Organization</label><input type="text" id="fo-s" placeholder="Search orgs..." autocomplete="off" /><div class="sr" id="fo-r" style="display:none;"></div><div id="fo-sel"></div></div><div class="field sw"><label>Contact</label><input type="text" id="fx-s" placeholder="Search contacts..." autocomplete="off" /><div class="sr" id="fx-r" style="display:none;"></div><div id="fx-sel"></div></div></div>';
   if(needCh){
-    h+='<div style="margin-bottom:13px;"><div style="font-size:11px;color:var(--gray);margin-bottom:4px;">'+(chOpt?'Participating choirs (optional)':'Participating choirs')+'</div><div class="choir-grid">';
-    CHOIRS.forEach(function(c){h+='<div class="choir-tog" data-choir="'+esc(c)+'" onclick="togCh(this)">'+esc(c)+'</div>';});
-    h+='</div></div>';
+    h+='<div style="margin-bottom:13px;"><div style="font-size:11px;color:var(--gray);margin-bottom:6px;">'+(chOpt?'Participating choirs (optional)':'Participating choirs')+'</div>';
+    h+=buildChoirPicker(S.intake?S.intake.org:null,[]);
+    h+='</div>';
   }
   if(needLog) h+='<div class="fg triple"><div class="field"><label>Call time</label><input type="time" id="fc" /></div><div class="field"><label>Performance time</label><input type="time" id="fp" /></div><div class="field"><label>Approx. dismissal</label><input type="time" id="fdis" /></div></div><div class="fg single"><div class="field"><label>Uniform</label><input type="text" id="fu" placeholder="e.g. Formal" /></div></div>';
   if(!isN&&!isC) h+='<div class="mod-row"><label class="mod-check"><input type="checkbox" id="fjosh" onchange="S.josh=this.checked"> On Josh\'s Calendar</label></div>';
@@ -782,13 +778,9 @@ function subForm(){
   if(perf) props['Performance Time']={rich_text:[{text:{content:ft(perf)}}]};
   if(dis) props['Approx. Dismissal']={rich_text:[{text:{content:ft(dis)}}]};
   if(uni) props['Uniform']={rich_text:[{text:{content:uni}}]};
-  var sc=[];
-  document.querySelectorAll('#content .choir-tog.on').forEach(function(el){sc.push(el.getAttribute('data-choir'));});
-  if(sc.length) {
-    props['Participating Choirs']={multi_select:sc.map(function(c){return{name:c};})};
-    var ruIds=getReceivingUpdates(sc);
-    if(ruIds.length) props['Receiving Updates']={relation:ruIds};
-  }
+  var selX=getSelectedRU();
+  if(selX.ruIds.length) props['Receiving Updates']={relation:selX.ruIds.map(function(id){return{id:id};})};
+  if(selX.choirNames.length) props['Participating Choirs']={multi_select:selX.choirNames.map(function(c){return{name:c};})};
   if(S.eRels.vn&&S.eRels.vn.id) props['Venue']={relation:[{id:S.eRels.vn.id}]};
   if(S.eRels.og&&S.eRels.og.id) props['Organization']={relation:[{id:S.eRels.og.id}]};
   if(S.eRels.ct&&S.eRels.ct.id) props['Contact']={relation:[{id:S.eRels.ct.id}]};
@@ -825,63 +817,229 @@ function sendChat(){
   var text=inp.value.trim();if(!text)return;
   inp.value='';
   pushMsg('user','<p>'+esc(text)+'</p>');
+  pushMsg('assistant','<p>The chat assistant is not active in this version. Fill in the form above and save — you can always update missing info from the Gap Report.</p>');
   renderChat();
-  var msgs=document.getElementById('cms');
-  if(msgs){var t=document.createElement('div');t.id='typing-ind';t.className='msg assistant';t.innerHTML='<div class="msg-av">&#9679;</div><div class="msg-bub"><div class="typing"><div class="td"></div><div class="td"></div><div class="td"></div></div></div>';msgs.appendChild(t);msgs.scrollTop=msgs.scrollHeight;}
-  var ctx=S.ev.slice(0,15).map(function(p){return{name:gt(p),date:gp(p,'date'),status:gp(p,'Status'),missing:miss(p)};});
-  fetch('/.netlify/functions/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,system:'You are an assistant for Camden Zetty at ICC. Be direct and concise.\n\nUpcoming events: '+JSON.stringify(ctx),messages:S.chatH.map(function(m){return{role:m.role,content:m.html||''};})})})
-    .then(function(r){return r.json();})
-    .then(function(d){
-      var ti=document.getElementById('typing-ind');if(ti)ti.remove();
-      var reply=d.error?('Error: '+d.error.message):(d.content||[]).map(function(c){return c.text||'';}).join('');
-      pushMsg('assistant','<p>'+esc(reply).replace(/\n/g,'<br>')+'</p>');
-      renderChat();
-    }).catch(function(e){
-      var ti=document.getElementById('typing-ind');if(ti)ti.remove();
-      pushMsg('assistant','<p>Chat requires an Anthropic API key. Set ANTHROPIC_API_KEY in Netlify environment variables.</p>');
-      renderChat();
-    });
 }
 
-// ── Take Note Brief ───────────────────────────────────────────────────────
 function showTN(){
   var today=new Date().toISOString().split('T')[0];
-  setC('<div style="max-width:740px;">'+
+  setC('<div style="max-width:700px;">'+
     '<div class="ph" style="margin-bottom:4px;">Take Note Brief</div>'+
-    '<div class="ps" style="margin-bottom:20px;">Generate the "Take Note, Music Makers &amp; Beyond" staff email</div>'+
+    '<div class="ps" style="margin-bottom:20px;">Generates the Weekly Updates page in Notion and downloads the formatted Word doc</div>'+
     '<div class="card">'+
-      '<div class="fg"><div class="field"><label>Publish date (Thursday)</label><input type="date" id="tn-date" value="'+today+'" style="padding:8px 11px;border:1.5px solid var(--border);border-radius:var(--r);font-size:13px;outline:none;width:100%;background:var(--gray-ll);" /><div style="font-size:11px;color:var(--gray);margin-top:4px;">Thursday send date &mdash; report covers 6 weeks from this date</div></div>'+
-      '<div class="field"><label>Response deadline</label><input type="text" id="tn-dl" placeholder="e.g. EOD Tuesday, April 22nd" style="padding:8px 11px;border:1.5px solid var(--border);border-radius:var(--r);font-size:13px;outline:none;width:100%;background:var(--gray-ll);" /></div></div>'+
-      '<div class="field" style="margin-bottom:14px;"><label>Additional breaks &amp; schedule changes (optional)</label><textarea id="tn-br" placeholder="Manual additions..." style="padding:8px 11px;border:1.5px solid var(--border);border-radius:var(--r);font-size:13px;outline:none;width:100%;min-height:72px;resize:vertical;background:var(--gray-ll);"></textarea></div>'+
-      '<button class="btn primary" style="width:100%;padding:11px;" id="tn-btn" onclick="genTN()">Generate Take Note Brief</button>'+
-    '</div><div id="tn-out"></div></div>');
+      '<div class="fg"><div class="field"><label>Publish date (Thursday)</label>'+
+      '<input type="date" id="tn-date" value="'+today+'" style="padding:8px 11px;border:1.5px solid var(--border);border-radius:var(--r);font-size:13px;outline:none;width:100%;background:var(--gray-ll);" />'+
+      '<div style="font-size:11px;color:var(--gray);margin-top:4px;">Thursday send date &mdash; Breaks window: this Thursday only. Events window: 6 weeks.</div></div>'+
+      '<div class="field"><label>Response deadline</label>'+
+      '<input type="text" id="tn-dl" placeholder="e.g. EOD Monday, April 28th" style="padding:8px 11px;border:1.5px solid var(--border);border-radius:var(--r);font-size:13px;outline:none;width:100%;background:var(--gray-ll);" /></div></div>'+
+      '<div class="field" style="margin-bottom:14px;"><label>Additional breaks &amp; schedule changes (optional)</label>'+
+      '<textarea id="tn-br" placeholder="Any manual additions beyond what is in Notion..." style="padding:8px 11px;border:1.5px solid var(--border);border-radius:var(--r);font-size:13px;outline:none;width:100%;min-height:72px;resize:vertical;background:var(--gray-ll);"></textarea></div>'+
+      '<button class="btn primary" style="width:100%;padding:11px;" id="tn-btn" onclick="genTN()">Generate &amp; Download Word Doc</button>'+
+    '</div><div id="tn-status"></div></div>');
   setT('Take Note Brief');setA('');
 }
 
-function genTN(){
-  var btn=document.getElementById('tn-btn');btn.innerHTML='<span class="spinner"></span> Generating...';btn.disabled=true;
-  var dv=document.getElementById('tn-date').value,dl=document.getElementById('tn-dl').value.trim(),xb=document.getElementById('tn-br').value.trim();
-  var sd=dv?new Date(dv+'T12:00:00'):new Date(),ed=new Date(sd.getTime()+42*24*60*60*1000);
-  var eDate=fdl(dv||new Date().toISOString().split('T')[0]),dlText=dl||'EOD Monday before publish';
-  var up=S.ev.filter(function(p){var d=gp(p,'date');if(!d)return false;var dt=new Date(d+'T12:00:00');return dt>=sd&&dt<=ed;});
-  var notices=up.filter(function(p){var t=gp(p,'Tags');return typeof t==='string'&&t.indexOf('Staff Notice')>=0;});
-  var calAdj=up.filter(function(p){var t=gp(p,'Tags');return typeof t==='string'&&t.indexOf('Calendar Addition / Adjustment')>=0;});
-  var evs=up.filter(function(p){var t=gp(p,'Tags');return typeof t!=='string'||(t.indexOf('Staff Notice')<0&&t.indexOf('Calendar Addition / Adjustment')<0);});
-  var eData=evs.map(function(p){return{name:gt(p),date:gp(p,'date'),formattedDate:fd(gp(p,'date')),callTime:gp(p,'Call Time'),perfTime:gp(p,'Performance Time'),dismissal:gp(p,'Approx. Dismissal'),uniform:gp(p,'Uniform'),choirs:gp(p,'Participating Choirs'),tags:gp(p,'Tags')};});
-  var prompt='Generate the full "Take Note, Music Makers & Beyond" weekly ICC staff email for publish date '+eDate+'.\n\nRESPONSE DEADLINE: '+dlText+'\nSTAFF NOTICES: '+(notices.length?notices.map(function(p){return gt(p);}).join(', '):'None')+'\nCALENDAR ADJUSTMENTS: '+(calAdj.length?calAdj.map(function(p){return gt(p);}).join(', '):'None')+(xb?'\nAdditional breaks: '+xb:'')+'\n\nEVENTS:\n'+JSON.stringify(eData,null,2)+'\n\nFORMAT:\nHi Team!\n\nI hope your week is off to a wonderful start. [Include staff notices naturally.] Please review and respond with changes by '+dlText+'.\n\nThank you!\n\n**Breaks & Schedule Changes:**\n[List or "None this week."]\n\n**Upcoming Events:**\n**[CHOIR]:**\n**[Event] | [Date]**\nLocation: ...\nUniform: ...\nCall Time: ...\nPerformance: ...\n[Notes]\n\nCHOIR ORDER: AACC Prep & Concert, AACC Youth Chorale, CICC Concert & Descant, Foundations, ICC Preparatory Choirs, ICC Beginning Level Choirs, ICC Lyric Choirs, ICC IndyVoice, ICC Master Chorale, Jubilate\n\nRules: Omit empty fields. End with **Marketing, Development & Admin:** placeholder.';
-  fetch('/.netlify/functions/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1200,system:'You are helping Camden Zetty at ICC prepare the weekly staff email.',messages:[{role:'user',content:prompt}]})})
-    .then(function(r){return r.json();})
-    .then(function(d){
-      if(d.error) throw new Error(d.error.message||'API error');
-      var result=(d.content||[]).map(function(c){return c.text||'';}).join('');
-      window._tn=result;
-      document.getElementById('tn-out').innerHTML='<div class="card" style="margin-top:14px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border);"><div><div class="card-title" style="margin-bottom:2px;">Take Note, Music Makers &amp; Beyond</div><div style="font-size:12px;color:var(--gray);">Publish '+eDate+' &middot; '+evs.length+' events</div></div><div style="display:flex;gap:8px;"><button class="btn" onclick="navigator.clipboard.writeText(window._tn||\'\').then(function(){var b=event.target;b.textContent=\'Copied!\';setTimeout(function(){b.textContent=\'Copy text\';},2000)})">Copy text</button><button class="btn primary" onclick="genTN()">Regenerate</button></div></div><div class="tn-out">'+result.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\*(.*?)\*/g,'<em>$1</em>')+'</div></div>';
-      btn.textContent='Generate Take Note Brief';btn.disabled=false;
-    }).catch(function(e){
-      document.getElementById('tn-out').innerHTML='<div class="card" style="margin-top:14px;color:var(--red);">Claude API unavailable. Set ANTHROPIC_API_KEY in Netlify environment variables, or copy the prompt below and paste it into claude.ai.<br><br><textarea style="width:100%;height:200px;font-size:12px;border:1px solid var(--border);border-radius:var(--r);padding:8px;">'+esc(prompt)+'</textarea></div>';
-      btn.textContent='Generate Take Note Brief';btn.disabled=false;
-    });
+function fmtDateBrief(d) {
+  if (!d) return '';
+  var months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var dt = new Date(d+'T12:00:00');
+  var day = dt.getDate();
+  var suffix = day===1||day===21||day===31?'st':day===2||day===22?'nd':day===3||day===23?'rd':'th';
+  return months[dt.getMonth()]+' '+day+suffix;
 }
+
+function genTN() {
+  var btn=document.getElementById('tn-btn');
+  btn.innerHTML='<span class="spinner"></span> Building...';btn.disabled=true;
+  var statusEl=document.getElementById('tn-status');
+  statusEl.innerHTML='<div style="margin-top:14px;font-size:13px;color:var(--gray);">Querying Notion...</div>';
+
+  var dv=document.getElementById('tn-date').value;
+  var dl=document.getElementById('tn-dl').value.trim();
+  var xb=document.getElementById('tn-br').value.trim();
+  if (!dv) { alert('Please select a publish date.'); btn.textContent='Generate & Download Word Doc'; btn.disabled=false; return; }
+
+  var pubDate = new Date(dv+'T12:00:00');
+  var thursdayEnd = new Date(pubDate.getTime() + 7*24*60*60*1000); // breaks: Thu to Thu
+  var sixWeekEnd = new Date(pubDate.getTime() + 42*24*60*60*1000); // events: 6 weeks
+
+  // Step 1: Query breaks (Calendar Addition / Adjustment) - Thu to Thu only
+  var breaksFilter = {
+    and: [
+      {property:'Date',date:{on_or_after:dv}},
+      {property:'Date',date:{before:thursdayEnd.toISOString().split('T')[0]}},
+      {property:'Tags',multi_select:{contains:'Calendar Addition / Adjustment'}}
+    ]
+  };
+
+  // Step 2: Query events for each brief section
+  var eventFilter = {
+    and: [
+      {property:'Date',date:{on_or_after:dv}},
+      {property:'Date',date:{on_or_before:sixWeekEnd.toISOString().split('T')[0]}}
+    ]
+  };
+
+  Promise.all([
+    qdb(CDB,{filter:breaksFilter,sorts:[{property:'Date',direction:'ascending'}]}),
+    qdb(CDB,{filter:eventFilter,sorts:[{property:'Date',direction:'ascending'}],page_size:100})
+  ]).then(function(res) {
+    var breaksEvents = res[0].results||[];
+    var allEvents = res[1].results||[];
+    statusEl.innerHTML='<div style="margin-top:14px;font-size:13px;color:var(--gray);">Fetching venue addresses...</div>';
+
+    // Get venue IDs we need
+    var venueIds = {};
+    allEvents.forEach(function(p) {
+      var vrel = gp(p,'Venue');
+      if (Array.isArray(vrel) && vrel.length) venueIds[vrel[0].id] = true;
+    });
+    var venueIdList = Object.keys(venueIds);
+
+    // Fetch venue details
+    var venuePromises = venueIdList.map(function(vid) {
+      return nr('/pages/'+vid,'GET',null).then(function(vp) {
+        return {id:vid, name:gt(vp), address: gp(vp,'Address')||''};
+      }).catch(function(){ return {id:vid,name:'',address:''}; });
+    });
+
+    return Promise.all(venuePromises).then(function(venues) {
+      var venueMap = {};
+      venues.forEach(function(v){ venueMap[v.id]=v; });
+
+      // Fetch page body blocks for events with body content
+      statusEl.innerHTML='<div style="margin-top:14px;font-size:13px;color:var(--gray);">Fetching event notes...</div>';
+      var bodyPromises = allEvents.map(function(p) {
+        return nr('/blocks/'+p.id+'/children','GET',null).then(function(r){
+          return {id:p.id, blocks:(r.results||[]).filter(function(b){return b.type==='paragraph'||b.type==='bulleted_list_item'||b.type==='numbered_list_item'||b.type==='heading_1'||b.type==='heading_2'||b.type==='heading_3';})};
+        }).catch(function(){ return {id:p.id,blocks:[]}; });
+      });
+
+      return Promise.all(bodyPromises).then(function(bodyResults) {
+        var bodyMap = {};
+        bodyResults.forEach(function(b){ bodyMap[b.id]=b.blocks; });
+        return {venueMap:venueMap, bodyMap:bodyMap};
+      });
+    }).then(function(maps) {
+      statusEl.innerHTML='<div style="margin-top:14px;font-size:13px;color:var(--gray);">Assembling brief...</div>';
+
+      // Build breaks section
+      var breaksSection = [];
+      breaksEvents.forEach(function(p) {
+        var ruRel = gp(p,'Receiving Updates');
+        var ruIds = Array.isArray(ruRel) ? ruRel.map(function(r){return r.id;}) : [];
+        if (ruIds.length === 0) {
+          // No RU set, just add with generic label
+          breaksSection.push({choirName:'', entryName:gt(p)});
+          return;
+        }
+        ruIds.forEach(function(rid) {
+          var ruRec = S.ru.find(function(r){return r.id===rid;});
+          if (ruRec) breaksSection.push({choirName:ruRec.name, entryName:gt(p)});
+        });
+      });
+      // Add manual extra breaks
+      if (xb) breaksSection.push({choirName:'', entryName:xb});
+
+      // Build choir sections
+      var choirSections = BRIEF_SECTIONS.map(function(sec) {
+        // Find events that have any of this section's RU IDs in their Receiving Updates
+        var secEvents = allEvents.filter(function(p) {
+          var ruRel = gp(p,'Receiving Updates');
+          if (!Array.isArray(ruRel) || !ruRel.length) return false;
+          var eventRuIds = ruRel.map(function(r){return r.id;});
+          return sec.ruIds.some(function(id){ return eventRuIds.indexOf(id)>=0; });
+        });
+
+        var events = secEvents.map(function(p) {
+          var vrel = gp(p,'Venue');
+          var vid = Array.isArray(vrel)&&vrel.length ? vrel[0].id : null;
+          var venue = vid ? maps.venueMap[vid] : null;
+          return {
+            name: gt(p),
+            formattedDate: fmtDateBrief(gp(p,'date')),
+            venueName: venue ? venue.name : '',
+            venueAddress: venue ? venue.address : '',
+            uniform: gp(p,'Uniform')||'',
+            callTime: gp(p,'Call Time')||'',
+            perfTime: gp(p,'Performance Time')||'',
+            dismissal: gp(p,'Approx. Dismissal')||'',
+            bodyBlocks: maps.bodyMap[p.id]||[]
+          };
+        });
+
+        // Sort by date
+        events.sort(function(a,b){ return a.formattedDate.localeCompare(b.formattedDate); });
+        return {label:sec.label, events:events};
+      });
+
+      // Create Notion Weekly Updates page
+      statusEl.innerHTML='<div style="margin-top:14px;font-size:13px;color:var(--gray);">Creating Notion Weekly Updates page...</div>';
+      var pageTitle = 'Take Note | '+fmtDateBrief(dv);
+      createNotionBriefPage(pageTitle, dv, sixWeekEnd.toISOString().split('T')[0], BRIEF_SECTIONS);
+
+      // Generate Word doc
+      statusEl.innerHTML='<div style="margin-top:14px;font-size:13px;color:var(--gray);">Generating Word doc...</div>';
+      return fetch('/.netlify/functions/server',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          action:'generate_doc',
+          notionKey:NK,
+          payload:{
+            publishDate:dv,
+            deadline:dl||'EOD Monday',
+            breaksSection:breaksSection,
+            choirSections:choirSections
+          }
+        })
+      });
+    }).then(function(resp) {
+      if (!resp.ok) return resp.text().then(function(t){ throw new Error(t); });
+      return resp.blob();
+    }).then(function(blob) {
+      var mn=['January','February','March','April','May','June','July','August','September','October','November','December'];
+      var pd=new Date(dv+'T12:00:00');
+      var fname='TNMB_-_'+mn[pd.getMonth()]+'_'+pd.getDate()+'_'+pd.getFullYear()+'.docx';
+      var url=URL.createObjectURL(blob);
+      var a=document.createElement('a');
+      a.href=url;a.download=fname;document.body.appendChild(a);a.click();
+      document.body.removeChild(a);URL.revokeObjectURL(url);
+      btn.textContent='Generate & Download Word Doc';btn.disabled=false;
+      statusEl.innerHTML='<div style="margin-top:14px;padding:14px;background:var(--green-l);border-radius:var(--r);color:var(--green);font-size:13px;font-weight:600;">&#10003; Word doc downloaded &mdash; '+fname+'<br><span style="font-weight:400;color:#444;">Weekly Updates page created in Notion.</span></div>';
+    });
+  }).catch(function(e) {
+    btn.textContent='Generate & Download Word Doc';btn.disabled=false;
+    statusEl.innerHTML='<div style="margin-top:14px;padding:14px;background:var(--red-l);border-radius:var(--r);color:var(--red);font-size:13px;">Error: '+esc(e.message)+'</div>';
+  });
+}
+
+function createNotionBriefPage(title, fromDate, toDate, sections) {
+  // Create page in Weekly Updates DB (377dbead-cb20-45a6-9400-31ecc45aaac6)
+  var WUDB = '377dbead-cb20-45a6-9400-31ecc45aaac6';
+  nr('/pages','POST',{
+    parent:{database_id:WUDB},
+    properties:{'Push Date':{title:[{text:{content:title}}]},'Status':{status:{name:'In progress'}}}
+  }).then(function(newPage) {
+    if (!newPage.id) return;
+    // Add content blocks
+    var blocks = [];
+    sections.forEach(function(sec) {
+      // Section heading
+      blocks.push({object:'block',type:'heading_2',heading_2:{rich_text:[{type:'text',text:{content:sec.label}}]}});
+      blocks.push({object:'block',type:'paragraph',paragraph:{rich_text:[{type:'text',text:{content:'Schedule Overview:'},annotations:{bold:true}}]}});
+    });
+    // Add blocks in batches of 100
+    var batches = [];
+    for (var i=0;i<blocks.length;i+=100) batches.push(blocks.slice(i,i+100));
+    return batches.reduce(function(p,batch) {
+      return p.then(function() {
+        return nr('/blocks/'+newPage.id+'/children','PATCH',{children:batch});
+      });
+    }, Promise.resolve());
+  }).catch(function(e){ console.warn('Notion page creation failed:', e.message); });
+}
+
 
 // ── DB Browser ────────────────────────────────────────────────────────────
 function showDB(k){
@@ -898,6 +1056,171 @@ function showDB(k){
 }
 
 // ── Boot ──────────────────────────────────────────────────────────────────
+// Known org IDs (Level 1)
+var ORG_IDS = {
+  icc: '1760f18a-00ec-803c-a5d7-f683ec9f0df3',
+  aacc: '1760f18a-00ec-8026-989f-f7eae160e3ee',
+  cicc: '1760f18a-00ec-80a6-aae1-e7a26f2fff51'
+};
+
+function buildChoirPicker(orgKey, selectedIds) {
+  // orgKey: 'icc', 'aacc', 'cicc', or null (show all)
+  // selectedIds: array of RU record IDs already selected
+  var sel = selectedIds || [];
+  var html = '<div class="choir-picker">';
+  
+  var orgs = orgKey ? [orgKey] : ['icc','aacc','cicc'];
+  orgs.forEach(function(org) {
+    var choirs = S.ruTree[org] || [];
+    if (!choirs.length) return;
+    choirs.forEach(function(l2) {
+      var isSelected = sel.indexOf(l2.id) >= 0;
+      var hasChildren = l2.children && l2.children.length > 0;
+      // Check if any children are selected
+      var anyChildSel = hasChildren && l2.children.some(function(c){ return sel.indexOf(c.id) >= 0; });
+      
+      html += '<div class="choir-group" style="margin-bottom:8px;">';
+      // Level 2 toggle
+      html += '<div class="choir-tog'+(isSelected||anyChildSel?' on':'')+'" data-ruid="'+l2.id+'" data-runame="'+esc(l2.name)+'" onclick="togRU(this)" style="margin-bottom:'+(hasChildren?'4px':'0')+';">'+esc(l2.name)+'</div>';
+      // Level 3 sub-chips
+      if (hasChildren) {
+        html += '<div class="choir-subs" style="display:flex;flex-wrap:wrap;gap:4px;margin-left:12px;">';
+        l2.children.forEach(function(l3) {
+          var isChildSel = sel.indexOf(l3.id) >= 0;
+          // Show short label (strip parent name if present)
+          var label = l3.name.replace(l2.name+' | ','').replace(l2.name+' ','');
+          if (label === l3.name) {
+            // Try to shorten common patterns
+            label = l3.name.replace('ICC Performing Arts Center','ICC PAC')
+              .replace('- MONDAY',' Mon').replace('- WEDNESDAY',' Wed');
+          }
+          html += '<div class="choir-sub-tog'+(isChildSel?' on':'')+'" data-ruid="'+l3.id+'" data-runame="'+esc(l3.name)+'" data-parentid="'+l2.id+'" onclick="togRUSub(this)">'+esc(label)+'</div>';
+        });
+        html += '</div>';
+      }
+      html += '</div>';
+    });
+  });
+  html += '</div>';
+  return html;
+}
+
+function togRU(el) {
+  el.classList.toggle('on');
+  var rid = el.getAttribute('data-ruid');
+  // When parent is toggled, clear any child selections for this parent
+  var subs = document.querySelectorAll('[data-parentid="'+rid+'"]');
+  subs.forEach(function(s){ s.classList.remove('on'); });
+}
+
+function togRUSub(el) {
+  el.classList.toggle('on');
+  var parentId = el.getAttribute('data-parentid');
+  // Deselect the parent toggle if any sub is selected
+  var parent = document.querySelector('[data-ruid="'+parentId+'"].choir-tog');
+  if (parent) parent.classList.remove('on');
+  // If deselecting last child and none selected, do nothing
+}
+
+function getSelectedRU() {
+  // Returns {ruIds: [...], participatingChoirs: [...]}
+  // Apply logic: if any Level 3 selected under a parent, exclude the Level 2
+  var ruIds = [];
+  var choirNames = [];
+  
+  // Get all selected Level 2 (parent) toggles
+  document.querySelectorAll('#content .choir-tog.on').forEach(function(el) {
+    var rid = el.getAttribute('data-ruid');
+    var name = el.getAttribute('data-runame');
+    if (rid && name) {
+      // Check if any of its children are selected
+      var childSel = document.querySelectorAll('[data-parentid="'+rid+'"].on');
+      if (childSel.length === 0) {
+        // No children selected — add the parent
+        ruIds.push(rid);
+        var c = ruToChoir(name);
+        if (c && choirNames.indexOf(c) < 0) choirNames.push(c);
+      }
+    }
+  });
+  
+  // Get all selected Level 3 sub-toggles
+  document.querySelectorAll('#content .choir-sub-tog.on').forEach(function(el) {
+    var rid = el.getAttribute('data-ruid');
+    var name = el.getAttribute('data-runame');
+    if (rid && name) {
+      ruIds.push(rid);
+      var c = ruToChoir(name);
+      if (c && choirNames.indexOf(c) < 0) choirNames.push(c);
+    }
+  });
+  
+  return {ruIds: ruIds, choirNames: choirNames};
+}
+
+
+function buildRuTree() {
+  // Build lookup map
+  var byId = {};
+  S.ru.forEach(function(r){ byId[r.id] = r; });
+  
+  // For each org, find its Level 2 children, and their Level 3 children
+  ['icc','aacc','cicc'].forEach(function(org) {
+    var orgRec = byId[ORG_IDS[org]];
+    if (!orgRec) return;
+    S.ruTree[org] = orgRec.subIds.map(function(l2id) {
+      var l2 = byId[l2id];
+      if (!l2) return null;
+      return {
+        id: l2.id,
+        name: l2.name,
+        children: l2.subIds.map(function(l3id) {
+          var l3 = byId[l3id];
+          return l3 ? {id: l3.id, name: l3.name} : null;
+        }).filter(Boolean)
+      };
+    }).filter(Boolean);
+  });
+}
+
+// Map Receiving Updates record name to Participating Choirs multi-select value
+var RU_TO_CHOIR = {
+  'Preparatory Choir': 'Prep',
+  'Beginning Level Choir': 'BLC',
+  'Lyric Choir': 'Lyric',
+  'Indy Voice': 'IndyVoice',
+  'Master Chorale': 'Master Chorale',
+  'Jubilate': 'Jubilate',
+  'Foundations': 'Foundations',
+  'Early Childhood': 'Foundations',
+  'Alumni Choir': 'Alumni Choir',
+  'Neighborhood Choir Academy': 'Neighborhood Choir Academy',
+  'AACC Preparatory Choir': 'AAACC Prep',
+  'AACC Concert Choir': 'AACC Concert',
+  'Anderson Area Youth Chorale': 'AACC Youth Chorale',
+  'CICC Preparatory Choir': 'Prep',
+  'CICC Concert Choir': 'CICC Concert',
+  'CICC Descant Choir': 'CICC Descant',
+  'Indianapolis Indiana Children\'s Choir': 'Prep',
+  'Anderson Area Children\'s Choir': 'AAACC Prep',
+  'Columbus Indiana Children\'s Choir': 'CICC Concert'
+};
+
+// Location-specific sub-records map to parent choir name
+function ruToChoir(ruName) {
+  // Try direct match first
+  if (RU_TO_CHOIR[ruName]) return RU_TO_CHOIR[ruName];
+  // For location-specific names, try to match parent-level choir
+  var lower = ruName.toLowerCase();
+  if (lower.indexOf('lyric') >= 0) return 'Lyric';
+  if (lower.indexOf('indyvoice') >= 0 || lower.indexOf('indy voice') >= 0) return 'IndyVoice';
+  if (lower.indexOf('preparatory') >= 0) return 'Prep';
+  if (lower.indexOf('beginning level') >= 0) return 'BLC';
+  if (lower.indexOf('master chorale') >= 0) return 'Master Chorale';
+  return ruName;
+}
+
+
 init();
 </script>
 </body>
