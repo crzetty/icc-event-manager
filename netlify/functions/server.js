@@ -75,9 +75,11 @@ function run(text, opts) {
   return '<w:r><w:rPr>'+rpr+'</w:rPr><w:t'+sp+'>'+t+'</w:t></w:r>';
 }
 
-function hr() {
-  // Horizontal rule
-  return '<w:p><w:pPr><w:pBdr><w:bottom w:val="single" w:sz="6" w:space="1" w:color="CCCCCC"/></w:pBdr><w:spacing w:after="80"/></w:pPr></w:p>';
+function hr(thick) {
+  // Horizontal rule - thick for major sections, thin for choir separators
+  var sz = thick ? '12' : '6';
+  var col = thick ? 'AAAAAA' : 'CCCCCC';
+  return '<w:p><w:pPr><w:pBdr><w:bottom w:val="single" w:sz="'+sz+'" w:space="1" w:color="'+col+'"/></w:pBdr><w:spacing w:after="80"/></w:pPr></w:p>';
 }
 
 function p(runs, after) {
@@ -125,19 +127,23 @@ function blocksToXml(blocks) {
 function buildDocx(d) {
   const pub = new Date(d.publishDate+'T12:00:00');
   const mn = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  const fileName = 'TNMB_-_'+mn[pub.getMonth()]+'_'+pub.getDate()+'_'+pub.getFullYear()+'.docx';
+  const fileName = 'TNMB - '+mn[pub.getMonth()]+' '+pub.getDate()+' '+pub.getFullYear()+'.docx';
   const dl = d.deadline || 'EOD Monday';
   const body = [];
 
+  // Greeting
   body.push(p([run('Hi Team!')]));
   body.push(ep());
   body.push(p([run('I hope your week is off to a wonderful start. '),run('Please take the time to review',{bold:true}),run(' and '),run('respond with any changes or additions',{bold:true}),run(' '),run('by ',{bold:true}),run(dl,{bold:true}),run('.',{bold:true})]));
   body.push(ep());
   body.push(p([run('Thank you for your help in making these happen!')]));
+  // Thick HR with one clean space each side before Breaks heading
+  body.push(ep());
+  body.push(hr(true));
   body.push(ep());
 
-  body.push(p([run('Breaks & Schedule Changes:',{bold:true,size:36,color:'#000000'})],120));
-  body.push(ep());
+  // Breaks & Schedule Changes — no blank line between heading and items
+  body.push(p([run('Breaks & Schedule Changes:',{bold:true,size:36,color:'#000000'})],40));
   if (!d.breaksSection||d.breaksSection.length===0) {
     body.push(p([run('No Changes This Week',{italic:true,color:'#212121'})]));
   } else {
@@ -146,37 +152,49 @@ function buildDocx(d) {
       body.push(p([run(item.choirName,{color:col}),run(' | ',{color:col}),run(item.entryName,{italic:true,color:col})]));
     });
   }
+  // Thick HR with one clean space each side before Upcoming Events
   body.push(ep());
-  body.push(hr());
+  body.push(hr(true));
+  body.push(ep());
 
-  body.push(p([run('Upcoming Events:',{bold:true,size:36,color:'#000000'})],120));
+  // Upcoming Events heading — no blank line before first choir section
+  body.push(p([run('Upcoming Events:',{bold:true,size:36,color:'#000000'})],40));
 
   (d.choirSections||[]).forEach(sec => {
-    body.push(hr());
+    // Thin HR before each choir section (no blank line before heading)
+    body.push(hr(false));
     const col = cc(sec.label);
-    body.push(p([run(sec.label+':',{bold:true,size:28,color:col})],60));
+    // Choir heading — no blank line between heading and first event
+    body.push(p([run(sec.label+':',{bold:true,size:28,color:col})],40));
     if (!sec.events||sec.events.length===0) {
       body.push(p([run('No Upcoming Events',{italic:true,color:'#212121'})]));
     } else {
       sec.events.forEach((ev,i) => {
-        if (i>0) body.push(p([run(' ')], 40));
-        body.push(p([run(ev.name+' | '+ev.formattedDate,{bold:true})],60));
-        if (ev.venueName) body.push(p([run('Location: '+(ev.venueName+(ev.venueAddress?' | '+ev.venueAddress:'')))],40));
-        if (ev.uniform) body.push(p([run('Uniform: '+ev.uniform)],40));
-        if (ev.callTime) body.push(p([run('Call Time: '+ev.callTime)],40));
-        if (ev.perfTime) body.push(p([run('Performance: '+ev.perfTime)],40));
-        if (ev.dismissal) body.push(p([run('Approx. Dismissal: '+ev.dismissal)],40));
+        // Single blank line between events within a section
+        if (i>0) body.push(ep());
+        body.push(p([run(ev.name+' | '+ev.formattedDate,{bold:true})],40));
+        if (ev.venueName) body.push(p([run('Location: '+(ev.venueName+(ev.venueAddress?' | '+ev.venueAddress:'')))],30));
+        if (ev.uniform) body.push(p([run('Uniform: '+ev.uniform)],30));
+        if (ev.callTime) body.push(p([run('Call Time: '+ev.callTime)],30));
+        if (ev.perfTime) body.push(p([run('Performance: '+ev.perfTime)],30));
+        if (ev.dismissal) body.push(p([run('Approx. Dismissal: '+ev.dismissal)],30));
         if (ev.bodyBlocks&&ev.bodyBlocks.length>0) body.push(blocksToXml(ev.bodyBlocks));
       });
     }
   });
 
+  // Thick HR with one clean space each side before Marketing
   body.push(ep());
-  body.push(p([run('Marketing, Development & Admin:',{bold:true,size:28,color:'#000000'})],120));
+  body.push(hr(true));
   body.push(ep());
-  body.push(p([run('Topic:',{bold:true,size:21,color:'#212121'})],40));
-  body.push(p([run('Topic Heading',{bold:true,size:21,color:'#212121'})],40));
+  // Marketing heading — no blank line before first topic
+  body.push(p([run('Marketing, Development & Admin:',{bold:true,size:28,color:'#000000'})],40));
+  body.push(p([run('Topic:',{bold:true,size:21,color:'#212121'})],30));
+  body.push(p([run('Topic Heading',{bold:true,size:21,color:'#212121'})],30));
   body.push(p([run('Body Copy',{size:20,color:'#212121'})],80));
+  // Thick HR with one clean space each side before Thank you
+  body.push(ep());
+  body.push(hr(true));
   body.push(ep());
   body.push(p([run('Thank you!')]));
   body.push(ep());

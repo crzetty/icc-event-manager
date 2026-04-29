@@ -260,6 +260,11 @@ body{font-family:'Open Sans',sans-serif;background:var(--gray-ll);color:#1a1a2e;
 .section-link{font-size:11px;color:var(--blue);cursor:pointer;background:none;border:none;font-family:'Open Sans',sans-serif;padding:0;}
 .section-link:hover{text-decoration:underline;}
 .tag-chip{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;background:var(--gray-l);color:var(--gray);margin:2px;}
+
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:500;display:flex;align-items:center;justify-content:center;}
+.modal{background:white;border-radius:var(--r);padding:24px;width:480px;max-width:90vw;box-shadow:0 8px 32px rgba(0,0,0,.15);}
+.modal-title{font-family:'Lora',serif;font-size:17px;color:var(--navy);margin-bottom:16px;}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;}
 </style>
 </head>
 <body>
@@ -476,7 +481,7 @@ function tagColor(tags) {
 
 function spill(s) {
   var m={'in progress':'sp-progress','details set':'sp-set','perspective':'sp-perspective','requested':'sp-requested','complete':'sp-complete','calendar event passed':'sp-complete'};
-  return '<span class="sp '+(m[(s||'').toLowerCase()]||'sp-perspective')+'">'+esc(s||'&mdash;')+'</span>';
+  return '<span class="sp '+(m[(s||'').toLowerCase()]||'sp-perspective')+'">'+esc(s||'—')+'</span>';
 }
 
 function render(html) { document.getElementById('content').innerHTML = html; }
@@ -652,9 +657,9 @@ function showEvents(f) {
   var rows = ev.map(function(p) {
     var m=missingFields(p), sy=getSyncs(p);
     var sh=sy.map(function(s){return '<span class="syn '+(s.done?'done':'pending')+'" onclick="togSync(event,\''+p.id+'\',\''+s.key+'\','+s.done+')">'+s.label+'</span>';}).join('');
-    return '<tr onclick="showDetail(\''+p.id+'\')" style="cursor:pointer"><td style="font-weight:600;color:var(--navy)">'+esc(gtitle(p))+'</td><td style="font-size:12px;color:var(--gray)">'+fmtDate(gp(p,'date'))+'</td><td>'+spill(gp(p,'Status'))+'</td><td style="font-size:12px">'+esc(gp(p,'Call Time')||'&mdash;')+'</td><td style="font-size:12px">'+esc(gp(p,'Uniform')||'&mdash;')+'</td><td>'+(m.length?'<span style="color:var(--red);font-size:12px;font-weight:600">&#9888; '+m.length+'</span>':'<span style="color:var(--green);font-size:12px">&#10003;</span>')+'</td><td><div class="sync-row">'+sh+'</div></td></tr>';
+    return '<tr onclick="showDetail(\''+p.id+'\')" style="cursor:pointer"><td style="font-weight:600;color:var(--navy)">'+esc(gtitle(p))+'</td><td style="font-size:12px;color:var(--gray)">'+fmtDate(gp(p,'date'))+'</td><td>'+spill(gp(p,'Status'))+'</td><td style="font-size:12px">'+esc(gp(p,'Call Time')||'—')+'</td><td style="font-size:12px">'+esc(gp(p,'Uniform')||'—')+'</td><td><div class="sync-row">'+sh+'</div></td></tr>';
   }).join('');
-  var body = ev.length ? '<div class="card" style="padding:0;overflow:hidden"><table class="tbl"><thead><tr><th>Entry</th><th>Date</th><th>Status</th><th>Call Time</th><th>Performance</th><th>Dismissal</th><th>Uniform</th><th>Missing</th><th>Sync</th></tr></thead><tbody>'+rows+'</tbody></table></div>' : '<div class="empty"><div class="empty-ic">&#128203;</div><p>No upcoming entries in this category.</p></div>';
+  var body = ev.length ? '<div class="card" style="padding:0;overflow:hidden"><table class="tbl"><thead><tr><th>Entry</th><th>Date</th><th>Status</th><th>Call Time</th><th>Performance</th><th>Dismissal</th><th>Uniform</th><th>Sync</th></tr></thead><tbody>'+rows+'</tbody></table></div>' : '<div class="empty"><div class="empty-ic">&#128203;</div><p>No upcoming entries in this category.</p></div>';
   page(lbls[f]||'All Entries', '<button class="btn" onclick="refresh().then(function(){showEvents('+JSON.stringify(f)+')})">&#8635; Refresh</button><button class="btn primary" onclick="go(\'intake\')">+ Add Entry</button>', body);
 }
 
@@ -930,8 +935,19 @@ function togSyncCard(pid, key, cur) {
 // CHOIR PICKER
 // ═══════════════════════════════════════════════════════════════
 function buildChoirPicker(orgKey, selectedRuIds) {
+  // Check if tree is loaded - if not, show loading state and re-render when ready
+  var totalChoirs = S.ruTree.icc.length + S.ruTree.aacc.length + S.ruTree.cicc.length;
+  if (totalChoirs === 0) {
+    setTimeout(function() {
+      var container = document.querySelector('.choir-picker-wrap');
+      if (container) {
+        container.innerHTML = buildChoirPicker(orgKey, selectedRuIds);
+      }
+    }, 500);
+    return '<div class="choir-picker-wrap"><div style="padding:8px;font-size:12px;color:var(--gray)"><span class="spinner dk"></span> Loading choirs...</div></div>';
+  }
   var sel = selectedRuIds || [];
-  var html = '<div class="choir-picker">';
+  var html = '<div class="choir-picker-wrap"><div class="choir-picker">';
   var orgs = orgKey ? [orgKey] : ['icc','aacc','cicc'];
   orgs.forEach(function(org) {
     var choirs = S.ruTree[org] || [];
@@ -951,7 +967,7 @@ function buildChoirPicker(orgKey, selectedRuIds) {
       html += '</div>';
     });
   });
-  html += '</div>';
+  html += '</div></div>';
   return html;
 }
 
@@ -1023,14 +1039,9 @@ function attachSearch(inId, resId, selId, key) {
     nd.textContent='+ Create new: "'+q+'"';
     nd.addEventListener('mousedown',function(e){
       e.preventDefault();
-      S.intake.rels[key]={id:null,name:q,isNew:true};
-      inp.value=''; rEl.style.display='none';
-      var sel=document.getElementById(selId); if(!sel) return;
-      sel.innerHTML='';
-      var tag=document.createElement('span'); tag.className='sel-tag'; tag.style.background='var(--amber-l)'; tag.style.borderColor='var(--amber)'; tag.style.color='#a67a1a'; tag.textContent='New: '+q+' ';
-      var x=document.createElement('button'); x.className='sel-tag-x'; x.style.color='#a67a1a'; x.textContent='\u00d7';
-      x.onclick=function(){delete S.intake.rels[key];sel.innerHTML='';};
-      tag.appendChild(x); sel.appendChild(tag);
+      rEl.style.display='none';
+      inp.value='';
+      showCreateNew(key, q);
     });
     rEl.appendChild(nd); rEl.style.display='block';
   });
@@ -1325,11 +1336,35 @@ function showDbRecord(key, pid) {
   nFetch('/pages/'+pid,'GET',null).then(function(p) {
     var ps=p.properties||{}, html='';
     html+='<div class="db-detail"><div class="db-detail-name">'+esc(gtitle(p))+'</div>';
+    // Collect relation IDs to resolve
+    var relIds = [];
+    Object.keys(ps).forEach(function(k) {
+      if (ps[k].type==='relation') {
+        var rel = ps[k].relation||[];
+        rel.forEach(function(r){ if(relIds.indexOf(r.id)<0) relIds.push(r.id); });
+      }
+    });
+    // Try to resolve from cached data first
+    var relNames = {};
+    relIds.forEach(function(id) {
+      var found = S.vn.find(function(x){return x.id===id;}) ||
+                  S.og.find(function(x){return x.id===id;}) ||
+                  S.ct.find(function(x){return x.id===id;}) ||
+                  S.ev.find(function(p2){return p2.id===id;});
+      if (found) relNames[id] = found.name || gtitle(found);
+    });
     Object.keys(ps).forEach(function(k) {
       if(ps[k].type==='title') return;
       var v=gp(p,k);
       if(!v||Array.isArray(v)&&!v.length) return;
-      var display=Array.isArray(v)?v.length+' linked':typeof v==='boolean'?(v?'Yes':'No'):String(v);
+      var display;
+      if (Array.isArray(v) && v.length) {
+        // Try to show names instead of "N linked"
+        var names = v.map(function(r){ return relNames[r.id] || null; }).filter(Boolean);
+        display = names.length ? names.join(', ') : v.length+' linked';
+      } else {
+        display = typeof v==='boolean'?(v?'Yes':'No'):String(v);
+      }
       html+='<div class="db-prop"><span class="db-prop-key">'+esc(k)+'</span><span class="db-prop-val">'+esc(display)+'</span></div>';
     });
     html+='</div>';
@@ -1340,6 +1375,108 @@ function showDbRecord(key, pid) {
 // ═══════════════════════════════════════════════════════════════
 // BOOT
 // ═══════════════════════════════════════════════════════════════
+// Create new record forms
+var _createNewCallback = null;
+
+function showCreateNew(key, prefill) {
+  var titles = {vn:'New Venue', og:'New Organization', ct:'New Collaborator'};
+  var title = titles[key] || 'New Record';
+  var formHtml = '';
+  if (key==='vn') {
+    formHtml = '<div class="detail-grid single"><div class="field"><label>Venue Name *</label><input type="text" id="cn-name" value="'+esc(prefill||'')+'" /></div></div>'+
+      '<div class="detail-grid"><div class="field"><label>Address</label><input type="text" id="cn-address" placeholder="e.g. 650 N Meridian St, Indianapolis, IN" /></div>'+
+      '<div class="field"><label>Venue Type</label><input type="text" id="cn-type" placeholder="e.g. Concert Hall" /></div></div>'+
+      '<div class="detail-grid single"><div class="field"><label>County</label><input type="text" id="cn-county" placeholder="e.g. Marion" /></div></div>';
+  } else if (key==='og') {
+    formHtml = '<div class="detail-grid single"><div class="field"><label>Organization Name *</label><input type="text" id="cn-name" value="'+esc(prefill||'')+'" /></div></div>'+
+      '<div class="detail-grid"><div class="field"><label>Industry</label><input type="text" id="cn-industry" placeholder="e.g. Performing Arts" /></div>'+
+      '<div class="field"><label>Website</label><input type="text" id="cn-website" placeholder="https://" /></div></div>';
+  } else if (key==='ct') {
+    formHtml = '<div class="detail-grid single"><div class="field"><label>Full Name *</label><input type="text" id="cn-name" value="'+esc(prefill||'')+'" /></div></div>'+
+      '<div class="detail-grid"><div class="field"><label>Job Title</label><input type="text" id="cn-title" placeholder="e.g. Executive Director" /></div>'+
+      '<div class="field"><label>Email</label><input type="email" id="cn-email" placeholder="email@example.com" /></div></div>'+
+      '<div class="detail-grid single"><div class="field"><label>Phone</label><input type="tel" id="cn-phone" placeholder="+1 317 555 0100" /></div></div>';
+  }
+  var overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.id = 'cn-overlay';
+  overlay.innerHTML = '<div class="modal"><div class="modal-title">'+esc(title)+'</div>'+formHtml+
+    '<div class="modal-actions"><button class="btn" onclick="closeCreateNew()">Cancel</button>'+
+    '<button class="btn primary" onclick="submitCreateNew(\x27'+key+'\x27)">Create in Notion</button></div></div>';
+  document.body.appendChild(overlay);
+  setTimeout(function(){ var n=document.getElementById('cn-name'); if(n)n.focus(); }, 50);
+}
+
+function closeCreateNew() {
+  var o=document.getElementById('cn-overlay'); if(o) o.remove();
+}
+
+function submitCreateNew(key) {
+  var nameEl=document.getElementById('cn-name');
+  var name=(nameEl?nameEl.value:'').trim();
+  if(!name){alert('Name is required.');return;}
+  var btn=document.querySelector('#cn-overlay .btn.primary');
+  if(btn){btn.innerHTML='<span class="spinner"></span> Creating...';btn.disabled=true;}
+  
+  var dbIds={vn:VDB, og:ODB, ct:XDB};
+  var props = {};
+  
+  if(key==='vn'){
+    props['Name']={title:[{text:{content:name}}]};
+    var addr=(document.getElementById('cn-address')||{}).value||'';
+    var vtype=(document.getElementById('cn-type')||{}).value||'';
+    var county=(document.getElementById('cn-county')||{}).value||'';
+    if(addr)props['Address']={rich_text:[{text:{content:addr}}]};
+    if(vtype)props['Venue Type']={select:{name:vtype}};
+    if(county)props['County']={rich_text:[{text:{content:county}}]};
+  } else if(key==='og'){
+    props['Name']={title:[{text:{content:name}}]};
+    var ind=(document.getElementById('cn-industry')||{}).value||'';
+    var web=(document.getElementById('cn-website')||{}).value||'';
+    if(ind)props['Industry']={rich_text:[{text:{content:ind}}]};
+    if(web)props['Website']={url:web};
+  } else if(key==='ct'){
+    props['Name']={title:[{text:{content:name}}]};
+    var jtitle=(document.getElementById('cn-title')||{}).value||'';
+    var email=(document.getElementById('cn-email')||{}).value||'';
+    var phone=(document.getElementById('cn-phone')||{}).value||'';
+    if(jtitle)props['Job Title']={rich_text:[{text:{content:jtitle}}]};
+    if(email)props['Email']={email:email};
+    if(phone)props['Phone']={phone_number:phone};
+  }
+  
+  nFetch('/pages','POST',{parent:{database_id:dbIds[key]},properties:props})
+    .then(function(np){
+      // Add to cached list
+      var newRec={id:np.id,name:name};
+      S[key].push(newRec);
+      S[key].sort(function(a,b){return a.name.localeCompare(b.name);});
+      // Set as selected in the current form
+      closeCreateNew();
+      // Find the selection container and populate it
+      var selIdMap={vn:'fvsel',og:'fosel',ct:'fxsel'};
+      var inIdMap={vn:'fvs',og:'fos',ct:'fxs'};
+      var selId=selIdMap[key], inId=inIdMap[key];
+      // Also check edit form IDs
+      if(!document.getElementById(selId)){selId=key==='vn'?'evsel':key==='og'?'eosel':'excel'; inId=key==='vn'?'evs':key==='og'?'eos':'exs';}
+      S.intake.rels[key]={id:np.id,name:name,isNew:false};
+      var inp=document.getElementById(inId); if(inp)inp.value='';
+      var sel=document.getElementById(selId);
+      if(sel){
+        sel.innerHTML='';
+        var tag=document.createElement('span'); tag.className='sel-tag'; tag.textContent=name+' ';
+        var x=document.createElement('button'); x.className='sel-tag-x'; x.textContent='×';
+        x.onclick=function(){delete S.intake.rels[key];sel.innerHTML='';};
+        tag.appendChild(x); sel.appendChild(tag);
+      }
+    })
+    .catch(function(e){
+      if(btn){btn.textContent='Create in Notion';btn.disabled=false;}
+      alert('Error creating record: '+e.message);
+    });
+}
+
+
 init();
 </script>
 </body>
