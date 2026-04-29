@@ -75,6 +75,11 @@ function run(text, opts) {
   return '<w:r><w:rPr>'+rpr+'</w:rPr><w:t'+sp+'>'+t+'</w:t></w:r>';
 }
 
+function hr() {
+  // Horizontal rule
+  return '<w:p><w:pPr><w:pBdr><w:bottom w:val="single" w:sz="6" w:space="1" w:color="CCCCCC"/></w:pBdr><w:spacing w:after="80"/></w:pPr></w:p>';
+}
+
 function p(runs, after) {
   const a = after !== undefined ? after : 80;
   return '<w:p><w:pPr><w:spacing w:after="'+a+'"/></w:pPr>'+(Array.isArray(runs)?runs.join(''):runs||'')+'</w:p>';
@@ -142,19 +147,19 @@ function buildDocx(d) {
     });
   }
   body.push(ep());
+  body.push(hr());
 
   body.push(p([run('Upcoming Events:',{bold:true,size:36,color:'#000000'})],120));
 
   (d.choirSections||[]).forEach(sec => {
-    body.push(ep());
+    body.push(hr());
     const col = cc(sec.label);
-    body.push(p([run(sec.label+':',{bold:true,size:28,color:col})],120));
-    body.push(ep());
+    body.push(p([run(sec.label+':',{bold:true,size:28,color:col})],60));
     if (!sec.events||sec.events.length===0) {
       body.push(p([run('No Upcoming Events',{italic:true,color:'#212121'})]));
     } else {
       sec.events.forEach((ev,i) => {
-        if (i>0) body.push(ep());
+        if (i>0) body.push(p([run(' ')], 40));
         body.push(p([run(ev.name+' | '+ev.formattedDate,{bold:true})],60));
         if (ev.venueName) body.push(p([run('Location: '+(ev.venueName+(ev.venueAddress?' | '+ev.venueAddress:'')))],40));
         if (ev.uniform) body.push(p([run('Uniform: '+ev.uniform)],40));

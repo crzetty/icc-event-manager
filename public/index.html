@@ -265,7 +265,7 @@ body{font-family:'Open Sans',sans-serif;background:var(--gray-ll);color:#1a1a2e;
 <body>
 <header class="hdr">
   <div class="hdr-brand">
-    <div class="org">Indianapolis Children's Choir</div>
+    <div class="org">Indianapolis Children’s Choir</div>
     <div class="sub">Event Manager</div>
   </div>
   <nav class="hdr-nav">
@@ -599,7 +599,7 @@ function showDash() {
 
   var gRows = gaps.slice(0,4).map(function(p) {
     var d=daysUntil(gp(p,'date')), m=missingFields(p);
-    return '<div class="dr" onclick="showEdit(\''+p.id+'\')"><div class="dd" style="background:'+(d<=7?'var(--red)':'var(--blue)')+'"></div><div style="flex:1;min-width:0"><div class="dn">'+esc(gtitle(p))+'</div><div style="font-size:11px;color:var(--gray);margin-top:1px">'+esc(m.join(' &middot; '))+'</div></div><div class="ddt">'+(d===0?'Today':d===1?'Tomorrow':d+' days')+'</div></div>';
+    return '<div class="dr" onclick="showEdit(\''+p.id+'\')"><div class="dd" style="background:'+(d<=7?'var(--red)':'var(--blue)')+'"></div><div style="flex:1;min-width:0"><div class="dn">'+esc(gtitle(p))+'</div><div style="font-size:11px;color:var(--gray);margin-top:1px">'+m.join(' · ')+'</div></div><div class="ddt">'+(d===0?'Today':d===1?'Tomorrow':d+' days')+'</div></div>';
   }).join('');
 
   var html = '';
@@ -612,7 +612,7 @@ function showDash() {
 
   html += '<div class="stat-grid">';
   html += '<div class="sc blue"><div class="sl">Total upcoming</div><div class="sv">'+up.length+'</div><div class="ss">'+wk.length+' this week</div></div>';
-  html += '<div class="sc '+gCard+' clickable" onclick="go(\'gaps\')"><div class="sl">Missing info</div><div class="sv">'+gaps.length+'</div><div class="ss">'+(urgGaps.length>0?urgGaps.length+' within 14 days':gaps.length===0?'All complete':'Check gap report')+'</div></div>';
+  html += '<div class="sc '+gCard+' clickable" onclick="go(\'gaps\')"><div class="sl">Missing Info</div><div class="sv">'+gaps.length+'</div><div class="ss">'+(urgGaps.length>0?urgGaps.length+' within 14 days':gaps.length===0?'All complete':'Check gap report')+'</div></div>';
   html += '<div class="sc '+sCard+' clickable" onclick="go(\'sync\')"><div class="sl">Pending syncs</div><div class="sv">'+ps.length+'</div><div class="ss">Click to review &amp; update</div></div>';
   html += '<div class="sc"><div class="sl">This week</div><div class="sv">'+wk.length+'</div><div class="ss">Next 7 days</div></div>';
   html += '</div>';
@@ -625,7 +625,7 @@ function showDash() {
 
   html += '<div class="dash-grid">';
   html += '<div class="dp"><div class="dp-hdr"><div class="dp-title">Upcoming</div><button class="dp-link" onclick="go(\'events\')">View all &rarr;</button></div>'+(upRows||'<div style="padding:16px;text-align:center;color:var(--gray);font-size:13px">No upcoming entries</div>')+'</div>';
-  html += '<div class="dp"><div class="dp-hdr"><div class="dp-title">Missing info</div><button class="dp-link" onclick="go(\'gaps\')">Full report &rarr;</button></div>'+(gRows||'<div style="padding:12px 15px;text-align:center;color:var(--green);font-size:13px">&#10003; All complete</div>')+'</div>';
+  html += '<div class="dp"><div class="dp-hdr"><div class="dp-title">Missing Info</div><button class="dp-link" onclick="go(\'gaps\')">Full report &rarr;</button></div>'+(gRows||'<div style="padding:12px 15px;text-align:center;color:var(--green);font-size:13px">&#10003; All complete</div>')+'</div>';
   html += '</div>';
 
   page('Dashboard', '<button class="btn" onclick="refresh().then(showDash)">&#8635; Refresh</button>', html);
@@ -654,7 +654,7 @@ function showEvents(f) {
     var sh=sy.map(function(s){return '<span class="syn '+(s.done?'done':'pending')+'" onclick="togSync(event,\''+p.id+'\',\''+s.key+'\','+s.done+')">'+s.label+'</span>';}).join('');
     return '<tr onclick="showDetail(\''+p.id+'\')" style="cursor:pointer"><td style="font-weight:600;color:var(--navy)">'+esc(gtitle(p))+'</td><td style="font-size:12px;color:var(--gray)">'+fmtDate(gp(p,'date'))+'</td><td>'+spill(gp(p,'Status'))+'</td><td style="font-size:12px">'+esc(gp(p,'Call Time')||'&mdash;')+'</td><td style="font-size:12px">'+esc(gp(p,'Uniform')||'&mdash;')+'</td><td>'+(m.length?'<span style="color:var(--red);font-size:12px;font-weight:600">&#9888; '+m.length+'</span>':'<span style="color:var(--green);font-size:12px">&#10003;</span>')+'</td><td><div class="sync-row">'+sh+'</div></td></tr>';
   }).join('');
-  var body = ev.length ? '<div class="card" style="padding:0;overflow:hidden"><table class="tbl"><thead><tr><th>Entry</th><th>Date</th><th>Status</th><th>Call Time</th><th>Uniform</th><th>Missing</th><th>Sync</th></tr></thead><tbody>'+rows+'</tbody></table></div>' : '<div class="empty"><div class="empty-ic">&#128203;</div><p>No upcoming entries in this category.</p></div>';
+  var body = ev.length ? '<div class="card" style="padding:0;overflow:hidden"><table class="tbl"><thead><tr><th>Entry</th><th>Date</th><th>Status</th><th>Call Time</th><th>Performance</th><th>Dismissal</th><th>Uniform</th><th>Missing</th><th>Sync</th></tr></thead><tbody>'+rows+'</tbody></table></div>' : '<div class="empty"><div class="empty-ic">&#128203;</div><p>No upcoming entries in this category.</p></div>';
   page(lbls[f]||'All Entries', '<button class="btn" onclick="refresh().then(function(){showEvents('+JSON.stringify(f)+')})">&#8635; Refresh</button><button class="btn primary" onclick="go(\'intake\')">+ Add Entry</button>', body);
 }
 
@@ -892,21 +892,18 @@ function showSync() {
       body += '<div class="sync-card-hdr"><div><div class="sync-event-name" onclick="showDetail(\''+p.id+'\')">'+esc(gtitle(p))+'</div><div class="sync-event-date">'+fmtDate(gp(p,'date'))+'</div></div>';
       body += '<button class="btn sm" onclick="showEdit(\''+p.id+'\')">&#9998; Edit</button></div>';
 
-      // Details inline
-      var details = [];
-      if (call) details.push('Call '+esc(call));
-      if (perf) details.push('Performance '+esc(perf));
-      if (dis) details.push('Dismissal '+esc(dis));
-      if (uni) details.push('Uniform: '+esc(uni));
-      if (choirs.length) details.push('Choirs: '+esc(choirs.join(', ')));
-
-      if (details.length) {
-        body += '<div class="sync-details">'+details.map(function(d){return'<span class="sync-detail-item">'+d+'</span>';}).join('')+'</div>';
-      } else {
-        body += '<div class="sync-details"><span class="sync-detail-item" style="color:var(--amber)">Review &amp; Update</span></div>';
-      }
-
-      // Pending sync toggles
+      // Details inline — always shown
+      body += '<div class="sync-details">';
+      if (call) body += '<span class="sync-detail-item"><strong>Call:</strong> '+esc(call)+'</span>';
+      if (perf) body += '<span class="sync-detail-item"><strong>Performance:</strong> '+esc(perf)+'</span>';
+      if (dis) body += '<span class="sync-detail-item"><strong>Dismissal:</strong> '+esc(dis)+'</span>';
+      if (uni) body += '<span class="sync-detail-item"><strong>Uniform:</strong> '+esc(uni)+'</span>';
+      var vRel2=gp(p,'Venue'), vid2=Array.isArray(vRel2)&&vRel2.length?vRel2[0].id:null;
+      var vObj2=vid2?S.vn.find(function(v){return v.id===vid2;}):null;
+      if (vObj2) body += '<span class="sync-detail-item"><strong>Venue:</strong> '+esc(vObj2.name)+'</span>';
+      if (choirs.length) body += '<span class="sync-detail-item"><strong>Choirs:</strong> '+esc(choirs.join(', '))+'</span>';
+      if (!call&&!perf&&!dis&&!uni&&!choirs.length&&!vObj2) body += '<span class="sync-detail-item" style="color:var(--gray)">Review &amp; Update</span>';
+      body += '</div>';
       body += '<div class="sync-toggles">';
       getSyncs(p).forEach(function(s) {
         body += '<button class="sync-tog-btn '+(s.done?'done':'pending')+'" onclick="togSyncCard(\''+p.id+'\',\''+s.key+'\','+s.done+')">'+
@@ -1050,107 +1047,120 @@ var iType=null, iSub=null, iOrg=null, iSt='';
 
 function showIntake() {
   S.intake={type:null,sub:null,org:null,rels:{},status:'',paid:false,inkind:false,josh:false};
-  S.msgs=[{role:'assistant',html:'<p>Hi Camden! What are you adding?</p>'+typeGrid()}];
-  renderIntake();
+  iType=null; iSub=null; iOrg=null; iSt='';
+  renderTypeSelect();
+}
+
+function renderTypeSelect() {
+  page('Add Entry', '', '<div style="max-width:640px"><div class="ph" style="margin-bottom:3px">Add Entry</div><div class="ps">Select the type of entry</div>'+typeGrid()+'</div>');
 }
 
 function typeGrid() {
-  return '<div class="type-grid">'+
-    '<button class="tc" onclick="selType(\'perf\')"><div class="tc-ic">&#127925;</div><div class="tc-t">Performance / Concert</div><div class="tc-d">Collaborative or season event</div></button>'+
-    '<button class="tc" onclick="selType(\'edu\')"><div class="tc-ic">&#127891;</div><div class="tc-t">Education &amp; Outreach</div><div class="tc-d">Program or outreach event</div></button>'+
-    '<button class="tc" onclick="selType(\'bldg\')"><div class="tc-ic">&#127970;</div><div class="tc-t">Building / Meeting</div><div class="tc-d">Partner, resident, or internal</div></button>'+
-    '<button class="tc" onclick="selType(\'cal\')"><div class="tc-ic">&#128197;</div><div class="tc-t">Calendar Notice</div><div class="tc-d">Break, cancellation, or change</div></button>'+
-    '<button class="tc" onclick="selType(\'notice\')"><div class="tc-ic">&#128226;</div><div class="tc-t">Staff Notice</div><div class="tc-d">Building or operational update</div></button>'+
-  '</div>';
+  var types = [
+    {id:'perf', ic:'&#127925;', t:'Performance / Concert', d:'Collaborative or season event'},
+    {id:'edu',  ic:'&#127891;', t:'Education &amp; Outreach', d:'Program or outreach event'},
+    {id:'bldg', ic:'&#127970;', t:'Building / Meeting', d:'Partner, resident, or internal'},
+    {id:'cal',  ic:'&#128197;', t:'Calendar Notice', d:'Break, cancellation, or change'},
+    {id:'notice',ic:'&#128226;',t:'Staff Notice', d:'Building or operational update'}
+  ];
+  return '<div class="type-grid">'+types.map(function(t){
+    return '<button class="tc" onclick="selType(\x27'+t.id+'\x27)"><div class="tc-ic">'+t.ic+'</div><div class="tc-t">'+t.t+'</div><div class="tc-d">'+t.d+'</div></button>';
+  }).join('')+'</div>';
 }
 
 function selType(type) {
   iType=type; iSub=null; iOrg=null;
-  var labels={perf:'Performance / Concert',edu:'Education & Outreach',bldg:'Building / Meeting',cal:'Calendar Notice',notice:'Staff Notice'};
-  S.msgs.push({role:'user',html:'<p>'+labels[type]+'</p>'});
-  if (type==='perf') {
-    S.msgs.push({role:'assistant',html:'<p>Which organization?</p><div class="sub-grid">'+
-      '<button class="sc2" onclick="selSub(\'icc\')"><div class="sc2-t">ICC</div><div class="sc2-d">Indianapolis Children\'s Choir</div></button>'+
-      '<button class="sc2" onclick="selSub(\'aacc\')"><div class="sc2-t">AACC</div><div class="sc2-d">Anderson Area Children\'s Choir</div></button>'+
-      '<button class="sc2" onclick="selSub(\'cicc\')"><div class="sc2-t">CICC</div><div class="sc2-d">Central Indiana Children\'s Choir</div></button>'+
-    '</div>'});
-  } else if (type==='bldg') {
-    S.msgs.push({role:'assistant',html:'<p>What kind of building event?</p><div class="sub-grid">'+
-      '<button class="sc2" onclick="selSub(\'partner\')"><div class="sc2-t">Partner</div><div class="sc2-d">External group using our space</div></button>'+
-      '<button class="sc2" onclick="selSub(\'resident\')"><div class="sc2-t">Resident</div><div class="sc2-d">Recurring resident meeting</div></button>'+
-      '<button class="sc2" onclick="selSub(\'org-bldg\')"><div class="sc2-t">Organizational</div><div class="sc2-d">Internal ICC event or meeting</div></button>'+
-    '</div>'});
-  } else {
-    iSub='default';
-    S.msgs.push({role:'assistant',html:buildEntryForm()});
-  }
-  renderIntake();
-  if (iSub==='default') setTimeout(attachIntakeSearch, 100);
+  if (type==='perf') renderSubSelect('perf');
+  else if (type==='bldg') renderSubSelect('bldg');
+  else { iSub='default'; renderEntryForm(); }
+}
+
+function renderSubSelect(type) {
+  var isPerf = type==='perf';
+  var title = isPerf?'Performance / Concert':'Building / Meeting';
+  var prompt = isPerf?'Which organization?':'What kind of building event?';
+  var subs = isPerf ? [
+    {id:'icc',      t:'ICC',          d:'Indianapolis Children’s Choir'},
+    {id:'aacc',     t:'AACC',         d:'Anderson Area Children’s Choir'},
+    {id:'cicc',     t:'CICC',         d:'Central Indiana Children’s Choir'}
+  ] : [
+    {id:'partner',  t:'Partner',      d:'External group using our space'},
+    {id:'resident', t:'Resident',     d:'Resident meeting or event'},
+    {id:'org-bldg', t:'Organizational',d:'Internal ICC event or meeting'}
+  ];
+  var btns = subs.map(function(s){
+    return '<button class="sc2" onclick="selSub(\x27'+s.id+'\x27)"><div class="sc2-t">'+s.t+'</div><div class="sc2-d">'+s.d+'</div></button>';
+  }).join('');
+  page('Add Entry', '<button class="btn" onclick="renderTypeSelect()">&#8592; Back</button>',
+    '<div style="max-width:640px"><div class="ph" style="margin-bottom:3px">'+title+'</div><div class="ps">'+prompt+'</div><div class="sub-grid">'+btns+'</div></div>');
 }
 
 function selSub(sub) {
-  iSub=sub;
-  iOrg=['icc','aacc','cicc'].indexOf(sub)>=0?sub:null;
-  var labels={icc:'ICC',aacc:'AACC',cicc:'CICC',partner:'Partner event',resident:'Resident meeting','org-bldg':'Organizational event'};
-  S.msgs.push({role:'user',html:'<p>'+(labels[sub]||sub)+'</p>'});
-  S.msgs.push({role:'assistant',html:buildEntryForm()});
-  renderIntake();
-  setTimeout(attachIntakeSearch, 100);
+  iSub=sub; iOrg=['icc','aacc','cicc'].indexOf(sub)>=0?sub:null;
+  renderEntryForm();
+}
+
+function renderEntryForm() {
+  var typeLabels={perf:'Performance / Concert',edu:'Education & Outreach',bldg:'Building / Meeting',cal:'Calendar Notice',notice:'Staff Notice'};
+  var subLabels={icc:'ICC',aacc:'AACC',cicc:'CICC',partner:'Partner',resident:'Resident','org-bldg':'Organizational'};
+  var subtitle=typeLabels[iType]||'';
+  if(iSub&&iSub!=='default') subtitle+=' — '+subLabels[iSub];
+  var backBtn=(iSub&&iSub!=='default')?'<button class="btn" onclick="renderSubSelect(\x27'+iType+'\x27)">&#8592; Back</button>':'<button class="btn" onclick="renderTypeSelect()">&#8592; Back</button>';
+  page('Add Entry', backBtn, '<div style="max-width:640px"><div class="ph" style="margin-bottom:3px">'+esc(subtitle)+'</div><div class="ps">Fill in what you know — edit anytime from the Gap Report</div><div class="card">'+buildEntryForm()+'</div></div>');
+  setTimeout(attachIntakeSearch, 80);
 }
 
 function buildEntryForm() {
-  var isP=iType==='perf', isE=iType==='edu', isB=iType==='bldg', isOB=isB&&iSub==='org-bldg', isC=iType==='cal', isN=iType==='notice';
-  var needLog=isP||isE, needCh=isP||isE||isC||isOB, chOpt=isE||isC||isOB, needV=isP||isE||isB, needCon=isP||isE||isB;
-  var h='<div>';
-  h+='<div class="detail-grid single"><div class="field"><label>Entry name *</label><input type="text" id="fn" placeholder="'+(isN?'e.g. PAC closure April 28':isC?'e.g. No Rehearsal — Boone Co. Prep':'e.g. NFFF Gala')+'" /></div></div>';
-  h+='<div class="detail-grid"><div class="field"><label>Date</label><input type="date" id="fd" /></div><div class="field"><label>Status</label><div class="status-row" id="fsr">'+STATS_LIST.map(function(s){return'<div class="status-tog" data-s="'+esc(s)+'" onclick="togFormSt(this)">'+esc(s)+'</div>';}).join('')+'</div></div></div>';
-  if (isP) h+='<div class="mod-row"><label class="mod-check"><input type="checkbox" id="fpaid" onchange="S.intake.paid=this.checked"> Paid</label><label class="mod-check"><input type="checkbox" id="finkind" onchange="S.intake.inkind=this.checked"> In-Kind</label></div>';
-  if (needV) h+='<div class="detail-grid single"><div class="field sw"><label>Venue</label><input type="text" id="fvs" placeholder="Search venues..." autocomplete="off" /><div class="sr" id="fvr" style="display:none"></div><div id="fvsel"></div></div></div>';
-  if (needCon) h+='<div class="detail-grid"><div class="field sw"><label>Organization</label><input type="text" id="fos" placeholder="Search orgs..." autocomplete="off" /><div class="sr" id="for" style="display:none"></div><div id="fosel"></div></div><div class="field sw"><label>Contact</label><input type="text" id="fxs" placeholder="Search contacts..." autocomplete="off" /><div class="sr" id="fxr" style="display:none"></div><div id="fxsel"></div></div></div>';
-  if (needCh) h+='<div style="margin-bottom:12px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--gray);margin-bottom:5px">'+(chOpt?'Participating choirs (optional)':'Participating choirs')+'</div>'+buildChoirPicker(iOrg,[])+'</div>';
-  if (needLog) h+='<div class="detail-grid triple"><div class="field"><label>Call time</label><input type="time" id="fc" /></div><div class="field"><label>Performance time</label><input type="time" id="fp" /></div><div class="field"><label>Approx. dismissal</label><input type="time" id="fdis" /></div></div><div class="detail-grid single"><div class="field"><label>Uniform</label><input type="text" id="fu" placeholder="e.g. Formal" /></div></div>';
-  if (!isN&&!isC) h+='<div class="mod-row"><label class="mod-check"><input type="checkbox" id="fjosh" onchange="S.intake.josh=this.checked"> On Josh\'s Calendar</label></div>';
+  var isP=iType==='perf',isE=iType==='edu',isB=iType==='bldg',isOB=isB&&iSub==='org-bldg',isC=iType==='cal',isN=iType==='notice';
+  var needLog=isP||isE,needCh=isP||isE||isC||isOB,chOpt=isE||isC||isOB,needV=isP||isE||isB,needCon=isP||isE||isB;
+  var autoStatus=isN||isC; if(autoStatus) iSt='Details Set';
+  var h='';
+  h+='<div class="detail-grid single"><div class="field"><label>Entry name *</label><input type="text" id="fn" placeholder="'+(isN?'e.g. PAC closure April 28':isC?'e.g. No Rehearsal':'e.g. NFFF Gala')+'" /></div></div>';
+  h+='<div class="detail-grid"><div class="field"><label>Date</label><input type="date" id="fd" /></div>'+(autoStatus?'':'<div class="field"><label>Status</label><div class="status-row" id="fsr">'+STATS_LIST.map(function(s){return'<div class="status-tog" data-s="'+esc(s)+'" onclick="togFormSt(this)">'+esc(s)+'</div>';}).join('')+'</div></div>')+'</div>';
+  if(isP) h+='<div class="mod-row"><label class="mod-check"><input type="checkbox" id="fpaid" onchange="S.intake.paid=this.checked"> Paid</label><label class="mod-check"><input type="checkbox" id="finkind" onchange="S.intake.inkind=this.checked"> In-Kind</label></div>';
+  if(needV) h+='<div class="detail-grid single"><div class="field sw"><label>Venue</label><input type="text" id="fvs" placeholder="Search venues..." autocomplete="off" /><div class="sr" id="fvr" style="display:none"></div><div id="fvsel"></div></div></div>';
+  if(needCon) h+='<div class="detail-grid"><div class="field sw"><label>Organization</label><input type="text" id="fos" placeholder="Search orgs..." autocomplete="off" /><div class="sr" id="for" style="display:none"></div><div id="fosel"></div></div><div class="field sw"><label>Contact</label><input type="text" id="fxs" placeholder="Search contacts..." autocomplete="off" /><div class="sr" id="fxr" style="display:none"></div><div id="fxsel"></div></div></div>';
+  if(needCh){h+='<div style="margin-bottom:12px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--gray);margin-bottom:5px">'+(chOpt?'Participating choirs (optional)':'Participating choirs *')+'</div>'+buildChoirPicker(iOrg,[])+'</div>';}
+  if(needLog) h+='<div class="detail-grid triple"><div class="field"><label>Call time</label><input type="time" id="fc" /></div><div class="field"><label>Performance time</label><input type="time" id="fp" /></div><div class="field"><label>Approx. dismissal</label><input type="time" id="fdis" /></div></div><div class="detail-grid single"><div class="field"><label>Uniform</label><input type="text" id="fu" placeholder="e.g. Formal" /></div></div>';
+  if(!isN&&!isC) h+='<div class="mod-row"><label class="mod-check"><input type="checkbox" id="fjosh" onchange="S.intake.josh=this.checked"> On Josh’s Calendar</label></div>';
   h+='<div class="detail-grid single"><div class="field"><label>Notes</label><textarea id="fnotes" placeholder="'+(isN?'Notice details...':isC?'What changed, which choirs affected...':'Food, drop-off, tickets, logistics...')+'"></textarea></div></div>';
-  h+='<button class="btn primary" style="width:100%;padding:10px" onclick="subEntry()">Add to Notion</button></div>';
+  h+='<button class="btn primary" style="width:100%;padding:10px" onclick="subEntry()">Add to Notion</button>';
   return h;
 }
 
-iSt = '';
-function togFormSt(btn) {
+iSt='';
+function togFormSt(btn){
   document.querySelectorAll('#fsr .status-tog').forEach(function(b){b.classList.remove('on');});
   btn.classList.add('on'); iSt=btn.getAttribute('data-s');
 }
-
-function attachIntakeSearch() {
+function attachIntakeSearch(){
   attachSearch('fvs','fvr','fvsel','vn');
   attachSearch('fos','for','fosel','og');
   attachSearch('fxs','fxr','fxsel','ct');
 }
 
-function subEntry() {
+function subEntry(){
   var nameEl=document.getElementById('fn'); var name=(nameEl?nameEl.value:'').trim();
-  if (!name) { alert('Entry name is required.'); return; }
+  if(!name){alert('Entry name is required.');return;}
   var btn=document.querySelector('[onclick="subEntry()"]');
   if(btn){btn.innerHTML='<span class="spinner"></span> Adding...';btn.disabled=true;}
-
   var date=(document.getElementById('fd')||{}).value||'';
   var call=(document.getElementById('fc')||{}).value||'';
   var perf=(document.getElementById('fp')||{}).value||'';
   var dis=(document.getElementById('fdis')||{}).value||'';
   var uni=((document.getElementById('fu')||{}).value||'').trim();
   var notes=((document.getElementById('fnotes')||{}).value||'').trim();
-
   var tags=[];
   if(iType==='perf'){if(iSub==='aacc')tags.push('Season Concerts & Events [AACC}');else if(iSub==='cicc')tags.push('Season Concerts & Events [CICC]');else tags.push('Collaborative Bookings');if(S.intake.paid)tags.push('Paid');if(S.intake.inkind)tags.push('In-Kind');}
   else if(iType==='edu')tags.push('Education & Outreach');
   else if(iType==='bldg'){if(iSub==='org-bldg')tags.push('Organizational Events');else tags.push(iSub==='resident'?'Resident Events & Meetings':'Partner Events & Meetings');}
   else if(iType==='cal')tags.push('Calendar Addition / Adjustment');
   else if(iType==='notice')tags.push('Staff Notice');
-
   var props={'Event':{title:[{text:{content:name}}]},'Update on ChorusConnection':{checkbox:false},'Update on Organizational Calendar':{checkbox:false},"Update on Josh's Calendar":{checkbox:false},"On Josh's Calendar":{checkbox:S.intake.josh||false}};
   if(date)props['Date']={date:{start:date}};
   if(tags.length)props['Tags']={multi_select:tags.map(function(t){return{name:t};})};
-  if(iSt)props['Status']={status:{name:iSt}};
+  var finalSt=iSt||(iType==='notice'||iType==='cal'?'Details Set':'');
+  if(finalSt)props['Status']={status:{name:finalSt}};
   if(call)props['Call Time']={rich_text:[{text:{content:fmtTime(call)}}]};
   if(perf)props['Performance Time']={rich_text:[{text:{content:fmtTime(perf)}}]};
   if(dis)props['Approx. Dismissal']={rich_text:[{text:{content:fmtTime(dis)}}]};
@@ -1158,33 +1168,17 @@ function subEntry() {
   if(S.intake.rels.vn&&S.intake.rels.vn.id)props['Venue']={relation:[{id:S.intake.rels.vn.id}]};
   if(S.intake.rels.og&&S.intake.rels.og.id)props['Organization']={relation:[{id:S.intake.rels.og.id}]};
   if(S.intake.rels.ct&&S.intake.rels.ct.id)props['Contact']={relation:[{id:S.intake.rels.ct.id}]};
-
   var sel=getSelectedRU();
   if(sel.ruIds.length)props['Receiving Updates']={relation:sel.ruIds.map(function(id){return{id:id};})};
   if(sel.choirNames.length)props['Participating Choirs']={multi_select:sel.choirNames.map(function(c){return{name:c};})};
-
   nFetch('/pages','POST',{parent:{database_id:CDB},properties:props})
     .then(function(np){if(notes)return nFetch('/blocks/'+np.id+'/children','PATCH',{children:[{object:'block',type:'paragraph',paragraph:{rich_text:[{type:'text',text:{content:notes}}]}}]});})
     .then(function(){return refresh();})
     .then(function(){
-      var miss2=[];if(!date)miss2.push('Date');if(!S.intake.rels.vn)miss2.push('Venue');if(!S.intake.rels.ct)miss2.push('Contact');
-      if((iType==='perf'||iType==='edu')&&!call)miss2.push('Call time');
-      if((iType==='perf'||iType==='edu')&&!perf)miss2.push('Performance time');
-      if((iType==='perf'||iType==='edu')&&!uni)miss2.push('Uniform');
-      if(iType==='perf'&&sel.ruIds.length===0)miss2.push('Participating choirs');
-      var newRec=Object.keys(S.intake.rels).filter(function(k){return S.intake.rels[k].isNew;}).map(function(k){return S.intake.rels[k].name;});
-      S.msgs.push({role:'assistant',html:'<p>&#10003; <strong>'+esc(name)+'</strong> added to Notion.</p>'+(newRec.length?'<p style="color:#a67a1a;margin-top:5px"><strong>Create in Notion first:</strong> '+esc(newRec.join(', '))+'</p>':'')+(miss2.length?'<p style="margin-top:5px"><strong>Still needed:</strong> '+esc(miss2.join(', '))+'</p>':'')+'<div class="qbs"><button class="qb" onclick="showIntake()">Add another</button><button class="qb" onclick="go(\'events\')">View entries</button></div>'});
-      iType=null;iSub=null;iOrg=null;iSt='';S.intake.rels={};S.intake.paid=false;S.intake.inkind=false;S.intake.josh=false;
-      renderIntake();
+      page('Entry Added','','<div style="max-width:440px;margin:48px auto;text-align:center"><div style="font-size:28px;margin-bottom:10px">&#10003;</div><div class="ph" style="margin-bottom:6px">'+esc(name)+' added</div><div style="display:flex;gap:8px;justify-content:center;margin-top:16px"><button class="btn primary" onclick="showIntake()">Add another</button><button class="btn" onclick="go(\x27events\x27)">View entries</button><button class="btn" onclick="go(\x27gaps\x27)">Gap report</button></div></div>');
     }).catch(function(e){if(btn){btn.textContent='Add to Notion';btn.disabled=false;}alert('Error: '+e.message);});
 }
 
-function renderIntake() {
-  var msgs = S.msgs.map(function(m){return'<div class="msg '+m.role+'"><div class="msg-av">'+(m.role==='assistant'?'iC':'CZ')+'</div><div class="msg-bub">'+m.html+'</div></div>';}).join('');
-  page('Add Entry', '', '<div class="intake-wrap"><div class="msg-list" id="msg-list">'+msgs+'</div></div>');
-  var el=document.getElementById('msg-list');
-  if(el) setTimeout(function(){el.scrollTop=el.scrollHeight;},50);
-}
 
 // ═══════════════════════════════════════════════════════════════
 // TAKE NOTE BRIEF
@@ -1310,13 +1304,20 @@ var DB_LABELS = {venues:'Venues', orgs:'Organizations', contacts:'Collaborators'
 function showDbBrowser(key) {
   page(DB_LABELS[key]||key, '', '<div class="loading"><div class="spinner dk"></div>Loading...</div>');
   qdb(DB_IDS[key]).then(function(r) {
-    var pages=r.results||[];
-    var rows=pages.map(function(p){
-      return '<tr onclick="showDbRecord(\x22'+key+'\x22,\x22'+p.id+'\x22)" style="cursor:pointer"><td style="font-weight:600;color:var(--navy)">'+esc(gtitle(p))+'</td></tr>';
-    }).join('');
+    var pages = r.results||[];
     page(DB_LABELS[key], '',
       '<div class="ph">'+esc(DB_LABELS[key])+'</div><div class="ps">'+pages.length+' records &mdash; click to view details</div>'+
-      '<div class="card" style="padding:0;overflow:hidden"><table class="tbl"><thead><tr><th>Name</th></tr></thead><tbody>'+rows+'</tbody></table></div>');
+      '<div class="card" style="padding:0;overflow:hidden"><table class="tbl"><thead><tr><th>Name</th></tr></thead><tbody id="db-tbody"></tbody></table></div>');
+    var tbody = document.getElementById('db-tbody');
+    if (!tbody) return;
+    pages.forEach(function(p) {
+      var row = document.createElement('tr');
+      row.style.cursor = 'pointer';
+      row.addEventListener('click', (function(k,id){return function(){showDbRecord(k,id);};})(key,p.id));
+      var td = document.createElement('td');
+      td.style.fontWeight = '600'; td.style.color = 'var(--navy)'; td.textContent = gtitle(p);
+      row.appendChild(td); tbody.appendChild(row);
+    });
   }).catch(function(e){page(DB_LABELS[key],'','<div class="empty"><p>Error: '+esc(e.message)+'</p></div>');});
 }
 
