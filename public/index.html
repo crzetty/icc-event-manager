@@ -529,17 +529,31 @@ function refresh() {
     .then(function(r){S.ev=r.results||[];updBadges();});
 }
 
+function normId(id) {
+  if (!id) return '';
+  var s = id.replace(/-/g,'');
+  if (s.length === 32) return s.slice(0,8)+'-'+s.slice(8,12)+'-'+s.slice(12,16)+'-'+s.slice(16,20)+'-'+s.slice(20);
+  return id;
+}
+
 function buildRuTree() {
   var byId = {};
-  S.ru.forEach(function(r){byId[r.id]=r;});
+  S.ru.forEach(function(r){
+    var n=normId(r.id);
+    byId[n]=r; byId[r.id]=r;
+  });
   ['icc','aacc','cicc'].forEach(function(org) {
-    var orgRec = byId[ORG_IDS[org]];
-    if (!orgRec) return;
-    S.ruTree[org] = orgRec.subIds.map(function(l2id) {
-      var l2 = byId[l2id]; if (!l2) return null;
-      return {id:l2.id, name:l2.name, children: l2.subIds.map(function(l3id){var l3=byId[l3id];return l3?{id:l3.id,name:l3.name}:null;}).filter(Boolean)};
+    var key=normId(ORG_IDS[org]);
+    var orgRec=byId[key]||byId[ORG_IDS[org]];
+    if(!orgRec){console.warn('ruTree: org not found:',org,ORG_IDS[org]);return;}
+    S.ruTree[org]=orgRec.subIds.map(function(l2id){
+      var l2=byId[normId(l2id)]||byId[l2id]; if(!l2) return null;
+      return {id:l2.id,name:l2.name,children:l2.subIds.map(function(l3id){
+        var l3=byId[normId(l3id)]||byId[l3id];return l3?{id:l3.id,name:l3.name}:null;
+      }).filter(Boolean)};
     }).filter(Boolean);
   });
+  console.log('ruTree: ICC='+S.ruTree.icc.length+' AACC='+S.ruTree.aacc.length+' CICC='+S.ruTree.cicc.length);
 }
 
 function updBadges() {
@@ -659,7 +673,7 @@ function showEvents(f) {
     var sh=sy.map(function(s){return '<span class="syn '+(s.done?'done':'pending')+'" onclick="togSync(event,\''+p.id+'\',\''+s.key+'\','+s.done+')">'+s.label+'</span>';}).join('');
     return '<tr onclick="showDetail(\''+p.id+'\')" style="cursor:pointer"><td style="font-weight:600;color:var(--navy)">'+esc(gtitle(p))+'</td><td style="font-size:12px;color:var(--gray)">'+fmtDate(gp(p,'date'))+'</td><td>'+spill(gp(p,'Status'))+'</td><td style="font-size:12px">'+esc(gp(p,'Call Time')||'—')+'</td><td style="font-size:12px">'+esc(gp(p,'Uniform')||'—')+'</td><td><div class="sync-row">'+sh+'</div></td></tr>';
   }).join('');
-  var body = ev.length ? '<div class="card" style="padding:0;overflow:hidden"><table class="tbl"><thead><tr><th>Entry</th><th>Date</th><th>Status</th><th>Call Time</th><th>Performance</th><th>Dismissal</th><th>Uniform</th><th>Sync</th></tr></thead><tbody>'+rows+'</tbody></table></div>' : '<div class="empty"><div class="empty-ic">&#128203;</div><p>No upcoming entries in this category.</p></div>';
+  var body = ev.length ? '<div class="card" style="padding:0;overflow:hidden"><table class="tbl"><thead><tr><th style="width:28%">Entry</th><th style="width:9%">Date</th><th style="width:9%">Status</th><th style="width:8%">Call Time</th><th style="width:9%">Performance</th><th style="width:9%">Dismissal</th><th style="width:9%">Uniform</th><th>Sync</th></tr></thead><tbody>'+rows+'</tbody></table></div>' : '<div class="empty"><div class="empty-ic">&#128203;</div><p>No upcoming entries in this category.</p></div>';
   page(lbls[f]||'All Entries', '<button class="btn" onclick="refresh().then(function(){showEvents('+JSON.stringify(f)+')})">&#8635; Refresh</button><button class="btn primary" onclick="go(\'intake\')">+ Add Entry</button>', body);
 }
 
@@ -1333,44 +1347,61 @@ function showDbBrowser(key) {
 }
 
 function showDbRecord(key, pid) {
+  page(DB_LABELS[key]||key,'<button class="btn" onclick="goDb(\x27'+key+'\x27)">&#8592; Back</button>','<div class="loading"><div class="spinner dk"></div>Loading...</div>');
   nFetch('/pages/'+pid,'GET',null).then(function(p) {
-    var ps=p.properties||{}, html='';
-    html+='<div class="db-detail"><div class="db-detail-name">'+esc(gtitle(p))+'</div>';
-    // Collect relation IDs to resolve
-    var relIds = [];
-    Object.keys(ps).forEach(function(k) {
-      if (ps[k].type==='relation') {
-        var rel = ps[k].relation||[];
-        rel.forEach(function(r){ if(relIds.indexOf(r.id)<0) relIds.push(r.id); });
-      }
+    var ps=p.properties||{};
+    // Collect relation IDs
+    var relIds=[];
+    Object.keys(ps).forEach(function(k){if(ps[k].type==='relation'){(ps[k].relation||[]).forEach(function(r){if(r.id&&relIds.indexOf(r.id)<0)relIds.push(r.id);});}});
+    // Resolve from cache first
+    var relNames={};
+    relIds.forEach(function(id){
+      var found=S.vn.find(function(x){return normId(x.id)===normId(id);})||
+               S.og.find(function(x){return normId(x.id)===normId(id);})||
+               S.ct.find(function(x){return normId(x.id)===normId(id);})||
+               S.ev.find(function(p2){return normId(p2.id)===normId(id);});
+      if(found)relNames[id]=found.name||gtitle(found);
     });
-    // Try to resolve from cached data first
-    var relNames = {};
-    relIds.forEach(function(id) {
-      var found = S.vn.find(function(x){return x.id===id;}) ||
-                  S.og.find(function(x){return x.id===id;}) ||
-                  S.ct.find(function(x){return x.id===id;}) ||
-                  S.ev.find(function(p2){return p2.id===id;});
-      if (found) relNames[id] = found.name || gtitle(found);
+    // Fetch unresolved (linked events not in S.ev cache)
+    var unresolved=relIds.filter(function(id){return !relNames[id];});
+    return Promise.all(unresolved.slice(0,30).map(function(id){
+      return nFetch('/pages/'+id,'GET',null).then(function(rp){relNames[id]=gtitle(rp);}).catch(function(){relNames[id]='';});
+    })).then(function(){
+      var html='<div class="db-detail"><div class="db-detail-name">'+esc(gtitle(p))+'</div>';
+      var order=['Job Title','Industry','Venue Type','Address','County','Website','Company / Organization','Collaborator Since','Pronouns','Email','Phone','LinkedIn','Capacity','Collaborations & Events'];
+      var shown={};
+      // Show in order first
+      order.forEach(function(k){
+        if(!ps[k])return; shown[k]=true;
+        var v=gp(p,k); if(!v||Array.isArray(v)&&!v.length) return;
+        var display;
+        if(Array.isArray(v)&&v.length){
+          var names=v.map(function(r){return relNames[r.id]||'';}).filter(Boolean);
+          display=names.length?names.join(', '):(v.length+' linked');
+        } else {
+          display=typeof v==='boolean'?(v?'Yes':'No'):String(v);
+        }
+        html+='<div class="db-prop"><span class="db-prop-key">'+esc(k)+'</span><span class="db-prop-val">'+esc(display)+'</span></div>';
+      });
+      // Show any remaining non-system fields
+      Object.keys(ps).forEach(function(k){
+        if(shown[k]||ps[k].type==='title') return;
+        var v=gp(p,k); if(!v||Array.isArray(v)&&!v.length) return;
+        var display;
+        if(Array.isArray(v)&&v.length){
+          var names=v.map(function(r){return relNames[r.id]||'';}).filter(Boolean);
+          display=names.length?names.join(', '):(v.length+' linked');
+        } else {
+          display=typeof v==='boolean'?(v?'Yes':'No'):String(v);
+        }
+        html+='<div class="db-prop"><span class="db-prop-key">'+esc(k)+'</span><span class="db-prop-val">'+esc(display)+'</span></div>';
+      });
+      html+='</div>';
+      page(gtitle(p),'<button class="btn" onclick="goDb(\x27'+key+'\x27)">&#8592; Back</button>',html);
     });
-    Object.keys(ps).forEach(function(k) {
-      if(ps[k].type==='title') return;
-      var v=gp(p,k);
-      if(!v||Array.isArray(v)&&!v.length) return;
-      var display;
-      if (Array.isArray(v) && v.length) {
-        // Try to show names instead of "N linked"
-        var names = v.map(function(r){ return relNames[r.id] || null; }).filter(Boolean);
-        display = names.length ? names.join(', ') : v.length+' linked';
-      } else {
-        display = typeof v==='boolean'?(v?'Yes':'No'):String(v);
-      }
-      html+='<div class="db-prop"><span class="db-prop-key">'+esc(k)+'</span><span class="db-prop-val">'+esc(display)+'</span></div>';
-    });
-    html+='</div>';
-    page(gtitle(p), '<button class="btn" onclick="goDb(\''+key+'\')">&#8592; Back</button>', html);
-  }).catch(function(e){alert('Error loading record: '+e.message);});
+  }).catch(function(e){page(DB_LABELS[key]||key,'','<div class="empty"><p>Error: '+esc(e.message)+'</p></div>');});
 }
+
 
 // ═══════════════════════════════════════════════════════════════
 // BOOT
@@ -1379,32 +1410,38 @@ function showDbRecord(key, pid) {
 var _createNewCallback = null;
 
 function showCreateNew(key, prefill) {
-  var titles = {vn:'New Venue', og:'New Organization', ct:'New Collaborator'};
-  var title = titles[key] || 'New Record';
-  var formHtml = '';
-  if (key==='vn') {
-    formHtml = '<div class="detail-grid single"><div class="field"><label>Venue Name *</label><input type="text" id="cn-name" value="'+esc(prefill||'')+'" /></div></div>'+
-      '<div class="detail-grid"><div class="field"><label>Address</label><input type="text" id="cn-address" placeholder="e.g. 650 N Meridian St, Indianapolis, IN" /></div>'+
-      '<div class="field"><label>Venue Type</label><input type="text" id="cn-type" placeholder="e.g. Concert Hall" /></div></div>'+
-      '<div class="detail-grid single"><div class="field"><label>County</label><input type="text" id="cn-county" placeholder="e.g. Marion" /></div></div>';
-  } else if (key==='og') {
-    formHtml = '<div class="detail-grid single"><div class="field"><label>Organization Name *</label><input type="text" id="cn-name" value="'+esc(prefill||'')+'" /></div></div>'+
-      '<div class="detail-grid"><div class="field"><label>Industry</label><input type="text" id="cn-industry" placeholder="e.g. Performing Arts" /></div>'+
-      '<div class="field"><label>Website</label><input type="text" id="cn-website" placeholder="https://" /></div></div>';
-  } else if (key==='ct') {
-    formHtml = '<div class="detail-grid single"><div class="field"><label>Full Name *</label><input type="text" id="cn-name" value="'+esc(prefill||'')+'" /></div></div>'+
-      '<div class="detail-grid"><div class="field"><label>Job Title</label><input type="text" id="cn-title" placeholder="e.g. Executive Director" /></div>'+
-      '<div class="field"><label>Email</label><input type="email" id="cn-email" placeholder="email@example.com" /></div></div>'+
-      '<div class="detail-grid single"><div class="field"><label>Phone</label><input type="tel" id="cn-phone" placeholder="+1 317 555 0100" /></div></div>';
+  var titles={vn:'New Venue',og:'New Organization',ct:'New Collaborator'};
+  var VN_TYPES=['Performance Hall','Community Space','Business','Athletic Facility','Event Space','Seasonal Performance Space','Church','TV Studio','School'];
+  var VN_COUNTIES=['Marion','Hendricks','Hamilton','Boone','Tippecanoe','Allen','Bartholomew','Johnson County','Madison'];
+  var OG_INDS=['Marketing','Education','Government','Medical','Performing Arts','Dance','Business','Consulting','Religious','Finance','Arts','Real Estate','Military','Non-Profit','Insurance','Community','History','Museum','Choir','Orchestra','Sports','Events','TV & Film'];
+  function sel(id,opts){return '<select id="'+id+'" style="padding:7px 10px;border:1px solid var(--border);border-radius:var(--r);font-family:Open Sans,sans-serif;font-size:13px;background:var(--gray-ll);width:100%;outline:none"><option value="">Select...</option>'+opts.map(function(o){return'<option value="'+esc(o)+'">'+esc(o)+'</option>';}).join('')+'</select>';}
+  function msel(id,opts){return '<select id="'+id+'" multiple style="padding:4px 10px;border:1px solid var(--border);border-radius:var(--r);font-family:Open Sans,sans-serif;font-size:12px;background:var(--gray-ll);width:100%;outline:none;min-height:90px">'+opts.map(function(o){return'<option value="'+esc(o)+'">'+esc(o)+'</option>';}).join('')+'</select><div style="font-size:10px;color:var(--gray);margin-top:2px">Hold Cmd/Ctrl to select multiple</div>';}
+  var f='';
+  if(key==='vn'){
+    f+='<div class="detail-grid single"><div class="field"><label>Venue Name *</label><input type="text" id="cn-name" value="'+esc(prefill||'')+'" /></div></div>';
+    f+='<div class="detail-grid"><div class="field"><label>Venue Type</label>'+sel('cn-type',VN_TYPES)+'</div>';
+    f+='<div class="field"><label>County</label>'+sel('cn-county',VN_COUNTIES)+'</div></div>';
+    f+='<div class="detail-grid single"><div class="field"><label>Address</label><input type="text" id="cn-address" placeholder="650 N Meridian St, Indianapolis, IN 46250" /></div></div>';
+    f+='<div class="detail-grid single"><div class="field"><label>Capacity</label><input type="number" id="cn-capacity" placeholder="e.g. 500" /></div></div>';
+  } else if(key==='og'){
+    f+='<div class="detail-grid single"><div class="field"><label>Organization Name *</label><input type="text" id="cn-name" value="'+esc(prefill||'')+'" /></div></div>';
+    f+='<div class="detail-grid single"><div class="field"><label>Industry</label>'+msel('cn-industry',OG_INDS)+'</div></div>';
+    f+='<div class="detail-grid single"><div class="field"><label>Website</label><input type="url" id="cn-website" placeholder="https://" /></div></div>';
+  } else if(key==='ct'){
+    f+='<div class="detail-grid single"><div class="field"><label>Full Name *</label><input type="text" id="cn-name" value="'+esc(prefill||'')+'" /></div></div>';
+    f+='<div class="detail-grid"><div class="field"><label>Job Title</label><input type="text" id="cn-title" placeholder="e.g. Executive Director" /></div>';
+    f+='<div class="field"><label>Email</label><input type="email" id="cn-email" placeholder="email@example.com" /></div></div>';
+    f+='<div class="detail-grid"><div class="field"><label>Phone</label><input type="tel" id="cn-phone" placeholder="317-555-0100" /></div>';
+    f+='<div class="field"><label>Pronouns</label><input type="text" id="cn-pronouns" placeholder="She / Her" /></div></div>';
+    f+='<div class="detail-grid single"><div class="field"><label>LinkedIn</label><input type="url" id="cn-linkedin" placeholder="https://linkedin.com/in/..." /></div></div>';
   }
-  var overlay = document.createElement('div');
-  overlay.className = 'modal-overlay';
-  overlay.id = 'cn-overlay';
-  overlay.innerHTML = '<div class="modal"><div class="modal-title">'+esc(title)+'</div>'+formHtml+
+  var overlay=document.createElement('div');
+  overlay.className='modal-overlay'; overlay.id='cn-overlay';
+  overlay.innerHTML='<div class="modal"><div class="modal-title">'+esc(titles[key]||'New Record')+'</div>'+f+
     '<div class="modal-actions"><button class="btn" onclick="closeCreateNew()">Cancel</button>'+
     '<button class="btn primary" onclick="submitCreateNew(\x27'+key+'\x27)">Create in Notion</button></div></div>';
   document.body.appendChild(overlay);
-  setTimeout(function(){ var n=document.getElementById('cn-name'); if(n)n.focus(); }, 50);
+  setTimeout(function(){var n=document.getElementById('cn-name');if(n)n.focus();},50);
 }
 
 function closeCreateNew() {
@@ -1417,64 +1454,61 @@ function submitCreateNew(key) {
   if(!name){alert('Name is required.');return;}
   var btn=document.querySelector('#cn-overlay .btn.primary');
   if(btn){btn.innerHTML='<span class="spinner"></span> Creating...';btn.disabled=true;}
-  
-  var dbIds={vn:VDB, og:ODB, ct:XDB};
-  var props = {};
-  
+  var dbIds={vn:VDB,og:ODB,ct:XDB};
+  var props={};
   if(key==='vn'){
     props['Name']={title:[{text:{content:name}}]};
-    var addr=(document.getElementById('cn-address')||{}).value||'';
     var vtype=(document.getElementById('cn-type')||{}).value||'';
     var county=(document.getElementById('cn-county')||{}).value||'';
-    if(addr)props['Address']={rich_text:[{text:{content:addr}}]};
+    var addr=(document.getElementById('cn-address')||{}).value||'';
+    var cap=(document.getElementById('cn-capacity')||{}).value||'';
     if(vtype)props['Venue Type']={select:{name:vtype}};
-    if(county)props['County']={rich_text:[{text:{content:county}}]};
+    if(county)props['County']={select:{name:county}};
+    if(addr)props['Address']={rich_text:[{text:{content:addr}}]};
+    if(cap)props['Capacity']={number:parseFloat(cap)};
   } else if(key==='og'){
     props['Name']={title:[{text:{content:name}}]};
-    var ind=(document.getElementById('cn-industry')||{}).value||'';
+    var indEl=document.getElementById('cn-industry');
+    var ind=indEl?Array.from(indEl.selectedOptions).map(function(o){return o.value;}).filter(Boolean):[];
     var web=(document.getElementById('cn-website')||{}).value||'';
-    if(ind)props['Industry']={rich_text:[{text:{content:ind}}]};
+    if(ind.length)props['Industry']={multi_select:ind.map(function(i){return{name:i};})};
     if(web)props['Website']={url:web};
   } else if(key==='ct'){
     props['Name']={title:[{text:{content:name}}]};
     var jtitle=(document.getElementById('cn-title')||{}).value||'';
     var email=(document.getElementById('cn-email')||{}).value||'';
     var phone=(document.getElementById('cn-phone')||{}).value||'';
+    var pronouns=(document.getElementById('cn-pronouns')||{}).value||'';
+    var linkedin=(document.getElementById('cn-linkedin')||{}).value||'';
     if(jtitle)props['Job Title']={rich_text:[{text:{content:jtitle}}]};
     if(email)props['Email']={email:email};
     if(phone)props['Phone']={phone_number:phone};
+    if(pronouns)props['Pronouns']={rich_text:[{text:{content:pronouns}}]};
+    if(linkedin)props['LinkedIn']={url:linkedin};
   }
-  
   nFetch('/pages','POST',{parent:{database_id:dbIds[key]},properties:props})
     .then(function(np){
-      // Add to cached list
       var newRec={id:np.id,name:name};
-      S[key].push(newRec);
-      S[key].sort(function(a,b){return a.name.localeCompare(b.name);});
-      // Set as selected in the current form
+      S[key].push(newRec); S[key].sort(function(a,b){return a.name.localeCompare(b.name);});
       closeCreateNew();
-      // Find the selection container and populate it
-      var selIdMap={vn:'fvsel',og:'fosel',ct:'fxsel'};
-      var inIdMap={vn:'fvs',og:'fos',ct:'fxs'};
-      var selId=selIdMap[key], inId=inIdMap[key];
-      // Also check edit form IDs
-      if(!document.getElementById(selId)){selId=key==='vn'?'evsel':key==='og'?'eosel':'excel'; inId=key==='vn'?'evs':key==='og'?'eos':'exs';}
+      var selMap={vn:'fvsel',og:'fosel',ct:'fxsel'};
+      var inMap={vn:'fvs',og:'fos',ct:'fxs'};
+      var selId=selMap[key],inId=inMap[key];
+      if(!document.getElementById(selId)){selId=key==='vn'?'evsel':key==='og'?'eosel':'excel';inId=key==='vn'?'evs':key==='og'?'eos':'exs';}
       S.intake.rels[key]={id:np.id,name:name,isNew:false};
-      var inp=document.getElementById(inId); if(inp)inp.value='';
-      var sel=document.getElementById(selId);
-      if(sel){
-        sel.innerHTML='';
-        var tag=document.createElement('span'); tag.className='sel-tag'; tag.textContent=name+' ';
-        var x=document.createElement('button'); x.className='sel-tag-x'; x.textContent='×';
-        x.onclick=function(){delete S.intake.rels[key];sel.innerHTML='';};
-        tag.appendChild(x); sel.appendChild(tag);
+      var inp=document.getElementById(inId);if(inp)inp.value='';
+      var selEl=document.getElementById(selId);
+      if(selEl){
+        selEl.innerHTML='';
+        var tag=document.createElement('span');tag.className='sel-tag';tag.textContent=name+' ';
+        var x=document.createElement('button');x.className='sel-tag-x';x.textContent='×';
+        x.onclick=function(){delete S.intake.rels[key];selEl.innerHTML='';};
+        tag.appendChild(x);selEl.appendChild(tag);
       }
     })
-    .catch(function(e){
-      if(btn){btn.textContent='Create in Notion';btn.disabled=false;}
-      alert('Error creating record: '+e.message);
-    });
+    .catch(function(e){if(btn){btn.textContent='Create in Notion';btn.disabled=false;}alert('Error: '+e.message);});
 }
+
 
 
 init();
