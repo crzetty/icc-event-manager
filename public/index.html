@@ -929,10 +929,10 @@ function saveEdit() {
   props['Update on ChorusConnection']={checkbox:false};
   props['Update on Organizational Calendar']={checkbox:false};
   props["Update on Josh's Calendar"]={checkbox:false};
-  if (call) props['Call Time']={rich_text:[{text:{content:fmtTime(call)}}]};
-  if (perf) props['Performance Time']={rich_text:[{text:{content:fmtTime(perf)}}]};
-  if (dis) props['Approx. Dismissal']={rich_text:[{text:{content:fmtTime(dis)}}]};
-  if (uni) props['Uniform']={rich_text:[{text:{content:uni}}]};
+  props['Call Time'] = call ? {rich_text:[{text:{content:fmtTime(call)}}]} : {rich_text:[]};
+  props['Performance Time'] = perf ? {rich_text:[{text:{content:fmtTime(perf)}}]} : {rich_text:[]};
+  props['Approx. Dismissal'] = dis ? {rich_text:[{text:{content:fmtTime(dis)}}]} : {rich_text:[]};
+  props['Uniform'] = uni ? {rich_text:[{text:{content:uni}}]} : {rich_text:[]};
   if (editStatus) props['Status']={status:{name:editStatus}};
   if (S.intake.rels.vn&&S.intake.rels.vn.id) props['Venue']={relation:[{id:S.intake.rels.vn.id}]};
   if (S.intake.rels.og&&S.intake.rels.og.id) props['Organization']={relation:[{id:S.intake.rels.og.id}]};
@@ -1125,6 +1125,15 @@ function togChoirL2AndExpand(el) {
       if (arr) arr.style.transform = isOpen ? '' : 'rotate(90deg)';
     }
   }
+}
+
+function togChoirArrow(l2Id, arrId) {
+  var panel = document.getElementById(l2Id);
+  var arr = document.getElementById(arrId);
+  if (!panel) return;
+  var isOpen = panel.style.display !== 'none';
+  panel.style.display = isOpen ? 'none' : 'flex';
+  if (arr) arr.style.transform = isOpen ? '' : 'rotate(90deg)';
 }
 
 function togChoirL3(el) {
