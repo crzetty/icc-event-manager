@@ -897,9 +897,9 @@ function showEdit(pid) {
   html += '<div class="ph" style="margin-bottom:3px">'+esc(gtitle(p2))+'</div>';
   html += '<div class="ps" style="margin-bottom:16px">'+fmtDate(gp(p2,'date'))+(m.length?' &middot; <span style="color:var(--red)">Missing: '+esc(m.join(', '))+'</span>':' &middot; <span style="color:var(--green)">All fields complete</span>')+'</div>';
   html += '<div class="card">';
+    html += '<div class="detail-grid triple"><div class="field"><label>Call time</label><input type="time" id="ec" value="'+t2i(gp(p2,'Call Time'))+'" /></div><div class="field"><label>Performance time</label><input type="time" id="ep" value="'+t2i(gp(p2,'Performance Time'))+'" /></div><div class="field"><label>Approx. dismissal</label><input type="time" id="ed" value="'+t2i(gp(p2,'Approx. Dismissal'))+'" /></div></div>';
   html += '<div class="mod-row"><label class="mod-check"><input type="checkbox" id="e-noperf"'+(gp(p2,'No Performance Time')===true?' checked':'')+' onchange=""" > No performance time</label></div>';
-  html += '<div class="detail-grid triple"><div class="field"><label>Call time</label><input type="time" id="ec" value="'+t2i(gp(p2,'Call Time'))+'" /></div><div class="field"><label>Performance time</label><input type="time" id="ep" value="'+t2i(gp(p2,'Performance Time'))+'" /></div><div class="field"><label>Approx. dismissal</label><input type="time" id="ed" value="'+t2i(gp(p2,'Approx. Dismissal'))+'" /></div></div>';
-  html += '<div class="detail-grid single"><div class="field"><label>Uniform</label><input type="text" id="eu" value="'+esc(gp(p2,'Uniform')||'')+'" placeholder="e.g. Formal" /></div></div>';
+html += '<div class="detail-grid single"><div class="field"><label>Uniform</label><input type="text" id="eu" value="'+esc(gp(p2,'Uniform')||'')+'" placeholder="e.g. Formal" /></div></div>';
   html += '<div class="field" style="margin-bottom:12px"><label>Status</label><div class="status-row" id="edit-sr">'+STATS_LIST.map(function(s){return'<div class="status-tog'+(editStatus===s?' on':'')+'" data-s="'+esc(s)+'" onclick="togEditSt(this)">'+esc(s)+'</div>';}).join('')+'</div></div>';
   html += '<div class="detail-grid single"><div class="field sw"><label>Venue (search to change)</label><input type="text" id="evs" placeholder="Search venues..." autocomplete="off" /><div class="sr" id="evr" style="display:none"></div><div id="evsel"></div></div></div>';
   html += '<div class="detail-grid"><div class="field sw"><label>Organization</label><input type="text" id="eos" placeholder="Search orgs..." autocomplete="off" /><div class="sr" id="eor" style="display:none"></div><div id="eosel"></div></div><div class="field sw"><label>Contact</label><input type="text" id="exs" placeholder="Search contacts..." autocomplete="off" /><div class="sr" id="exr" style="display:none"></div><div id="excel"></div></div></div>';
@@ -1001,26 +1001,38 @@ function showSync() {
       if (choirs.length) body += '<span class="sync-detail-item"><strong>Choirs:</strong> '+esc(choirs.join(', '))+'</span>';
       if (!call&&!perf&&!dis&&!uni&&!choirs.length&&!vObj2) body += '<span class="sync-detail-item" style="color:var(--gray)">Review &amp; Update</span>';
       body += '</div>';
-      // For Calendar Adjustments: show site contact info fetched async
-      if (isCal3 && vid2) {
+      // For Calendar Adjustments: trace choir -> Site (venue) -> Contact
+      if (isCal3 && ruIds.length > 0) {
         var contactDivId = 'sc-contact-'+p.id.replace(/-/g,'');
-        body += '<div class="sync-details" id="'+contactDivId+'" style="background:var(--amber-l);border-top:1px solid var(--border)"><span style="font-size:11px;color:var(--gray)">Loading site contact...</span></div>';
-        (function(pageId, venueId, divId){
-          nFetch('/pages/'+venueId,'GET',null).then(function(vp){
-            var cRel=gp(vp,'Contact'), cId=Array.isArray(cRel)&&cRel.length?cRel[0].id:null;
-            if (!cId) { var d=document.getElementById(divId); if(d)d.style.display='none'; return; }
-            return nFetch('/pages/'+cId,'GET',null).then(function(cp){
-              var d=document.getElementById(divId); if(!d)return;
-              var nm=gtitle(cp), em=gp(cp,'Email'), ph=gp(cp,'Phone');
-              var parts=[];
-              if(nm) parts.push('<strong>Site Contact:</strong> '+esc(nm));
-              if(em) parts.push('<a href="mailto:'+esc(em)+'" style="color:var(--blue)">'+esc(em)+'</a>');
-              if(ph) parts.push(esc(ph));
-              if(parts.length) d.innerHTML=parts.map(function(x){return'<span class="sync-detail-item">'+x+'</span>';}).join('');
-              else d.style.display='none';
+        body += '<div class="sync-details" id="'+contactDivId+'" style="background:var(--amber-l);border-top:1px solid var(--border)"><span style="font-size:11px;color:var(--gray)">Loading site contact info...</span></div>';
+        (function(choirIds, divId){
+          // Fetch the first choir record to get its Site relation
+          var firstChoirId = choirIds[0];
+          nFetch('/pages/'+firstChoirId,'GET',null).then(function(choirPage){
+            var siteRel=gp(choirPage,'Site'), siteId=Array.isArray(siteRel)&&siteRel.length?siteRel[0].id:null;
+            if (!siteId) { var d=document.getElementById(divId); if(d)d.style.display='none'; return; }
+            return nFetch('/pages/'+siteId,'GET',null).then(function(venuePage){
+              var venueName=gtitle(venuePage);
+              var cRel=gp(venuePage,'Contact'), cId=Array.isArray(cRel)&&cRel.length?cRel[0].id:null;
+              if (!cId) {
+                var d=document.getElementById(divId); if(!d)return;
+                d.innerHTML='<span class="sync-detail-item"><strong>Site:</strong> '+esc(venueName)+'</span>';
+                return;
+              }
+              return nFetch('/pages/'+cId,'GET',null).then(function(cp){
+                var d=document.getElementById(divId); if(!d)return;
+                var nm=gtitle(cp), em=gp(cp,'Email'), ph=gp(cp,'Phone');
+                var parts=[];
+                if(venueName) parts.push('<strong>Site:</strong> '+esc(venueName));
+                if(nm) parts.push('<strong>Contact:</strong> '+esc(nm));
+                if(em) parts.push('<a href="mailto:'+esc(em)+'" style="color:var(--blue)">'+esc(em)+'</a>');
+                if(ph) parts.push(esc(ph));
+                if(parts.length) d.innerHTML=parts.map(function(x){return'<span class="sync-detail-item">'+x+'</span>';}).join('');
+                else d.style.display='none';
+              });
             });
           }).catch(function(){var d=document.getElementById(divId);if(d)d.style.display='none';});
-        })(p.id, vid2, contactDivId);
+        })(ruIds, contactDivId);
       }
       body += '<div class="sync-toggles">';
       getSyncs(p).forEach(function(s) {
