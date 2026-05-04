@@ -478,13 +478,20 @@ function missingFields(page) {
   var isBldgOnly=tl.length>0&&tl.every(function(t){return TAG_BLDG.indexOf(t)>=0;});
   if (isN) return [];
   if (isBldgOnly) return ['Venue','Organization','Contact'].filter(function(f){var v=gp(page,f);return Array.isArray(v)?v.length===0:!v;});
-  return ['Call Time','Performance Time','Approx. Dismissal','Uniform','Venue','Organization','Contact','Participating Choirs'].filter(function(f){var v=gp(page,f);return Array.isArray(v)?v.length===0:!v;});
+  var noPerf = gp(page,'No Performance Time')===true;
+  var required = ['Call Time','Approx. Dismissal','Uniform','Venue','Organization','Contact','Participating Choirs'];
+  if (!noPerf) required.splice(1, 0, 'Performance Time');
+  return required.filter(function(f){var v=gp(page,f);return Array.isArray(v)?v.length===0:!v;});
 }
 
 function getSyncs(page) {
   var cc=gp(page,'Update on ChorusConnection'), oc=gp(page,'Update on Organizational Calendar'), jc=gp(page,"Update on Josh's Calendar"), onJ=gp(page,"On Josh's Calendar");
+  var sc=gp(page,'Update Site Contact');
+  var tags=gp(page,'Tags'), tl=typeof tags==='string'?tags.split(', '):[];
+  var isCal=tl.some(function(t){return t==='Calendar Addition / Adjustment';});
   var r=[{key:'cc',label:'ChorusConnection',done:cc===true},{key:'oc',label:'Organizational Calendar',done:oc===true}];
   if (onJ===true) r.push({key:'jc',label:"Josh's Calendar",done:jc===true});
+  if (isCal) r.push({key:'sc',label:'Update Site Contact',done:sc===true});
   return r;
 }
 
@@ -742,7 +749,7 @@ function showEvents(f) {
 
 function togSync(evt, pid, key, cur) {
   evt.stopPropagation();
-  var fm={cc:'Update on ChorusConnection',oc:'Update on Organizational Calendar',jc:"Update on Josh's Calendar"};
+  var fm={cc:'Update on ChorusConnection',oc:'Update on Organizational Calendar',jc:"Update on Josh's Calendar",'sc':'Update Site Contact'};
   var field=fm[key]; if(!field) return;
   var props={}; props[field]={checkbox:!cur};
   nFetch('/pages/'+pid,'PATCH',{properties:props}).then(function(){
@@ -828,7 +835,7 @@ function df(label, value) {
 }
 
 function togSyncDirect(pid, key, cur) {
-  var fm={cc:'Update on ChorusConnection',oc:'Update on Organizational Calendar',jc:"Update on Josh's Calendar"};
+  var fm={cc:'Update on ChorusConnection',oc:'Update on Organizational Calendar',jc:"Update on Josh's Calendar",'sc':'Update Site Contact'};
   var field=fm[key]; if(!field) return;
   var props={}; props[field]={checkbox:!cur};
   nFetch('/pages/'+pid,'PATCH',{properties:props}).then(function(){
@@ -892,8 +899,9 @@ function showEdit(pid) {
   html += '<div class="card">';
   html += '<div class="detail-grid triple"><div class="field"><label>Call time</label><input type="time" id="ec" value="'+t2i(gp(p2,'Call Time'))+'" /></div><div class="field"><label>Performance time</label><input type="time" id="ep" value="'+t2i(gp(p2,'Performance Time'))+'" /></div><div class="field"><label>Approx. dismissal</label><input type="time" id="ed" value="'+t2i(gp(p2,'Approx. Dismissal'))+'" /></div></div>';
   html += '<div class="detail-grid single"><div class="field"><label>Uniform</label><input type="text" id="eu" value="'+esc(gp(p2,'Uniform')||'')+'" placeholder="e.g. Formal" /></div></div>';
+  html += '<div class="mod-row"><label class="mod-check"><input type="checkbox" id="e-noperf"'+(gp(p2,'No Performance Time')===true?' checked':'')+' onchange=""" > No performance time</label></div>';
   html += '<div class="field" style="margin-bottom:12px"><label>Status</label><div class="status-row" id="edit-sr">'+STATS_LIST.map(function(s){return'<div class="status-tog'+(editStatus===s?' on':'')+'" data-s="'+esc(s)+'" onclick="togEditSt(this)">'+esc(s)+'</div>';}).join('')+'</div></div>';
-  html += '<div class="detail-grid single"><div class="field sw"><label>Venue (leave blank to keep)</label><input type="text" id="evs" placeholder="Search venues..." autocomplete="off" /><div class="sr" id="evr" style="display:none"></div><div id="evsel"></div></div></div>';
+  html += '<div class="detail-grid single"><div class="field sw"><label>Venue (search to change)</label><input type="text" id="evs" placeholder="Search venues..." autocomplete="off" /><div class="sr" id="evr" style="display:none"></div><div id="evsel"></div></div></div>';
   html += '<div class="detail-grid"><div class="field sw"><label>Organization</label><input type="text" id="eos" placeholder="Search orgs..." autocomplete="off" /><div class="sr" id="eor" style="display:none"></div><div id="eosel"></div></div><div class="field sw"><label>Contact</label><input type="text" id="exs" placeholder="Search contacts..." autocomplete="off" /><div class="sr" id="exr" style="display:none"></div><div id="excel"></div></div></div>';
   html += '<div style="margin-bottom:12px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--gray);margin-bottom:6px">Participating choirs</div>'+buildChoirPicker(null,curRuIds)+'</div>';
   html += '<div class="detail-grid single"><div class="field"><label>Notes (appended to page body)</label><textarea id="en" placeholder="Additional notes..."></textarea></div></div>';
@@ -929,6 +937,9 @@ function saveEdit() {
   props['Update on ChorusConnection']={checkbox:false};
   props['Update on Organizational Calendar']={checkbox:false};
   props["Update on Josh's Calendar"]={checkbox:false};
+  props['Update Site Contact']={checkbox:false};
+  var noPerf2 = document.getElementById('e-noperf');
+  if (noPerf2) props['No Performance Time'] = {checkbox: noPerf2.checked};
   props['Call Time'] = call ? {rich_text:[{text:{content:fmtTime(call)}}]} : {rich_text:[]};
   props['Performance Time'] = perf ? {rich_text:[{text:{content:fmtTime(perf)}}]} : {rich_text:[]};
   props['Approx. Dismissal'] = dis ? {rich_text:[{text:{content:fmtTime(dis)}}]} : {rich_text:[]};
@@ -1001,7 +1012,7 @@ function showSync() {
 }
 
 function togSyncCard(pid, key, cur) {
-  var fm={cc:'Update on ChorusConnection',oc:'Update on Organizational Calendar',jc:"Update on Josh's Calendar"};
+  var fm={cc:'Update on ChorusConnection',oc:'Update on Organizational Calendar',jc:"Update on Josh's Calendar",'sc':'Update Site Contact'};
   var field=fm[key]; if(!field) return;
   var props={}; props[field]={checkbox:!cur};
   nFetch('/pages/'+pid,'PATCH',{properties:props}).then(function(){
@@ -1215,7 +1226,7 @@ document.addEventListener('click', function(e) {
 var iType=null, iSub=null, iOrg=null, iSt='';
 
 function showIntake() {
-  S.intake={type:null,sub:null,org:null,rels:{},status:'',paid:false,inkind:false,josh:false};
+  S.intake={type:null,sub:null,org:null,rels:{},status:'',paid:false,inkind:false,josh:false,cc:false};
   iType=null; iSub=null; iOrg=null; iSt='';
   renderTypeSelect();
 }
@@ -1281,7 +1292,7 @@ function renderEntryForm() {
 
 function buildEntryForm() {
   var isP=iType==='perf',isE=iType==='edu',isB=iType==='bldg',isOB=isB&&iSub==='org-bldg',isC=iType==='cal',isN=iType==='notice';
-  var needLog=isP||isE,needCh=isP||isE||isC||isOB,chOpt=isE||isC||isOB,needV=isP||isE||isB,needCon=isP||isE||isB;
+  var needLog=isP||isE||isB,needCh=isP||isE||isC||isOB,chOpt=isE||isC||isOB,needV=isP||isE||isB,needCon=isP||isE||isB;
   var autoStatus=isN||isC; if(autoStatus) iSt='Details Set';
   var h='';
   h+='<div class="detail-grid single"><div class="field"><label>Entry name *</label><input type="text" id="fn" placeholder="'+(isN?'e.g. PAC closure April 28':isC?'e.g. No Rehearsal':'e.g. NFFF Gala')+'" /></div></div>';
@@ -1291,7 +1302,7 @@ function buildEntryForm() {
   if(needCon) h+='<div class="detail-grid"><div class="field sw"><label>Organization</label><input type="text" id="fos" placeholder="Search orgs..." autocomplete="off" /><div class="sr" id="for" style="display:none"></div><div id="fosel"></div></div><div class="field sw"><label>Contact</label><input type="text" id="fxs" placeholder="Search contacts..." autocomplete="off" /><div class="sr" id="fxr" style="display:none"></div><div id="fxsel"></div></div></div>';
   if(needCh){h+='<div style="margin-bottom:12px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--gray);margin-bottom:5px">'+(chOpt?'Participating choirs (optional)':'Participating choirs *')+'</div>'+buildChoirPicker(iOrg,[])+'</div>';}
   if(needLog) h+='<div class="detail-grid triple"><div class="field"><label>Call time</label><input type="time" id="fc" /></div><div class="field"><label>Performance time</label><input type="time" id="fp" /></div><div class="field"><label>Approx. dismissal</label><input type="time" id="fdis" /></div></div><div class="detail-grid single"><div class="field"><label>Uniform</label><input type="text" id="fu" placeholder="e.g. Formal" /></div></div>';
-  if(!isN&&!isC) h+='<div class="mod-row"><label class="mod-check"><input type="checkbox" id="fjosh" onchange="S.intake.josh=this.checked"> On Josh’s Calendar</label></div>';
+  if(!isN&&!isC) h+='<div class="mod-row"><label class="mod-check"><input type="checkbox" id="fcc" onchange="S.intake.cc=this.checked"> On ChorusConnection</label><label class="mod-check" style="margin-left:12px"><input type="checkbox" id="fjosh" onchange="S.intake.josh=this.checked"> On Josh’s Calendar</label></div>';
   h+='<div class="detail-grid single"><div class="field"><label>Notes</label><textarea id="fnotes" placeholder="'+(isN?'Notice details...':isC?'What changed, which choirs affected...':'Food, drop-off, tickets, logistics...')+'"></textarea></div></div>';
   h+='<button class="btn primary" style="width:100%;padding:10px" onclick="subEntry()">Add to Notion</button>';
   return h;
@@ -1325,7 +1336,7 @@ function subEntry(){
   else if(iType==='bldg'){if(iSub==='org-bldg')tags.push('Organizational Events');else tags.push(iSub==='resident'?'Resident Events & Meetings':'Partner Events & Meetings');}
   else if(iType==='cal')tags.push('Calendar Addition / Adjustment');
   else if(iType==='notice')tags.push('Staff Notice');
-  var props={'Event':{title:[{text:{content:name}}]},'Update on ChorusConnection':{checkbox:false},'Update on Organizational Calendar':{checkbox:false},"Update on Josh's Calendar":{checkbox:false},"On Josh's Calendar":{checkbox:S.intake.josh||false}};
+  var props={'Event':{title:[{text:{content:name}}]},'Update on ChorusConnection':{checkbox:S.intake.cc||false},'Update on Organizational Calendar':{checkbox:false},"Update on Josh's Calendar":{checkbox:false},"On Josh's Calendar":{checkbox:S.intake.josh||false}};
   if(date)props['Date']={date:{start:date}};
   if(tags.length)props['Tags']={multi_select:tags.map(function(t){return{name:t};})};
   var finalSt=iSt||(iType==='notice'||iType==='cal'?'Details Set':'');
