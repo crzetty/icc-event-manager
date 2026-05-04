@@ -1004,11 +1004,45 @@ function showSync() {
       // For Calendar Adjustments: trace choir -> Site (venue) -> Contact
       if (isCal3 && ruIds.length > 0) {
         var contactDivId = 'sc-contact-'+p.id.replace(/-/g,'');
-        body += '<div class="sync-details" id="'+contactDivId+'" style="background:var(--amber-l);border-top:1px solid var(--border)"><span style="font-size:11px;color:var(--gray)">Loading site contact info...</span></div>';
+        body += '<div class="sync-details" id="'+contactDivId+'" style="border-top:1px solid var(--border);padding:8px 16px"><span style="font-size:11px;color:var(--gray)">Loading site contact...</span></div>';
         (function(choirIds, divId){
-          // Fetch the first choir record to get its Site relation
-          var firstChoirId = choirIds[0];
-          nFetch('/pages/'+firstChoirId,'GET',null).then(function(choirPage){
+          // Fetch all choir records to get Site relations, deduplicate by venue ID
+          var seen = {};
+          var allSiteInfo = [];
+          var fetchPromises = choirIds.slice(0,5).map(function(cid){
+            return nFetch('/pages/'+cid,'GET',null).then(function(choirPage){
+              var siteRel=gp(choirPage,'Site'), siteId=Array.isArray(siteRel)&&siteRel.length?siteRel[0].id:null;
+              if (!siteId || seen[siteId]) return;
+              seen[siteId]=true;
+              return nFetch('/pages/'+siteId,'GET',null).then(function(vp){
+                var vName=gtitle(vp);
+                var cRel=gp(vp,'Contact'), cId=Array.isArray(cRel)&&cRel.length?cRel[0].id:null;
+                if (!cId) { allSiteInfo.push({venueName:vName,nm:'',em:'',ph:''}); return; }
+                return nFetch('/pages/'+cId,'GET',null).then(function(cp){
+                  allSiteInfo.push({venueName:vName,nm:gtitle(cp),em:gp(cp,'Email'),ph:gp(cp,'Phone')});
+                });
+              });
+            }).catch(function(){});
+          });
+          Promise.all(fetchPromises).then(function(){
+            var d=document.getElementById(divId); if(!d)return;
+            if(!allSiteInfo.length){d.style.display='none';return;}
+            var html2=allSiteInfo.map(function(info){
+              var row='';
+              if(info.venueName) row+='<div style=\"margin-bottom:3px\"><span style=\"color:var(--gray);font-size:11px;font-weight:600;margin-right:6px\">Site:</span><span style=\"font-size:13px\">'+esc(info.venueName)+'</span></div>';
+              if(info.nm||info.em||info.ph){
+                row+='<div style=\"display:flex;align-items:center;flex-wrap:wrap;gap:6px\"><span style=\"color:var(--gray);font-size:11px;font-weight:600;margin-right:2px\">Contact:</span>';
+                if(info.nm) row+='<span style=\"font-size:13px;margin-right:4px\">'+esc(info.nm)+'</span>';
+                if(info.em) row+='<a href=\"mailto:'+esc(info.em)+'\" style=\"display:inline-flex;align-items:center;padding:2px 9px;background:var(--blue-l);border:1px solid var(--blue);color:var(--blue);border-radius:12px;font-size:11px;text-decoration:none\">'+esc(info.em)+'</a>';
+                if(info.ph) row+='<a href=\"tel:'+esc(info.ph.replace(/[^0-9+]/g,''))+'\" style=\"display:inline-flex;align-items:center;padding:2px 9px;background:var(--gray-l);border:1px solid var(--border);color:#444;border-radius:12px;font-size:11px;text-decoration:none\">'+esc(info.ph)+'</a>';
+                row+='</div>';
+              }
+              return row;
+            }).filter(Boolean).join('<div style=\"height:8px\"></div>');
+            if(html2) d.innerHTML=html2; else d.style.display='none';
+          });
+          // Legacy single-choir path replaced by above
+          if(false && choirIds[0]) { var firstChoirId = choirIds[0]; nFetch('/pages/'+firstChoirId,'GET',null).then(function(choirPage){
             var siteRel=gp(choirPage,'Site'), siteId=Array.isArray(siteRel)&&siteRel.length?siteRel[0].id:null;
             if (!siteId) { var d=document.getElementById(divId); if(d)d.style.display='none'; return; }
             return nFetch('/pages/'+siteId,'GET',null).then(function(venuePage){
@@ -1031,7 +1065,7 @@ function showSync() {
                 else d.style.display='none';
               });
             });
-          }).catch(function(){var d=document.getElementById(divId);if(d)d.style.display='none';});
+          }).catch(function(){var d=document.getElementById(divId);if(d)d.style.display='none';}); }
         })(ruIds, contactDivId);
       }
       body += '<div class="sync-toggles">';
@@ -1335,8 +1369,9 @@ function buildEntryForm() {
   if(needV) h+='<div class="detail-grid single"><div class="field sw"><label>Venue</label><input type="text" id="fvs" placeholder="Search venues..." autocomplete="off" /><div class="sr" id="fvr" style="display:none"></div><div id="fvsel"></div></div></div>';
   if(needCon) h+='<div class="detail-grid"><div class="field sw"><label>Organization</label><input type="text" id="fos" placeholder="Search orgs..." autocomplete="off" /><div class="sr" id="for" style="display:none"></div><div id="fosel"></div></div><div class="field sw"><label>Contact</label><input type="text" id="fxs" placeholder="Search contacts..." autocomplete="off" /><div class="sr" id="fxr" style="display:none"></div><div id="fxsel"></div></div></div>';
   if(needCh){h+='<div style="margin-bottom:12px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--gray);margin-bottom:5px">'+(chOpt?'Participating choirs (optional)':'Participating choirs *')+'</div>'+buildChoirPicker(iOrg,[])+'</div>';}
+  if(needLog) h+='<div class="detail-grid triple"><div class="field"><label>Call time</label><input type="time" id="fc" /></div><div class="field"><label>Performance time</label><input type="time" id="fp" /></div><div class="field"><label>Approx. dismissal</label><input type="time" id="fdis" /></div></div>';
   if(needLog) h+='<div class="mod-row"><label class="mod-check"><input type="checkbox" id="fnoperf" onchange="S.intake.noPerf=this.checked"> No performance time</label></div>';
-  if(needLog) h+='<div class="detail-grid triple"><div class="field"><label>Call time</label><input type="time" id="fc" /></div><div class="field"><label>Performance time</label><input type="time" id="fp" /></div><div class="field"><label>Approx. dismissal</label><input type="time" id="fdis" /></div></div><div class="detail-grid single"><div class="field"><label>Uniform</label><input type="text" id="fu" placeholder="e.g. Formal" /></div></div>';
+  if(needLog) h+='<div class="detail-grid single"><div class="field"><label>Uniform</label><input type="text" id="fu" placeholder="e.g. Formal" /></div></div>';
   if(!isN&&!isC) h+='<div class="mod-row"><label class="mod-check"><input type="checkbox" id="fcc" onchange="S.intake.cc=this.checked"> On ChorusConnection</label><label class="mod-check" style="margin-left:12px"><input type="checkbox" id="fjosh" onchange="S.intake.josh=this.checked"> On Josh’s Calendar</label></div>';
   h+='<div class="detail-grid single"><div class="field"><label>Notes</label><textarea id="fnotes" placeholder="'+(isN?'Notice details...':isC?'What changed, which choirs affected...':'Food, drop-off, tickets, logistics...')+'"></textarea></div></div>';
   h+='<button class="btn primary" style="width:100%;padding:10px" onclick="subEntry()">Add to Notion</button>';
