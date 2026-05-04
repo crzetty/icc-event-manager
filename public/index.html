@@ -1029,16 +1029,20 @@ function showSync() {
             if(!allSiteInfo.length){d.style.display='none';return;}
             var html2=allSiteInfo.map(function(info){
               var row='';
-              if(info.venueName) row+='<div style=\"margin-bottom:3px\"><span style=\"color:var(--gray);font-size:11px;font-weight:600;margin-right:6px\">Site:</span><span style=\"font-size:13px\">'+esc(info.venueName)+'</span></div>';
+              var fs='font-size:13px;color:#1a1a2e;';
+              var lbl='font-size:13px;font-weight:600;color:#1a1a2e;margin-right:5px;';
+              var chip='display:inline-flex;align-items:center;padding:2px 10px;border:1px solid var(--border);border-radius:12px;font-size:13px;color:#1a1a2e;text-decoration:none;margin-right:4px;';
+              var chipBlue='display:inline-flex;align-items:center;padding:2px 10px;border:1px solid var(--blue);border-radius:12px;font-size:13px;color:var(--blue);text-decoration:none;margin-right:4px;';
+              if(info.venueName) row+='<div style=\"margin-bottom:4px\"><span style=\"'+lbl+'\">Site:</span><span style=\"'+fs+'\">'+esc(info.venueName)+'</span></div>';
               if(info.nm||info.em||info.ph){
-                row+='<div style=\"display:flex;align-items:center;flex-wrap:wrap;gap:6px\"><span style=\"color:var(--gray);font-size:11px;font-weight:600;margin-right:2px\">Contact:</span>';
-                if(info.nm) row+='<span style=\"font-size:13px;margin-right:4px\">'+esc(info.nm)+'</span>';
-                if(info.em) row+='<a href=\"mailto:'+esc(info.em)+'\" style=\"display:inline-flex;align-items:center;padding:2px 9px;background:var(--blue-l);border:1px solid var(--blue);color:var(--blue);border-radius:12px;font-size:11px;text-decoration:none\">'+esc(info.em)+'</a>';
-                if(info.ph) row+='<a href=\"tel:'+esc(info.ph.replace(/[^0-9+]/g,''))+'\" style=\"display:inline-flex;align-items:center;padding:2px 9px;background:var(--gray-l);border:1px solid var(--border);color:#444;border-radius:12px;font-size:11px;text-decoration:none\">'+esc(info.ph)+'</a>';
+                row+='<div style=\"display:flex;align-items:center;flex-wrap:wrap;gap:4px\"><span style=\"'+lbl+'\">Contact:</span>';
+                if(info.nm) row+='<span style=\"'+fs+'\">'+esc(info.nm)+'</span>';
+                if(info.em) row+='<a href=\"mailto:'+esc(info.em)+'\" style=\"'+chipBlue+'\">'+esc(info.em)+'</a>';
+                if(info.ph) row+='<a href=\"tel:'+esc(info.ph.replace(/[^0-9+]/g,''))+'\" style=\"'+chip+'\">'+esc(info.ph)+'</a>';
                 row+='</div>';
               }
               return row;
-            }).filter(Boolean).join('<div style=\"height:8px\"></div>');
+            }).filter(Boolean).join('<div style=\"height:10px\"></div>');
             if(html2) d.innerHTML=html2; else d.style.display='none';
           });
           // Legacy single-choir path replaced by above
