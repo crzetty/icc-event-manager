@@ -449,6 +449,7 @@ function gp(page, name) {
   if (p.type==='relation') return p.relation||[];
   if (p.type==='checkbox') return p.checkbox||false;
   if (p.type==='status') return (p.status&&p.status.name)||'';
+  if (p.type==='email') return p.email||'';  if (p.type==='phone_number') return p.phone_number||'';  if (p.type==='url') return p.url||'';
   return '';
 }
 
