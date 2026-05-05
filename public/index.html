@@ -666,8 +666,8 @@ function showDash() {
   }).join('');
 
   var html = '';
-  // greeting removed
-  html += '<div class="ps">'+new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})+'</div>';
+  html += '<div class="ph">Good '+tod()+', Camden.</div>'; html += '<div class="ps">'+new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})'</div>';
+
 
   if (next) {
     html += '<div class="next-ban"><div><div class="next-label">Next event</div><div class="next-name">'+esc(gtitle(next))+'</div><div class="next-meta"><span>'+fmtDate(gp(next,'date'))+'</span>'+(gp(next,'Call Time')?'<span>Call '+esc(gp(next,'Call Time'))+'</span>':'')+(gp(next,'Uniform')?'<span>'+esc(gp(next,'Uniform'))+'</span>':'')+'</div></div><div><div class="cdn-n">'+(nd===0?'Today':nd===1?'1':nd)+'</div><div class="cdn-l">'+(nd===0?'':nd===1?'day away':'days away')+'</div></div></div>';
@@ -691,7 +691,7 @@ function showDash() {
   html += '<div class="dp"><div class="dp-hdr"><div class="dp-title">Missing Info</div><button class="dp-link" onclick="go(\'gaps\')">Full report &rarr;</button></div>'+(gRows||'<div style="padding:12px 15px;text-align:center;color:var(--green);font-size:13px">&#10003; All complete</div>')+'</div>';
   html += '</div>';
 
-  page('Dashboard', '<button class="btn" onclick="refresh().then(showDash)">&#8635; Refresh</button>', html);
+  page('', '<button class="btn" onclick="refresh().then(showDash)">&#8635; Refresh</button>', html);
 }
 
 // ═══════════════════════════════════════════════════════════════
