@@ -49,10 +49,10 @@ body{font-family:'Open Sans',sans-serif;background:#f4f6f9;color:#1a202c;font-si
 /* Main */
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
 .content{flex:1;overflow-y:auto;padding:0;}
-.page-wrap{padding:0 28px 28px 28px;max-width:1200px;margin:0 auto;}
+.page-wrap{padding:0 28px 28px 28px;}
 
 /* Content bar */
-.page-hdr{display:flex;align-items:center;justify-content:space-between;padding-top:28px;margin-bottom:2px;}.page-hdr-title{font-family:'Lora',serif;font-size:22px;color:var(--navy);font-weight:400;margin-bottom:2px;}.page-hdr-actions{display:flex;gap:8px;}
+.page-hdr{display:flex;align-items:center;justify-content:space-between;padding-top:28px;margin-bottom:16px;}.page-hdr-title{font-family:'Lora',serif;font-size:22px;color:var(--navy);font-weight:400;margin-bottom:2px;}.page-hdr-actions{display:flex;gap:8px;}.form-panel{background:#eef2f9;min-height:calc(100vh - 130px);padding:0 28px 40px;margin:0 -28px;}.form-panel .page-hdr-title{margin-bottom:4px;}.form-panel-inner{max-width:680px;margin:0 auto;}
 
 
 
@@ -871,7 +871,7 @@ function showEdit(pid) {
   var ruRel = gp(p2,'Receiving Updates');
   var curRuIds = Array.isArray(ruRel)?ruRel.map(function(r){return r.id;}):[];
 
-  var html = '<div style="max-width:680px;margin:0 auto">';
+  var html = '<div class="form-panel"><div class="form-panel-inner">';
   html += '<div class="ph" style="margin-bottom:3px">'+esc(gtitle(p2))+'</div>';
   html += '<div class="ps" style="margin-bottom:16px">'+fmtDate(gp(p2,'date'))+(m.length?' &middot; <span style="color:var(--red)">Missing: '+esc(m.join(', '))+'</span>':' &middot; <span style="color:var(--green)">All fields complete</span>')+'</div>';
   html += '<div class="card">';
@@ -1280,7 +1280,7 @@ function showIntake() {
 }
 
 function renderTypeSelect() {
-  page('Add Entry', '', typeGrid());
+  page('Add Entry', '', '<div class="form-panel">'+typeGrid()+'</div>');
 }
 
 function typeGrid() {
@@ -1320,7 +1320,7 @@ function renderSubSelect(type) {
     return '<button class="sc2" onclick="selSub(\x27'+s.id+'\x27)"><div class="sc2-t">'+s.t+'</div><div class="sc2-d">'+s.d+'</div></button>';
   }).join('');
   page('Add Entry', '<button class="btn" onclick="renderTypeSelect()">&#8592; Back</button>',
-    '<div style="max-width:680px;margin:0 auto"><div class="ph" style="margin-bottom:3px">'+title+'</div><div class="ps">'+prompt+'</div><div class="sub-grid">'+btns+'</div></div>');
+    '<div class="form-panel"><div class="form-panel-inner"><p style="font-size:13px;color:var(--gray);margin-bottom:16px">'+prompt+'</p><div class="sub-grid">'+btns+'</div></div></div>');
 }
 
 function selSub(sub) {
@@ -1334,7 +1334,7 @@ function renderEntryForm() {
   var subtitle=typeLabels[iType]||'';
   if(iSub&&iSub!=='default') subtitle+=' — '+subLabels[iSub];
   var backBtn=(iSub&&iSub!=='default')?'<button class="btn" onclick="renderSubSelect(\x27'+iType+'\x27)">&#8592; Back</button>':'<button class="btn" onclick="renderTypeSelect()">&#8592; Back</button>';
-  page('Add Entry', backBtn, '<div style="max-width:680px;margin:0 auto"><div class="ph" style="margin-bottom:3px">'+esc(subtitle)+'</div><div class="ps">Fill in what you know — edit anytime from the Gap Report</div><div class="card">'+buildEntryForm()+'</div></div>');
+  page('Add Entry', backBtn, '<div class="form-panel"><div class="form-panel-inner"><p style="font-size:13px;color:var(--gray);margin-bottom:16px">Fill in what you know — edit anytime from the Gap Report</p><div class="card">'+buildEntryForm()+'</div></div></div>');
   setTimeout(attachIntakeSearch, 80);
 }
 
@@ -1415,7 +1415,7 @@ function subEntry(){
 // ═══════════════════════════════════════════════════════════════
 function showTN() {
   var today = new Date().toISOString().split('T')[0];
-  var html = '<div style="max-width:680px;margin:0 auto" class="tn-form">';
+  var html = '<div class="form-panel"><div class="form-panel-inner"><div class="tn-form">';
   // tn heading removed
   html += '<div class="ps" style="margin-bottom:18px">Queries Notion, creates the Weekly Updates page, and downloads the formatted Word doc</div>';
   html += '<div class="card">';
