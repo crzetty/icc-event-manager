@@ -52,7 +52,7 @@ body{font-family:'Open Sans',sans-serif;background:#f4f6f9;color:#1a202c;font-si
 .page-wrap{padding:0 28px 28px 28px;max-width:1200px;margin:0 auto;}
 
 /* Content bar */
-.page-hdr{display:flex;align-items:center;justify-content:space-between;padding:32px 0 0 0;margin-bottom:20px;max-width:1200px;margin-left:auto;margin-right:auto;padding-left:28px;padding-right:28px;}.page-hdr-title{font-family:'Lora',serif;font-size:22px;color:var(--navy);font-weight:600;}.page-hdr-actions{display:flex;gap:8px;}
+.page-hdr{display:flex;align-items:center;justify-content:space-between;padding-top:32px;margin-bottom:20px;}.page-hdr-title{font-family:'Lora',serif;font-size:22px;color:var(--navy);font-weight:600;}.page-hdr-actions{display:flex;gap:8px;}
 
 
 
@@ -1536,7 +1536,7 @@ function showDbBrowser(key) {
   qdb(DB_IDS[key]).then(function(r) {
     var pages = r.results||[];
     page(DB_LABELS[key], '',
-      '<div class="ph">'+esc(DB_LABELS[key])+'</div><div class="ps">'+pages.length+' records &mdash; click to view details</div>'+
+      '<div style="font-size:13px;color:var(--gray);margin-bottom:16px">'+pages.length+' records</div>'+
       '<div class="card" style="padding:0;overflow:hidden"><table class="tbl"><thead><tr><th>Name</th></tr></thead><tbody id="db-tbody"></tbody></table></div>');
     var tbody = document.getElementById('db-tbody');
     if (!tbody) return;
