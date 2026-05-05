@@ -34,7 +34,7 @@ body{font-family:'Open Sans',sans-serif;background:#f4f6f9;color:#1a202c;font-si
 
 /* Sidebar */
 .sb{width:220px;min-width:220px;background:#f8fafc;border-right:1px solid var(--border);overflow-y:auto;display:flex;flex-direction:column;box-shadow:1px 0 0 var(--border);}
-.sb-sec{padding:16px 16px 4px;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8896a7;}
+.sb-sec{padding:16px 16px 4px;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8896a7;}
 .sb-item{display:flex;align-items:center;gap:9px;padding:8px 14px;font-size:13px;cursor:pointer;color:#475569;border-left:3px solid transparent;margin-right:8px;border-radius:0 6px 6px 0;transition:all .12s;user-select:none;}
 .sb-item:hover{background:var(--gray-l);color:var(--navy);}
 .sb-item.active{background:var(--navy-xl);color:var(--navy);border-left-color:var(--navy);font-weight:600;}
@@ -52,7 +52,7 @@ body{font-family:'Open Sans',sans-serif;background:#f4f6f9;color:#1a202c;font-si
 .page-wrap{padding:0 28px 28px 28px;max-width:1200px;margin:0 auto;}
 
 /* Content bar */
-.page-hdr{display:flex;align-items:center;justify-content:space-between;padding-top:28px;margin-bottom:8px;}.page-hdr-title{font-family:'Lora',serif;font-size:22px;color:var(--navy);font-weight:400;margin-bottom:2px;}.page-hdr-actions{display:flex;gap:8px;}
+.page-hdr{display:flex;align-items:center;justify-content:space-between;padding-top:28px;margin-bottom:2px;}.page-hdr-title{font-family:'Lora',serif;font-size:22px;color:var(--navy);font-weight:400;margin-bottom:2px;}.page-hdr-actions{display:flex;gap:8px;}
 
 
 
@@ -68,7 +68,7 @@ body{font-family:'Open Sans',sans-serif;background:#f4f6f9;color:#1a202c;font-si
 .card{background:white;border-radius:var(--r);padding:20px 22px;margin-bottom:14px;box-shadow:var(--shadow);}
 .card-title{font-family:'Lora',serif;font-size:15px;color:var(--navy);margin-bottom:12px;}
 .ph{font-family:'Lora',serif;font-size:22px;color:var(--navy);margin-bottom:3px;padding-top:32px;}
-.ps{font-size:13px;color:var(--gray);margin-bottom:20px;}
+.ps{font-size:13px;color:var(--gray);margin-bottom:12px;}
 
 /* Dashboard */
 .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
@@ -181,7 +181,7 @@ body{font-family:'Open Sans',sans-serif;background:#f4f6f9;color:#1a202c;font-si
 .choir-l2-arrow{font-size:9px;transition:transform .2s;display:inline-block;}
 
 /* Gap report */
-.gc{background:white;border-radius:var(--r);padding:14px 18px;margin-bottom:10px;cursor:pointer;transition:all .15s;box-shadow:var(--shadow);border-left:4px solid var(--blue);}
+.gc{background:white;border-radius:var(--r);padding:14px 18px;margin-bottom:10px;cursor:pointer;transition:all .15s;box-shadow:var(--shadow);border-left:3px solid var(--blue);}
 .gc:hover{box-shadow:var(--shadow-md);transform:translateY(-1px);}
 .gc.urgent{border-left-color:var(--red);}
 .gc.ok{border-left-color:var(--green);}
@@ -196,7 +196,7 @@ body{font-family:'Open Sans',sans-serif;background:#f4f6f9;color:#1a202c;font-si
 
 /* Calendar Sync */
 .sync-card{background:white;border-radius:var(--r);margin-bottom:12px;overflow:hidden;box-shadow:var(--shadow);}
-.sync-card-hdr{padding:14px 18px;display:flex;align-items:flex-start;justify-content:space-between;border-bottom:1px solid var(--border);background:white;}
+.sync-card-hdr{padding:14px 18px;display:flex;align-items:flex-start;justify-content:space-between;border-bottom:1px solid var(--border);background:#f8fafc;}
 .sync-event-name{font-family:'Lora',serif;font-size:15px;color:var(--navy);font-weight:600;cursor:pointer;}
 .sync-event-name:hover{text-decoration:underline;}
 .sync-event-date{font-size:12px;color:var(--gray);margin-top:3px;}
@@ -209,8 +209,8 @@ body{font-family:'Open Sans',sans-serif;background:#f4f6f9;color:#1a202c;font-si
 .sync-tog-btn:hover{opacity:.8;transform:translateY(-1px);}
 
 /* Type grid for Add Entry */
-.type-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-top:12px;}
-.tc{background:white;border:1.5px solid var(--border);border-radius:var(--r);padding:16px;cursor:pointer;text-align:left;font-family:'Open Sans',sans-serif;transition:all .15s;box-shadow:var(--shadow);}
+.type-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px;}
+.tc{background:white;border:1.5px solid var(--border);border-radius:var(--r);padding:13px 14px;cursor:pointer;text-align:left;font-family:'Open Sans',sans-serif;transition:all .15s;box-shadow:var(--shadow);}
 .tc:hover{border-color:var(--navy);background:var(--navy-xl);box-shadow:var(--shadow-md);}
 .tc-ic{font-size:20px;margin-bottom:6px;}
 .tc-t{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:2px;}
@@ -871,7 +871,7 @@ function showEdit(pid) {
   var ruRel = gp(p2,'Receiving Updates');
   var curRuIds = Array.isArray(ruRel)?ruRel.map(function(r){return r.id;}):[];
 
-  var html = '<div style="max-width:660px">';
+  var html = '<div style="max-width:680px;margin:0 auto">';
   html += '<div class="ph" style="margin-bottom:3px">'+esc(gtitle(p2))+'</div>';
   html += '<div class="ps" style="margin-bottom:16px">'+fmtDate(gp(p2,'date'))+(m.length?' &middot; <span style="color:var(--red)">Missing: '+esc(m.join(', '))+'</span>':' &middot; <span style="color:var(--green)">All fields complete</span>')+'</div>';
   html += '<div class="card">';
@@ -1280,7 +1280,7 @@ function showIntake() {
 }
 
 function renderTypeSelect() {
-  page('Add Entry', '', '<div style="max-width:640px">'+typeGrid()+'</div>');
+  page('Add Entry', '', typeGrid());
 }
 
 function typeGrid() {
@@ -1320,7 +1320,7 @@ function renderSubSelect(type) {
     return '<button class="sc2" onclick="selSub(\x27'+s.id+'\x27)"><div class="sc2-t">'+s.t+'</div><div class="sc2-d">'+s.d+'</div></button>';
   }).join('');
   page('Add Entry', '<button class="btn" onclick="renderTypeSelect()">&#8592; Back</button>',
-    '<div style="max-width:640px"><div class="ph" style="margin-bottom:3px">'+title+'</div><div class="ps">'+prompt+'</div><div class="sub-grid">'+btns+'</div></div>');
+    '<div style="max-width:680px;margin:0 auto"><div class="ph" style="margin-bottom:3px">'+title+'</div><div class="ps">'+prompt+'</div><div class="sub-grid">'+btns+'</div></div>');
 }
 
 function selSub(sub) {
@@ -1334,7 +1334,7 @@ function renderEntryForm() {
   var subtitle=typeLabels[iType]||'';
   if(iSub&&iSub!=='default') subtitle+=' — '+subLabels[iSub];
   var backBtn=(iSub&&iSub!=='default')?'<button class="btn" onclick="renderSubSelect(\x27'+iType+'\x27)">&#8592; Back</button>':'<button class="btn" onclick="renderTypeSelect()">&#8592; Back</button>';
-  page('Add Entry', backBtn, '<div style="max-width:640px"><div class="ph" style="margin-bottom:3px">'+esc(subtitle)+'</div><div class="ps">Fill in what you know — edit anytime from the Gap Report</div><div class="card">'+buildEntryForm()+'</div></div>');
+  page('Add Entry', backBtn, '<div style="max-width:680px;margin:0 auto"><div class="ph" style="margin-bottom:3px">'+esc(subtitle)+'</div><div class="ps">Fill in what you know — edit anytime from the Gap Report</div><div class="card">'+buildEntryForm()+'</div></div>');
   setTimeout(attachIntakeSearch, 80);
 }
 
@@ -1415,7 +1415,7 @@ function subEntry(){
 // ═══════════════════════════════════════════════════════════════
 function showTN() {
   var today = new Date().toISOString().split('T')[0];
-  var html = '<div style="max-width:680px" class="tn-form">';
+  var html = '<div style="max-width:680px;margin:0 auto" class="tn-form">';
   // tn heading removed
   html += '<div class="ps" style="margin-bottom:18px">Queries Notion, creates the Weekly Updates page, and downloads the formatted Word doc</div>';
   html += '<div class="card">';
