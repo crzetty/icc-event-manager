@@ -79,7 +79,7 @@ body{font-family:'Open Sans',sans-serif;background:var(--gray-ll);color:#1a1a2e;
 .sc.amber{border-top-color:var(--amber);}
 .sc.blue{border-top-color:var(--blue);}
 .sc.muted{border-top-color:var(--gray-l);}
-.sl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--gray);margin-bottom:5px;}
+.sl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--gray);margin-bottom:4px;}
 .sv{font-family:'Lora',serif;font-size:28px;color:var(--navy);line-height:1;margin-bottom:2px;}
 .sc.red .sv{color:var(--red);}
 .sc.green .sv{color:var(--green);}
@@ -154,7 +154,7 @@ body{font-family:'Open Sans',sans-serif;background:var(--gray-ll);color:#1a1a2e;
 .sri{padding:7px 11px;font-size:13px;cursor:pointer;border-bottom:1px solid var(--border);}
 .sri:last-child{border-bottom:none;}
 .sri:hover{background:var(--blue-l);}
-.sel-tag{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;background:var(--blue-l);border:1px solid var(--blue);color:var(--blue);border-radius:16px;font-size:12px;margin:2px;}
+.sel-tag{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;background:var(--blue-l);border:1px solid var(--border);color:#1a1a2e;border-radius:16px;font-size:12px;margin:2px;}
 .sel-tag-x{background:none;border:none;cursor:pointer;color:var(--blue);font-size:12px;line-height:1;padding:0;}
 
 /* Choir picker */
@@ -1036,7 +1036,7 @@ function showSync() {
               if(info.venueName) row+='<div style=\"margin-bottom:5px\"><span style=\"'+bold+'\">Site:</span><span style=\"'+base+'\">'+esc(info.venueName)+'</span></div>';
               if(info.nm||info.em||info.ph){
                 row+='<div style=\"display:flex;align-items:center;flex-wrap:wrap;gap:0\"><span style=\"'+bold+'\">Contact:</span><span style=\"'+base+'\">'+esc(info.nm||'')+'</span>';
-                if(info.em) row+='<a href=\"mailto:'+esc(info.em)+'\" style=\"'+chip+'border:1px solid var(--blue);color:var(--blue)\">'+esc(info.em)+'</a>';
+                if(info.em) row+='<a href=\"mailto:'+esc(info.em)+'\" style=\"'+chip+'border:1px solid var(--border);color:#1a1a2e\">'+esc(info.em)+'</a>';
                 if(info.ph) row+='<a href=\"tel:'+esc(info.ph.replace(/[^0-9+]/g,''))+'\" style=\"'+chip+'border:1px solid var(--border);color:#444\">'+esc(info.ph)+'</a>';
                 row+='</div>';
               }
