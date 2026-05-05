@@ -493,7 +493,7 @@ function render(html) { document.getElementById('content').innerHTML = html; }
 
 function page(title, actions, body) {  var hdr=title?('<div class="page-hdr"><div class="page-hdr-title">'+esc(title)+'</div>'+(actions?'<div class="page-hdr-actions">'+actions+'</div>':'')+'</div>'):'';  render('<div class="page-wrap">'+hdr+body+'</div>');}
 
-}
+
 
 // ═══════════════════════════════════════════════════════════════
 // INIT
