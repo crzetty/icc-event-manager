@@ -348,7 +348,7 @@ var VDB = '341cb336-4acb-4540-866f-08e443ba6876';
 var ODB = '1740f18a-00ec-8004-9879-f88a5d3eaec6';
 var XDB = 'f5998a51-e200-4ad7-9e20-9e25ca4ca1eb';
 var RUDB = 'f5f40839-f72f-4ef9-bd82-8629563a8e83';
-var WUDB = '377dbead-cb20-45a6-9400-31ecc45aaac6';
+var WUDB = '1750f18a-00ec-804b-ba79-e3e4ea5f0e8a'; // Weekly Updates database page ID
 
 var TAG_PERF = ['Collaborative Bookings','Season Concerts & Events','Season Concerts & Events [AACC}','Season Concerts & Events [CICC]'];
 var TAG_EDU = ['Education & Outreach'];
@@ -1030,20 +1030,18 @@ function showSync() {
             if(!allSiteInfo.length){d.style.display='none';return;}
             var html2=allSiteInfo.map(function(info){
               var row='';
-              var fs='font-size:13px;color:#1a1a2e;';
-              var lbl='font-size:13px;font-weight:600;color:#1a1a2e;margin-right:5px;';
-              var chip='display:inline-flex;align-items:center;padding:2px 10px;border:1px solid var(--border);border-radius:12px;font-size:13px;color:#1a1a2e;text-decoration:none;margin-right:4px;';
-              var chipBlue='display:inline-flex;align-items:center;padding:2px 10px;border:1px solid var(--blue);border-radius:12px;font-size:13px;color:var(--blue);text-decoration:none;margin-right:4px;';
-              if(info.venueName) row+='<div style=\"margin-bottom:4px\"><span style=\"'+lbl+'\">Site:</span><span style=\"'+fs+'\">'+esc(info.venueName)+'</span></div>';
+              var base='font-size:13px;color:#1a1a2e;font-family:Open Sans,sans-serif;';
+              var bold=base+'font-weight:600;margin-right:6px;';
+              var chip=base+'display:inline-flex;align-items:center;padding:2px 10px;border-radius:12px;text-decoration:none;margin-left:4px;';
+              if(info.venueName) row+='<div style=\"margin-bottom:5px\"><span style=\"'+bold+'\">Site:</span><span style=\"'+base+'\">'+esc(info.venueName)+'</span></div>';
               if(info.nm||info.em||info.ph){
-                row+='<div style=\"display:flex;align-items:center;flex-wrap:wrap;gap:4px\"><span style=\"'+lbl+'\">Contact:</span>';
-                if(info.nm) row+='<span style=\"'+fs+'\">'+esc(info.nm)+'</span>';
-                if(info.em) row+='<a href=\"mailto:'+esc(info.em)+'\" style=\"'+chipBlue+'\">'+esc(info.em)+'</a>';
-                if(info.ph) row+='<a href=\"tel:'+esc(info.ph.replace(/[^0-9+]/g,''))+'\" style=\"'+chip+'\">'+esc(info.ph)+'</a>';
+                row+='<div style=\"display:flex;align-items:center;flex-wrap:wrap;gap:0\"><span style=\"'+bold+'\">Contact:</span><span style=\"'+base+'\">'+esc(info.nm||'')+'</span>';
+                if(info.em) row+='<a href=\"mailto:'+esc(info.em)+'\" style=\"'+chip+'border:1px solid var(--blue);color:var(--blue)\">'+esc(info.em)+'</a>';
+                if(info.ph) row+='<a href=\"tel:'+esc(info.ph.replace(/[^0-9+]/g,''))+'\" style=\"'+chip+'border:1px solid var(--border);color:#444\">'+esc(info.ph)+'</a>';
                 row+='</div>';
               }
               return row;
-            }).filter(Boolean).join('<div style=\"height:10px\"></div>');
+            }).filter(Boolean).join('<div style=\"height:8px;border-top:1px solid var(--border);margin:6px 0\"></div>');
             if(html2) d.innerHTML=html2; else d.style.display='none';
           });
           // Legacy single-choir path replaced by above
