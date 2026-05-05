@@ -1030,19 +1030,18 @@ function showSync() {
             if(!allSiteInfo.length){d.style.display='none';return;}
             var html2=allSiteInfo.map(function(info){
               var row='';
-              var s13='font-size:13px;color:#1a1a2e;font-family:Open Sans,sans-serif;';
-              var s13b=s13+'font-weight:600;';
-              var chip='display:inline-flex;align-items:center;padding:2px 10px;border:1px solid var(--border);border-radius:12px;font-size:13px;color:#1a1a2e;text-decoration:none;margin-left:6px;';
-              if(info.venueName) row+='<div style="margin-bottom:4px"><span style="'+s13b+'">Site: </span><span style="'+s13+'">'+esc(info.venueName)+'</span></div>';
+              var base='font-size:13px;color:#1a1a2e;font-family:Open Sans,sans-serif;';
+              var bold=base+'font-weight:600;margin-right:6px;';
+              var chip=base+'display:inline-flex;align-items:center;padding:2px 10px;border-radius:12px;text-decoration:none;margin-left:4px;';
+              if(info.venueName) row+='<div style=\"margin-bottom:5px\"><span style=\"'+bold+'\">Site:</span><span style=\"'+base+'\">'+esc(info.venueName)+'</span></div>';
               if(info.nm||info.em||info.ph){
-                row+='<div style="display:flex;align-items:center;flex-wrap:wrap;gap:0"><span style="'+s13b+'">Contact: </span>';
-                if(info.nm) row+='<span style="'+s13+'">'+esc(info.nm)+'</span>';
-                if(info.em) row+='<a href="mailto:'+esc(info.em)+'" style="'+chip+'">'+esc(info.em)+'</a>';
-                if(info.ph) row+='<a href="tel:'+esc(info.ph.replace(/[^0-9+]/g,''))+'" style="'+chip+'">'+esc(info.ph)+'</a>';
+                row+='<div style=\"display:flex;align-items:center;flex-wrap:wrap;gap:0\"><span style=\"'+bold+'\">Contact:</span><span style=\"'+base+'\">'+esc(info.nm||'')+'</span>';
+                if(info.em) row+='<a href=\"mailto:'+esc(info.em)+'\" style=\"'+chip+'border:1px solid var(--blue);color:var(--blue)\">'+esc(info.em)+'</a>';
+                if(info.ph) row+='<a href=\"tel:'+esc(info.ph.replace(/[^0-9+]/g,''))+'\" style=\"'+chip+'border:1px solid var(--border);color:#444\">'+esc(info.ph)+'</a>';
                 row+='</div>';
               }
               return row;
-            }).filter(Boolean).join('<div style="height:10px"></div>');margin:6px 0\"></div>');
+            }).filter(Boolean).join('<div style=\"height:8px;border-top:1px solid var(--border);margin:6px 0\"></div>');
             if(html2) d.innerHTML=html2; else d.style.display='none';
           });
           // Legacy single-choir path replaced by above
@@ -1523,23 +1522,7 @@ function genTN() {
 
     // Create Notion Weekly Updates page
     statusEl.innerHTML='<div style="margin-top:12px;font-size:13px;color:var(--gray)">&#9679; Creating Notion Weekly Updates page...</div>';
-    // Create page, apply template, then update inline view date filters
-    nFetch('/pages','POST',{parent:{database_id:WUDB},properties:{'Push Date':{title:[{text:{content:'Take Note | '+fmtDateLong(dv)}}]}}})
-      .then(function(newPage){
-        if(!newPage||!newPage.id) return;
-        var newPageId=newPage.id;
-        var templateId='1750f18a-00ec-8092-beef-efb33ccf406f';
-        // Apply the template to get all choir section views
-        return nFetch('/pages/'+newPageId+'/content/apply_template','POST',{template_id:templateId})
-          .catch(function(){
-            // apply_template may not be a direct endpoint - use the server function instead
-            return fetch('/.netlify/functions/server',{
-              method:'POST',
-              headers:{'Content-Type':'application/json'},
-              body:JSON.stringify({action:'apply_template',notionKey:NK,payload:{pageId:newPageId,templateId:templateId,publishDate:dv}})
-            });
-          });
-      }).catch(function(){});
+    nFetch('/pages','POST',{parent:{database_id:WUDB},properties:{'Push Date':{title:[{text:{content:'Take Note | '+fmtDateLong(dv)}}]}}}).catch(function(){});
 
     // Generate Word doc
     statusEl.innerHTML='<div style="margin-top:12px;font-size:13px;color:var(--gray)">&#9679; Generating Word doc...</div>';
