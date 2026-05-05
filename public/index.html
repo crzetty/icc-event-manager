@@ -666,7 +666,7 @@ function showDash() {
   }).join('');
 
   var html = '';
-  html += '<div class="ph">Good '+tod()+', Camden.</div>';
+  // greeting removed
   html += '<div class="ps">'+new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})+'</div>';
 
   if (next) {
@@ -848,7 +848,7 @@ function showGaps() {
 
   var cs = comp.length ? '<div style="margin-top:20px;padding-top:14px;border-top:1px solid var(--border)"><div style="font-size:10px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.08em;margin-bottom:9px">&#10003; Complete ('+comp.length+')</div>'+comp.map(function(p){return'<div class="gc ok" style="padding:9px 15px"><div style="display:flex;justify-content:space-between"><div><div class="gc-name" style="font-size:13px">'+esc(gtitle(p))+'</div><div class="gc-date">'+fmtDate(gp(p,'date'))+'</div></div><span style="color:var(--green)">&#10003;</span></div></div>';}).join('')+'</div>' : '';
 
-  var body = wg.length ? '<div class="ph">Gap Report</div><div class="ps">'+wg.length+' entries need attention &mdash; click any to edit</div>'+cards+cs : '<div class="empty"><div class="empty-ic">&#9989;</div><p style="color:var(--green)">All upcoming entries are complete.</p></div>';
+  var body = wg.length ? ''+cards+cs : '<div class="empty"><div class="empty-ic">&#9989;</div><p style="color:var(--green)">All upcoming entries are complete.</p></div>';
   page('Gap Report', '<button class="btn" onclick="refresh().then(showGaps)">&#8635; Refresh</button>', body);
 }
 
@@ -955,7 +955,7 @@ function showSync() {
   if (!pending.length) {
     body = '<div class="empty"><div class="empty-ic">&#10003;</div><p style="color:var(--green)">All calendars are up to date.</p></div>';
   } else {
-    body += '<div class="ph">Calendar Sync</div><div class="ps">'+pending.length+' entr'+(pending.length===1?'y':'ies')+' need calendar updates &mdash; review details and check off each platform when done</div>';
+    body += '';
     pending.forEach(function(p) {
       var sy = getSyncs(p).filter(function(s){return !s.done;});
       var call=gp(p,'Call Time'), perf=gp(p,'Performance Time'), uni=gp(p,'Uniform'), dis=gp(p,'Approx. Dismissal');
@@ -1280,7 +1280,7 @@ function showIntake() {
 }
 
 function renderTypeSelect() {
-  page('Add Entry', '', '<div style="max-width:640px"><div class="ph" style="margin-bottom:3px">Add Entry</div><div class="ps">Select the type of entry</div>'+typeGrid()+'</div>');
+  page('Add Entry', '', '<div style="max-width:640px">'+typeGrid()+'</div>');
 }
 
 function typeGrid() {
@@ -1416,7 +1416,7 @@ function subEntry(){
 function showTN() {
   var today = new Date().toISOString().split('T')[0];
   var html = '<div style="max-width:680px" class="tn-form">';
-  html += '<div class="ph" style="margin-bottom:3px">Take Note Brief</div>';
+  // tn heading removed
   html += '<div class="ps" style="margin-bottom:18px">Queries Notion, creates the Weekly Updates page, and downloads the formatted Word doc</div>';
   html += '<div class="card">';
   html += '<div class="detail-grid"><div class="field"><label>Publish date (Thursday)</label><input type="date" id="tn-date" value="'+today+'" /><div style="font-size:11px;color:var(--gray);margin-top:3px">Breaks: this Thursday only &bull; Events: 6 weeks from this date</div></div>';
