@@ -1005,7 +1005,7 @@ function showSync() {
       // For Calendar Adjustments: trace choir -> Site (venue) -> Contact
       if (isCal3 && ruIds.length > 0) {
         var contactDivId = 'sc-contact-'+p.id.replace(/-/g,'');
-        body += '<div class="sync-details" id="'+contactDivId+'" style="border-top:1px solid var(--border);padding:8px 16px"><span style="font-size:11px;color:var(--gray)">Loading site contact...</span></div>';
+        body += '<div class="sync-details" id="'+contactDivId+'" style="border-top:1px solid var(--border);padding:8px 16px;display:block"><span style="font-size:11px;color:var(--gray)">Loading site contact...</span></div>';
         (function(choirIds, divId){
           // Fetch all choir records to get Site relations, deduplicate by venue ID
           var seen = {};
