@@ -52,7 +52,7 @@ body{font-family:'Open Sans',sans-serif;background:#f4f6f9;color:#1a202c;font-si
 .page-wrap{padding:0 28px 28px 28px;}
 
 /* Content bar */
-.page-hdr{display:flex;align-items:center;justify-content:space-between;padding-top:28px;margin-bottom:16px;}.page-hdr-title{font-family:'Lora',serif;font-size:22px;color:var(--navy);font-weight:400;margin-bottom:2px;}.page-hdr-actions{display:flex;gap:8px;}.form-panel{padding-top:4px;}.form-panel-inner{max-width:680px;margin:0 auto;}
+.page-hdr{display:flex;align-items:center;justify-content:space-between;padding-top:28px;margin-bottom:16px;}.page-hdr-title{font-family:'Lora',serif;font-size:22px;color:var(--navy);font-weight:400;margin-bottom:2px;}.page-hdr-actions{display:flex;gap:8px;}.form-panel{padding-top:0;}.form-panel-inner{max-width:680px;margin:0 auto;}.form-panel .page-hdr{margin-bottom:6px;padding-bottom:0;}.form-page-hdr{padding-top:28px;margin-bottom:6px;}
 
 
 
@@ -133,7 +133,7 @@ body{font-family:'Open Sans',sans-serif;background:#f4f6f9;color:#1a202c;font-si
 .syn:hover{opacity:.7;}
 
 /* Detail / Edit view */
-.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}.detail-grid.date-status{grid-template-columns:260px 1fr;gap:14px;margin-bottom:14px;}
 .detail-grid.single{grid-template-columns:1fr;}
 .detail-grid.triple{grid-template-columns:1fr 1fr 1fr;}
 .field{display:flex;flex-direction:column;gap:4px;}
@@ -141,7 +141,7 @@ body{font-family:'Open Sans',sans-serif;background:#f4f6f9;color:#1a202c;font-si
 .field input,.field select,.field textarea{padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--r);font-family:'Open Sans',sans-serif;font-size:13px;background:white;color:#1a202c;outline:none;width:100%;transition:border .15s,box-shadow .15s;}
 .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--navy);box-shadow:0 0 0 3px rgba(28,53,94,0.08);}
 .field textarea{resize:vertical;min-height:68px;}
-.status-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;}
+.status-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;width:100%;}
 .status-tog{padding:5px 13px;border-radius:16px;border:1.5px solid var(--border);font-size:12px;cursor:pointer;background:white;color:#475569;transition:all .12s;font-family:'Open Sans',sans-serif;font-weight:500;}
 .status-tog:hover{border-color:var(--navy);color:var(--navy);}
 .status-tog.on{background:var(--navy);color:white;border-color:var(--navy);}
@@ -491,7 +491,7 @@ function spill(s) {
 
 function render(html) { document.getElementById('content').innerHTML = html; }
 
-function page(title, actions, body) {  var hdr=title?('<div class="page-hdr"><div class="page-hdr-title">'+esc(title)+'</div>'+(actions?'<div class="page-hdr-actions">'+actions+'</div>':'')+'</div>'):'';  render('<div class="page-wrap">'+hdr+body+'</div>');}
+function page(title, actions, body) {  var hdr=title?('<div class="page-hdr"><div class="page-hdr-title">'+esc(title)+'</div>'+(actions?'<div class="page-hdr-actions">'+actions+'</div>':'')+'</div>'):'';  render('<div class="page-wrap">'+hdr+body+'</div>');}function pageForm(title, actions, body) {  var inner='<div class="form-panel-inner"><div class="page-hdr form-page-hdr"><div class="page-hdr-title">'+esc(title)+'</div>'+(actions?'<div class="page-hdr-actions">'+actions+'</div>':'')+'</div>'+body+'</div>';  render('<div class="page-wrap"><div class="form-panel">'+inner+'</div></div>');}
 
 
 
@@ -1280,7 +1280,7 @@ function showIntake() {
 }
 
 function renderTypeSelect() {
-  page('Add Entry', '', '<div class="form-panel">'+typeGrid()+'</div>');
+  pageForm('Add Entry', '', typeGrid());
 }
 
 function typeGrid() {
@@ -1334,7 +1334,7 @@ function renderEntryForm() {
   var subtitle=typeLabels[iType]||'';
   if(iSub&&iSub!=='default') subtitle+=' — '+subLabels[iSub];
   var backBtn=(iSub&&iSub!=='default')?'<button class="btn" onclick="renderSubSelect(\x27'+iType+'\x27)">&#8592; Back</button>':'<button class="btn" onclick="renderTypeSelect()">&#8592; Back</button>';
-  page('Add Entry', backBtn, '<div class="form-panel"><div class="form-panel-inner"><p style="font-size:13px;color:var(--gray);margin-bottom:16px">Fill in what you know — edit anytime from the Gap Report</p><div class="card">'+buildEntryForm()+'</div></div></div>');
+  pageForm('Add Entry', backBtn, '<p style="font-size:13px;color:var(--gray);margin-bottom:16px">Fill in what you know — edit anytime from the Gap Report</p><div class="card">'+buildEntryForm()+'</div></div></div>');');
   setTimeout(attachIntakeSearch, 80);
 }
 
@@ -1344,7 +1344,7 @@ function buildEntryForm() {
   var autoStatus=isN||isC; if(autoStatus) iSt='Details Set';
   var h='';
   h+='<div class="detail-grid single"><div class="field"><label>Entry name *</label><input type="text" id="fn" placeholder="'+(isN?'e.g. PAC closure April 28':isC?'e.g. No Rehearsal':'e.g. NFFF Gala')+'" /></div></div>';
-  h+='<div class="detail-grid"><div class="field"><label>Date</label><input type="date" id="fd" /></div>'+(autoStatus?'':'<div class="field"><label>Status</label><div class="status-row" id="fsr">'+STATS_LIST.map(function(s){return'<div class="status-tog" data-s="'+esc(s)+'" onclick="togFormSt(this)">'+esc(s)+'</div>';}).join('')+'</div></div>')+'</div>';
+  h+='<div class="detail-grid date-status"><div class="field"><label>Date</label><input type="date" id="fd" /></div>'+(autoStatus?'':'<div class="field"><label>Status</label><div class="status-row" id="fsr">'+STATS_LIST.map(function(s){return'<div class="status-tog" data-s="'+esc(s)+'" onclick="togFormSt(this)">'+esc(s)+'</div>';}).join('')+'</div></div>')+'</div>';
   if(isP) h+='<div class="mod-row"><label class="mod-check"><input type="checkbox" id="fpaid" onchange="S.intake.paid=this.checked"> Paid</label><label class="mod-check"><input type="checkbox" id="finkind" onchange="S.intake.inkind=this.checked"> In-Kind</label></div>';
   if(needV) h+='<div class="detail-grid single"><div class="field sw"><label>Venue</label><input type="text" id="fvs" placeholder="Search venues..." autocomplete="off" /><div class="sr" id="fvr" style="display:none"></div><div id="fvsel"></div></div></div>';
   if(needCon) h+='<div class="detail-grid"><div class="field sw"><label>Organization</label><input type="text" id="fos" placeholder="Search orgs..." autocomplete="off" /><div class="sr" id="for" style="display:none"></div><div id="fosel"></div></div><div class="field sw"><label>Contact</label><input type="text" id="fxs" placeholder="Search contacts..." autocomplete="off" /><div class="sr" id="fxr" style="display:none"></div><div id="fxsel"></div></div></div>';
