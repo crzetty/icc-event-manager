@@ -805,7 +805,7 @@ function showDetail(pid) {
   var prevTab = S.currentTab;
   var backBtn = '<button class="btn" onclick="goBack(\''+prevTab+'\')">&#8592; Back</button>';
   var editBtn = '<button class="btn primary" onclick="showEdit(\''+pid+'\')">&#9998; Edit</button>';
-  page(gtitle(page2), backBtn+editBtn, html);
+  html='<div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:16px">'+backBtn+editBtn+'</div>'+html; page('','',html);
 }
 
 function df(label, value) {
@@ -871,8 +871,8 @@ function showEdit(pid) {
   var ruRel = gp(p2,'Receiving Updates');
   var curRuIds = Array.isArray(ruRel)?ruRel.map(function(r){return r.id;}):[];
 
-  var html = '<div class="form-panel"><div class="form-panel-inner">';
-  html += '<div class="ph" style="margin-bottom:3px">'+esc(gtitle(p2))+'</div>';
+  var html = '';
+
   html += '<div class="ps" style="margin-bottom:16px">'+fmtDate(gp(p2,'date'))+(m.length?' &middot; <span style="color:var(--red)">Missing: '+esc(m.join(', '))+'</span>':' &middot; <span style="color:var(--green)">All fields complete</span>')+'</div>';
   html += '<div class="card">';
     html += '<div class="detail-grid triple"><div class="field"><label>Call time</label><input type="time" id="ec" value="'+t2i(gp(p2,'Call Time'))+'" /></div><div class="field"><label>Performance time</label><input type="time" id="ep" value="'+t2i(gp(p2,'Performance Time'))+'" /></div><div class="field"><label>Approx. dismissal</label><input type="time" id="ed" value="'+t2i(gp(p2,'Approx. Dismissal'))+'" /></div></div>';
@@ -1620,7 +1620,7 @@ function showDbRecord(key, pid) {
         }
       });
       html+='</div>';
-      page(gtitle(p),'<button class="btn" onclick="goDb(\x27'+key+'\x27)">&#8592; Back</button>',html);
+      page('','',html);
     });
   }).catch(function(e){page(DB_LABELS[key]||key,'','<div class="empty"><p>Error: '+esc(e.message)+'</p></div>');});
 }
