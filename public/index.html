@@ -884,10 +884,10 @@ html += '<div class="detail-grid single"><div class="field"><label>Uniform</labe
   html += '<div style="margin-bottom:12px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--gray);margin-bottom:6px">Participating choirs</div>'+buildChoirPicker(null,curRuIds)+'</div>';
   html += '<div class="detail-grid single"><div class="field"><label>Notes (appended to page body)</label><textarea id="en" placeholder="Additional notes..."></textarea></div></div>';
   html += '<button class="btn primary" style="width:100%;padding:10px" onclick="saveEdit()">Save to Notion</button>';
-  html += '</div></div>';
+  html += '</div>';
 
   var prevTab = S.currentTab;
-  page('Edit Entry', '<button class="btn" onclick="goBack(\''+prevTab+'\')">&#8592; Back</button>', html);
+  pageForm(gtitle(p2), '<button class="btn" onclick="goBack(\''+prevTab+'\')">&#8592; Back</button>', html);
 
   setTimeout(function(){
     attachSearch('evs','evr','evsel','vn');
