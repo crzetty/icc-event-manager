@@ -52,7 +52,7 @@ body{font-family:'Open Sans',sans-serif;background:#f4f6f9;color:#1a202c;font-si
 .page-wrap{padding:0 28px 28px 28px;}
 
 /* Content bar */
-.page-hdr{display:flex;align-items:center;justify-content:space-between;padding-top:28px;margin-bottom:16px;}.page-hdr-title{font-family:'Lora',serif;font-size:22px;color:var(--navy);font-weight:400;margin-bottom:2px;}.page-hdr-actions{display:flex;gap:8px;}.form-panel{padding-top:0;}.form-panel-inner{max-width:680px;margin:0 auto;}.form-panel .page-hdr{margin-bottom:6px;padding-bottom:0;}.form-page-hdr{padding-top:28px;margin-bottom:6px;}
+.page-hdr{display:flex;align-items:center;justify-content:space-between;padding-top:28px;margin-bottom:4px;}.page-hdr-title{font-family:'Lora',serif;font-size:22px;color:var(--navy);font-weight:400;margin-bottom:2px;}.page-hdr-actions{display:flex;gap:8px;}.form-panel{padding-top:0;}.form-panel-inner{max-width:680px;margin:0 auto;}.form-panel .page-hdr{margin-bottom:6px;padding-bottom:0;}.form-page-hdr{padding-top:28px;margin-bottom:6px;}
 
 
 
@@ -65,7 +65,7 @@ body{font-family:'Open Sans',sans-serif;background:#f4f6f9;color:#1a202c;font-si
 .btn:disabled{opacity:.4;cursor:not-allowed;}
 
 /* Cards */
-.card{background:white;border-radius:var(--r);padding:20px 22px;margin-bottom:14px;box-shadow:var(--shadow);}
+.card{background:white;border-radius:var(--r);padding:20px 22px;margin-bottom:14px;margin-top:0;box-shadow:var(--shadow);}
 .card-title{font-family:'Lora',serif;font-size:15px;color:var(--navy);margin-bottom:12px;}
 .ph{font-family:'Lora',serif;font-size:22px;color:var(--navy);margin-bottom:3px;padding-top:32px;}
 .ps{font-size:13px;color:var(--gray);margin-top:0;margin-bottom:12px;}
@@ -133,7 +133,7 @@ body{font-family:'Open Sans',sans-serif;background:#f4f6f9;color:#1a202c;font-si
 .syn:hover{opacity:.7;}
 
 /* Detail / Edit view */
-.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}.detail-grid.date-status{grid-template-columns:260px 1fr;gap:14px;margin-bottom:14px;}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}.detail-grid.date-status{grid-template-columns:220px 1fr;gap:14px;margin-bottom:14px;}
 .detail-grid.single{grid-template-columns:1fr;}
 .detail-grid.triple{grid-template-columns:1fr 1fr 1fr;}
 .field{display:flex;flex-direction:column;gap:4px;}
@@ -1319,8 +1319,8 @@ function renderSubSelect(type) {
   var btns = subs.map(function(s){
     return '<button class="sc2" onclick="selSub(\x27'+s.id+'\x27)"><div class="sc2-t">'+s.t+'</div><div class="sc2-d">'+s.d+'</div></button>';
   }).join('');
-  page('Add Entry', '<button class="btn" onclick="renderTypeSelect()">&#8592; Back</button>',
-    '<div class="form-panel"><div class="form-panel-inner"><p style="font-size:13px;color:var(--gray);margin-bottom:16px">'+prompt+'</p><div class="sub-grid">'+btns+'</div></div></div>');
+  pageForm('Add Entry', '<button class="btn" onclick="renderTypeSelect()">&#8592; Back</button>',
+    '<p style="font-size:13px;color:var(--gray);margin-bottom:16px">'+prompt+'</p><div class="sub-grid">'+btns+'</div>');
 }
 
 function selSub(sub) {
@@ -1415,7 +1415,7 @@ function subEntry(){
 // ═══════════════════════════════════════════════════════════════
 function showTN() {
   var today = new Date().toISOString().split('T')[0];
-  var html = '<div class="form-panel"><div class="form-panel-inner"><div class="tn-form">';
+  var html = '<div class="tn-form">';
   // tn heading removed
   html += '<div class="ps" style="margin-bottom:18px">Queries Notion, creates the Weekly Updates page, and downloads the formatted Word doc</div>';
   html += '<div class="card">';
@@ -1424,7 +1424,7 @@ function showTN() {
   html += '<div class="detail-grid single"><div class="field"><label>Additional breaks &amp; schedule changes (optional)</label><textarea id="tn-br" placeholder="Manual additions beyond what is in Notion..." style="min-height:60px"></textarea></div></div>';
   html += '<button class="btn primary" style="width:100%;padding:10px" id="tn-btn" onclick="genTN()">Generate &amp; Download Word Doc</button>';
   html += '</div><div id="tn-status"></div></div>';
-  page('Take Note Brief', '', html);
+  pageForm('Take Note Brief', '', html);
 }
 
 function genTN() {
