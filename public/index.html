@@ -1334,7 +1334,7 @@ function renderEntryForm() {
   var subtitle=typeLabels[iType]||'';
   if(iSub&&iSub!=='default') subtitle+=' — '+subLabels[iSub];
   var backBtn=(iSub&&iSub!=='default')?'<button class="btn" onclick="renderSubSelect(\x27'+iType+'\x27)">&#8592; Back</button>':'<button class="btn" onclick="renderTypeSelect()">&#8592; Back</button>';
-  pageForm('Add Entry', backBtn, '<p style="font-size:13px;color:var(--gray);margin-bottom:16px">Fill in what you know — edit anytime from the Gap Report</p><div class="card">'+buildEntryForm()+'</div></div></div>');');
+  pageForm('Add Entry', backBtn, '<p style="font-size:13px;color:var(--gray);margin-bottom:16px">Fill in what you know — edit anytime from the Gap Report</p><div class="card">'+buildEntryForm()+'</div>');
   setTimeout(attachIntakeSearch, 80);
 }
 
