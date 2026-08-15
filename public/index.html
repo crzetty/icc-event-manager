@@ -347,14 +347,17 @@ var BRIEF_SECTIONS = [
   {label:'ICC Lyric Choirs',       color:'#462E8D', ruIds:['1760f18a-00ec-80ab-b776-f5a585af8cee']},
   {label:'ICC IndyVoice',          color:'#0083C1', ruIds:['1760f18a-00ec-80fb-8ba0-e8441ce4b4aa']},
   {label:'ICC Master Chorale',     color:'#F6A800', ruIds:['1750f18a-00ec-80e0-8032-f3ff45c428fb']},
-  {label:'Jubilate',               color:'#E63E51', ruIds:['1750f18a-00ec-8050-987b-d4ec52616add']}
+  {label:'Jubilate',               color:'#E63E51', ruIds:['1750f18a-00ec-8050-987b-d4ec52616add']},
+  {label:'Upland Prep & Concert', color:'#D7282F', ruIds:['3b90f18a-00ec-81af-8377-fb00e2d8e123','3b90f18a-00ec-8137-91e9-fedc5c4c7ba0']},
+  {label:'Upland Youth Chorale',   color:'#D7282F', ruIds:['3b90f18a-00ec-81a0-a5f2-c23c8ba3de50']}];
 ];
 
 // ORG IDs in Choirs & Programs DB
 var ORG_IDS = {
   icc:  '1760f18a-00ec-803c-a5d7-f683ec9f0df3',
   aacc: '1760f18a-00ec-8026-989f-f7eae160e3ee',
-  cicc: '1760f18a-00ec-80a6-aae1-e7a26f2fff51'
+  cicc: '1760f18a-00ec-80a6-aae1-e7a26f2fff51',
+  iccu: '3b90f18a-00ec-81d7-845a-e80eaf55ec96'
 };
 
 // Map RU record name to Participating Choirs multi-select value
@@ -1316,6 +1319,7 @@ function renderSubSelect(type) {
     {id:'icc',      t:'ICC',          d:'Indianapolis Children’s Choir'},
     {id:'aacc',     t:'AACC',         d:'Anderson Area Children’s Choir'},
     {id:'cicc',     t:'CICC',         d:'Central Indiana Children’s Choir'}
+    {id:'iccu',     t:'Upland',       d:'ICC Upland'}
   ] : [
     {id:'partner',  t:'Partner',      d:'External group using our space'},
     {id:'resident', t:'Resident',     d:'Resident meeting or event'},
