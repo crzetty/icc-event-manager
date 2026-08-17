@@ -327,7 +327,7 @@ var XDB = 'f5998a51-e200-4ad7-9e20-9e25ca4ca1eb';
 var RUDB = 'f5f40839-f72f-4ef9-bd82-8629563a8e83';
 var WUDB = '1750f18a-00ec-804b-ba79-e3e4ea5f0e8a'; // Weekly Updates database page ID
 
-var TAG_PERF = ['Collaborative Bookings','Season Concerts & Events','Season Concerts & Events [AACC}','Season Concerts & Events [CICC]'];
+var TAG_PERF = ['Collaborative Bookings','Season Concerts & Events','Season Concerts & Events [AACC]','Season Concerts & Events [CICC]'];
 var TAG_EDU = ['Education & Outreach'];
 var TAG_BLDG = ['Partner Events & Meetings','Resident Events & Meetings'];
 var TAG_ORG = ['Organizational Events'];
@@ -1389,7 +1389,7 @@ function subEntry(){
   var uni=((document.getElementById('fu')||{}).value||'').trim();
   var notes=((document.getElementById('fnotes')||{}).value||'').trim();
   var tags=[];
-  if(iType==='perf'){if(iSub==='aacc')tags.push('Season Concerts & Events [AACC}');else if(iSub==='cicc')tags.push('Season Concerts & Events [CICC]');else tags.push('Collaborative Bookings');if(S.intake.paid)tags.push('Paid');if(S.intake.inkind)tags.push('In-Kind');}
+  if(iType==='perf'){if(iSub==='aacc')tags.push('Season Concerts & Events [AACC]');else if(iSub==='cicc')tags.push('Season Concerts & Events [CICC]');else tags.push('Collaborative Bookings');if(S.intake.paid)tags.push('Paid');if(S.intake.inkind)tags.push('In-Kind');}
   else if(iType==='edu')tags.push('Education & Outreach');
   else if(iType==='bldg'){if(iSub==='org-bldg')tags.push('Organizational Events');else tags.push(iSub==='resident'?'Resident Events & Meetings':'Partner Events & Meetings');}
   else if(iType==='cal')tags.push('Calendar Addition / Adjustment');
